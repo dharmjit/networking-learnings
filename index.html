@@ -291,11 +291,11 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
       </ul>
     </div>
     <div>
-      <div class="toc-h">IV · Inside one host</div>
+      <div class="toc-h">IV · When the network becomes software</div>
       <ul>
         <li><span class="no">13</span><a href="#s13">Virtual Ethernet</a></li>
         <li><span class="no">14</span><a href="#s14">Network namespaces</a></li>
-        <li><span class="no">15</span><a href="#s15">VRF &amp; policy routing</a></li>
+        <li><span class="no">15</span><a href="#s15">VRF on Linux</a></li>
         <li><span class="no">16</span><a href="#s16">Identity, not address</a></li>
         <li><span class="no">—</span><a href="#coda">Coda · one idea, five times</a></li>
       </ul>
@@ -818,7 +818,7 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
       <div class="tag" style="color:var(--mp)">At the edge · VRF</div>
       <ul>
         <li>The PE keeps a <b>separate RIB and FIB per tenant</b>. Customer interfaces are bound to one VRF.</li>
-        <li>Blue’s <code>10.0.0.0/8</code> and red’s are rows in two different tables that never meet — no more magic than two network namespaces on one host.</li>
+        <li>Blue’s <code>10.0.0.0/8</code> and red’s are rows in two different tables that never meet — no more magic than <a href="#s14" style="color:inherit">two network namespaces</a> on one host — and Linux has the VRF abstraction itself, in <a href="#s15" style="color:inherit">section 15</a>.</li>
         <li>P routers in the core hold <b>zero</b> tenant routes, which is the whole scaling argument.</li>
       </ul>
     </div>
@@ -1548,8 +1548,8 @@ $ bridge fdb show dev vxlan0
 
 <div class="part">
   <div class="part-n">Part IV</div>
-  <div class="part-t">Inside one host</div>
-  <p class="part-d">The last three metres. Below the NIC a link stops being a cable and becomes pointers and softirqs — and the tenancy question this guide keeps asking gets its final, strangest answer.</p>
+  <div class="part-t">When the network becomes software</div>
+  <p class="part-d">The last three metres, where a cable is a pointer, a stack is a struct, a routing table is a device and a tenant is a number in a map. Not all of it is host-scoped — one of these is a router concept and one is a cluster concept — but this is where you meet them as code.</p>
 </div>
 
 <section id="s13">
@@ -1755,9 +1755,9 @@ default via 10.244.3.1 dev eth0
 
 <section id="s15">
   <div class="head">
-    <div class="eyebrow">15 — VRF and policy routing</div>
-    <h2>Many tables, one stack</h2>
-    <p class="lede">Sometimes total isolation is too much. You want separate routing but one firewall, one conntrack, one daemon that can see everything — which is exactly what a PE router has, and Linux grew the same thing.</p>
+    <div class="eyebrow">15 — VRF on Linux</div>
+    <h2>The same idea, one layer down</h2>
+    <p class="lede">You have already met VRF, in <a href="#s05" style="color:inherit">section 05</a>, as what a provider edge router keeps per tenant. It is not a host concept and has no scale of its own — a PE, a switch and a laptop all mean the same thing by it. What is specific here is the implementation, and what it buys: separate routing tables, but one firewall, one conntrack and one agent that can see all of them.</p>
   </div>
 
   <figure class="wide">

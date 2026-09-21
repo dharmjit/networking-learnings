@@ -17,7 +17,8 @@ Every diagram is hand-authored inline SVG. The only external request is to Googl
 | **I · Between networks** | 01 The shape of it · 02 The family tree · 03 BGP · 04 MPLS · 05 One address, many tenants · 06 Sessions all the way down |
 | **II · Inside one network** | 07 Distance vector vs link state · 08 Bookkeeping · 09 Inside one router · 10 Quick reference |
 | **III · One wire, many networks** | 11 VLAN · 12 VXLAN & EVPN |
-| **IV · Inside one host** | 13 Virtual Ethernet (veth) |
+| **IV · When the network becomes software** | 13 Virtual Ethernet · 14 Network namespaces · 15 VRF on Linux · 16 Identity, not address |
+| **Coda** | One idea, five times |
 
 The through-line: give each tenant its own table, and make the identifier travel with the
 packet. MPLS does it with a VPN label, VXLAN with a VNI, VLAN with twelve bits, the kernel
@@ -44,7 +45,7 @@ If you fork it, update `og:url` and `link[rel=canonical]` in `index.html`, and t
 
 ## Still to come
 
-`network namespaces` · `bridge & FDB` · `conntrack & NAT` · `tc, qdiscs & XDP` ·
+`bridge & FDB` · `conntrack & NAT` · `tc, qdiscs & XDP` ·
 `NIC queues & offloads` · `RDMA & kernel bypass` · `MACsec & 802.1X`
 
 ## Corrections
