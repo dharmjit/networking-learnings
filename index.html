@@ -294,6 +294,10 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
       <div class="toc-h">IV · Inside one host</div>
       <ul>
         <li><span class="no">13</span><a href="#s13">Virtual Ethernet</a></li>
+        <li><span class="no">14</span><a href="#s14">Network namespaces</a></li>
+        <li><span class="no">15</span><a href="#s15">VRF &amp; policy routing</a></li>
+        <li><span class="no">16</span><a href="#s16">Identity, not address</a></li>
+        <li><span class="no">—</span><a href="#coda">Coda · one idea, five times</a></li>
       </ul>
     </div>
   </nav>
@@ -1545,7 +1549,7 @@ $ bridge fdb show dev vxlan0
 <div class="part">
   <div class="part-n">Part IV</div>
   <div class="part-t">Inside one host</div>
-  <p class="part-d">The last three metres. Below the NIC, a link stops being a cable and becomes namespaces, pointers and softirqs.</p>
+  <p class="part-d">The last three metres. Below the NIC a link stops being a cable and becomes pointers and softirqs — and the tenancy question this guide keeps asking gets its final, strangest answer.</p>
 </div>
 
 <section id="s13">
@@ -1656,12 +1660,348 @@ $ ip -d link show | grep -A1 '^12:'
   <div class="note"><b>On a GPU node this path is the slow lane on purpose.</b> RoCE traffic never enters it: the verbs datapath bypasses the kernel stack completely, which is why an RDMA pod gets an <em>SR-IOV VF alongside</em> its veth rather than instead of it. The veth carries control traffic, health checks and anything that needs a Service IP; the fabric carries the tensors, and the two never meet in the stack.</div>
 </section>
 
+<section id="s14">
+  <div class="head">
+    <div class="eyebrow">14 — Network namespaces</div>
+    <h2>Not a filter over the stack — another copy of it</h2>
+    <p class="lede">The kernel’s answer to tenancy is the most thorough one in this guide and the only one that puts nothing on the wire at all.</p>
+  </div>
+
+  <figure class="wide">
+    <svg viewBox="0 0 1040 430" role="img" aria-label="Two network namespaces side by side, each holding its own devices, routing tables, neighbour table, netfilter rules and conntrack, sysctls, port space and sockets. A veth pair is the only path between them.">
+      <g class="kn">
+        <rect class="s-zone" x="60" y="60" width="380" height="310" rx="14"/>
+        <rect class="s-zone" x="600" y="60" width="380" height="310" rx="14"/>
+        <text class="s-t" x="80" y="88" fill="currentColor">netns · pod</text>
+        <text class="s-t" x="620" y="88" fill="currentColor">netns · host</text>
+
+        <rect class="s-box" x="80" y="100" width="340" height="30" rx="7"/>
+        <text class="s-ts" x="94" y="120">devices — lo, eth0</text>
+        <rect class="s-box" x="80" y="134" width="340" height="30" rx="7"/>
+        <text class="s-ts" x="94" y="154">routing tables — local, main, default</text>
+        <rect class="s-box" x="80" y="168" width="340" height="30" rx="7"/>
+        <text class="s-ts" x="94" y="188">neighbour / ARP table</text>
+        <rect class="s-box" x="80" y="202" width="340" height="30" rx="7"/>
+        <text class="s-ts" x="94" y="222">netfilter rules + conntrack</text>
+        <rect class="s-box" x="80" y="236" width="340" height="30" rx="7"/>
+        <text class="s-ts" x="94" y="256">sysctls — rp_filter, forwarding, …</text>
+        <rect class="s-box" x="80" y="270" width="340" height="30" rx="7"/>
+        <text class="s-ts" x="94" y="290">TCP / UDP port space</text>
+        <rect class="s-box" x="80" y="304" width="340" height="30" rx="7"/>
+        <text class="s-ts" x="94" y="324">sockets</text>
+
+        <rect class="s-box" x="620" y="100" width="340" height="30" rx="7"/>
+        <text class="s-ts" x="634" y="120">devices — lo, eth0 (the real NIC), vethXYZ</text>
+        <rect class="s-box" x="620" y="134" width="340" height="30" rx="7"/>
+        <text class="s-ts" x="634" y="154">routing tables — local, main, default</text>
+        <rect class="s-box" x="620" y="168" width="340" height="30" rx="7"/>
+        <text class="s-ts" x="634" y="188">neighbour / ARP table</text>
+        <rect class="s-box" x="620" y="202" width="340" height="30" rx="7"/>
+        <text class="s-ts" x="634" y="222">netfilter rules + conntrack</text>
+        <rect class="s-box" x="620" y="236" width="340" height="30" rx="7"/>
+        <text class="s-ts" x="634" y="256">sysctls — rp_filter, forwarding, …</text>
+        <rect class="s-box" x="620" y="270" width="340" height="30" rx="7"/>
+        <text class="s-ts" x="634" y="290">TCP / UDP port space</text>
+        <rect class="s-box" x="620" y="304" width="340" height="30" rx="7"/>
+        <text class="s-ts" x="634" y="324">sockets</text>
+
+        <line class="s-flow" x1="424" y1="115" x2="616" y2="115"/>
+        <text class="s-ts" x="520" y="106" text-anchor="middle" fill="currentColor">veth pair</text>
+        <text class="s-ts" x="520" y="134" text-anchor="middle">the only way across</text>
+
+        <text class="s-ts" x="520" y="400" text-anchor="middle">every row is a separate object · nothing in any packet says which column it came from</text>
+      </g>
+    </svg>
+    <figcaption>Both columns can hold a device called <code>eth0</code> carrying <code>10.0.0.1</code>, both can bind <code>:80</code>, and a conntrack entry in one is invisible in the other. The kernel object is <b>struct net</b>; every device, socket, route and netfilter hook holds a pointer to exactly one of them, and that pointer <em>is</em> the isolation.</figcaption>
+  </figure>
+
+  <pre class="code"><span class="c"># a namespace is a reference, not a file — `ip netns add` bind-mounts one so it survives</span>
+$ ls -l /proc/<span class="h">4821</span>/ns/net
+lrwxrwxrwx 1 root root 0 → 'net:[<span class="h">4026533871</span>]'
+
+<span class="c"># enter a running pod's namespace without its filesystem, its cgroups or its binaries</span>
+$ nsenter -t <span class="h">4821</span> -n ip route
+default via 10.244.3.1 dev eth0
+10.244.3.0/24 dev eth0 proto kernel scope link src 10.244.3.47</pre>
+  <p class="body">That inode number is the namespace’s real identity. A namespace lives while something still references it — a running process, or a bind mount under <code>/var/run/netns</code> — and is destroyed when the last reference goes. On destruction its virtual devices are deleted and any physical device it held is <em>returned to the initial namespace</em> rather than disappearing with it.</p>
+
+  <div class="trio">
+    <div class="card knc">
+      <div class="tag" style="color:var(--kn)">What it buys</div>
+      <ul>
+        <li><b>Total isolation</b>, not just routing. Firewall rules, conntrack, sysctls, port space and sockets are all separate — the strongest boundary in this guide.</li>
+        <li>Overlapping addresses are free and need no encapsulation, because nothing is shared to collide in.</li>
+        <li>It is the unit Kubernetes builds on: a <b>pod is a namespace</b>. The pause container exists to hold it open, which is why containers in one pod share <code>localhost</code> and a single port space.</li>
+      </ul>
+    </div>
+    <div class="card knc">
+      <div class="tag" style="color:var(--kn)">What it costs</div>
+      <ul>
+        <li>Crossing a boundary needs a <em>device</em>, so every packet pays the two full stack traversals from <a href="#s13" style="color:inherit">section 13</a>.</li>
+        <li>Each namespace carries its own conntrack accounting and its own copy of every sysctl you thought you had set. A node-wide tuning change reaches none of them.</li>
+        <li>Debugging tools are namespace-blind by default: <code>ss</code>, <code>tcpdump</code> and <code>conntrack -L</code> all report the namespace you happen to be in, which is usually the wrong one.</li>
+      </ul>
+    </div>
+    <div class="card knc">
+      <div class="tag" style="color:var(--kn)">The thing to notice</div>
+      <ul>
+        <li>VLAN puts twelve bits in the frame. MPLS puts a label in the packet. VXLAN puts a VNI in a UDP header.</li>
+        <li>A namespace puts <b>nothing anywhere</b>. There is no tenant identifier on the wire, because there is no shared wire — the packet never touches a structure belonging to anyone else.</li>
+        <li>That is why it is both the cleanest isolation available and completely unable to cross a machine. The moment you need two hosts, you are back to <a href="#s12" style="color:inherit">VXLAN</a>.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="s15">
+  <div class="head">
+    <div class="eyebrow">15 — VRF and policy routing</div>
+    <h2>Many tables, one stack</h2>
+    <p class="lede">Sometimes total isolation is too much. You want separate routing but one firewall, one conntrack, one daemon that can see everything — which is exactly what a PE router has, and Linux grew the same thing.</p>
+  </div>
+
+  <figure class="wide">
+    <svg viewBox="0 0 1040 400" role="img" aria-label="Inside one network namespace, netfilter, sockets and sysctls are shared, while three separate routing tables are selected by an ip rule according to which VRF device an interface is enslaved to.">
+      <rect class="s-zone" x="30" y="40" width="980" height="340" rx="14"/>
+      <text class="s-t" x="52" y="66">one network namespace — one stack</text>
+      <text class="s-ts" x="988" y="66" text-anchor="end">shared by every VRF ↓</text>
+
+      <rect class="s-box" x="60" y="80" width="290" height="48" rx="9"/>
+      <text class="s-t" x="205" y="110" text-anchor="middle">netfilter + conntrack</text>
+      <rect class="s-box" x="375" y="80" width="290" height="48" rx="9"/>
+      <text class="s-t" x="520" y="110" text-anchor="middle">sockets + port space</text>
+      <rect class="s-box" x="690" y="80" width="290" height="48" rx="9"/>
+      <text class="s-t" x="835" y="110" text-anchor="middle">sysctls</text>
+
+      <line x1="60" y1="146" x2="980" y2="146" stroke="var(--rule)" stroke-width="1.5" stroke-dasharray="5 6"/>
+      <text class="s-ts" x="60" y="172" fill="var(--kn)">ip rule 1000 · from all lookup [l3mdev-table] — one rule, selecting by the device’s L3 master</text>
+
+      <g class="kn">
+        <rect class="w-kn" x="60" y="186" width="290" height="56" rx="9" stroke="currentColor" stroke-width="1.2"/>
+        <text class="s-t" x="205" y="210" text-anchor="middle" fill="currentColor">table 10</text>
+        <text class="s-ts" x="205" y="230" text-anchor="middle">vrf-blue</text>
+        <rect class="w-kn" x="375" y="186" width="290" height="56" rx="9" stroke="currentColor" stroke-width="1.2"/>
+        <text class="s-t" x="520" y="210" text-anchor="middle" fill="currentColor">table 20</text>
+        <text class="s-ts" x="520" y="230" text-anchor="middle">vrf-red</text>
+        <rect class="s-box" x="690" y="186" width="290" height="56" rx="9"/>
+        <text class="s-t" x="835" y="210" text-anchor="middle">table 254</text>
+        <text class="s-ts" x="835" y="230" text-anchor="middle">main</text>
+
+        <line class="s-flow" x1="205" y1="292" x2="205" y2="248" marker-end="url(#aKn2)"/>
+        <line class="s-flow" x1="520" y1="292" x2="520" y2="248" marker-end="url(#aKn2)"/>
+        <line class="s-flow" x1="835" y1="292" x2="835" y2="248" marker-end="url(#aKn2)"/>
+
+        <defs>
+          <marker id="aKn2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="currentColor"/>
+          </marker>
+        </defs>
+      </g>
+
+      <rect class="s-box" x="60" y="296" width="290" height="44" rx="9"/>
+      <text class="s-t" x="205" y="323" text-anchor="middle">eth1 — enslaved</text>
+      <rect class="s-box" x="375" y="296" width="290" height="44" rx="9"/>
+      <text class="s-t" x="520" y="323" text-anchor="middle">eth2 — enslaved</text>
+      <rect class="s-box" x="690" y="296" width="290" height="44" rx="9"/>
+      <text class="s-t" x="835" y="323" text-anchor="middle">eth0 — unenslaved</text>
+
+      <text class="s-ts" x="520" y="366" text-anchor="middle">both tenants may carry 10.0.0.0/8 · the same firewall sees both</text>
+    </svg>
+    <figcaption>Compare this with the previous figure. There, <em>everything</em> was duplicated. Here only the routing table is, and the top row — netfilter, sockets, sysctls — is shared by all of them. That is a feature when you want one firewall policy across tenants, and a hazard when a conntrack entry created in one VRF is matched in another.</figcaption>
+  </figure>
+
+  <pre class="code">$ ip link add vrf-blue type vrf table <span class="h">10</span>
+$ ip link set vrf-blue up
+$ ip link set eth1 master vrf-blue      <span class="c"># eth1's traffic now resolves in table 10</span>
+
+$ ip rule show
+0:      from all lookup local
+<span class="h">1000</span>:   from all lookup [l3mdev-table]     <span class="c"># one rule covers every VRF</span>
+32766:  from all lookup main
+32767:  from all lookup default</pre>
+
+  <div class="trio">
+    <div class="card knc">
+      <div class="tag" style="color:var(--kn)">How selection works</div>
+      <ul>
+        <li>A VRF is an <code>l3mdev</code> device. Enslaving an interface to it makes the kernel resolve that interface’s traffic in the master’s table.</li>
+        <li>Priority <b>1000</b>’s <code>[l3mdev-table]</code> is a single rule standing in for all of them — add a hundred VRFs and it stays one rule.</li>
+        <li>The routing policy database underneath predates VRF and is more general: <code>ip rule</code> can select a table by source, input interface, <code>fwmark</code> or uid. VRF is the tidy special case that won.</li>
+      </ul>
+    </div>
+    <div class="card knc">
+      <div class="tag" style="color:var(--kn)">The gotcha that costs a day</div>
+      <ul>
+        <li>A socket is <b>not</b> in a VRF unless you put it there. An unbound listener uses the default table and silently ignores your VRFs.</li>
+        <li>Fixes: <code>SO_BINDTODEVICE</code> to the VRF device, or <code>ip vrf exec vrf-blue &lt;cmd&gt;</code>, which attaches a small BPF program to bind the process’s sockets for you.</li>
+        <li>To let <em>one</em> listener serve every VRF, set <code>net.ipv4.tcp_l3mdev_accept=1</code> and the UDP equivalent — after which you must read the incoming device to know which tenant you are talking to.</li>
+      </ul>
+    </div>
+    <div class="card knc">
+      <div class="tag" style="color:var(--kn)">Where you meet it</div>
+      <ul>
+        <li>Linux <b>as a router</b> — FRR with VRFs is the open-source PE from <a href="#s05" style="color:inherit">section 05</a>, with the same RD and RT configuration.</li>
+        <li>Splitting a management network from a data network on a host that must never route between them.</li>
+        <li>Keeping a <b>storage or RoCE network</b> off the default table so a mis-set default route cannot pull GPU fabric traffic onto the pod network.</li>
+        <li>Anywhere a namespace would be too much — because you still want one firewall, one metrics exporter, one agent that can see it all.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="s16">
+  <div class="head">
+    <div class="eyebrow">16 — Identity, not address</div>
+    <h2>When the address stops meaning anything</h2>
+    <p class="lede">Every mechanism so far assumes an address identifies a tenant. In a cluster it identifies nothing: pod addresses are handed out from a node’s range and reused within seconds.</p>
+  </div>
+
+  <figure class="wide">
+    <svg viewBox="0 0 1040 380" role="img" aria-label="A pod's labels are hashed into a numeric security identity; policy is written between identities. In overlay mode the identity travels in the encapsulation header, in direct routing mode the destination node resolves the source address to an identity from its local map.">
+      <g class="kn">
+        <rect class="s-box" x="40" y="66" width="250" height="110" rx="10"/>
+        <text class="s-ts" x="58" y="90">pod · labels</text>
+        <text class="s-t" x="58" y="114">app=api</text>
+        <text class="s-t" x="58" y="136">env=prod</text>
+        <text class="s-t" x="58" y="158">team=blue</text>
+
+        <line class="s-flow" x1="294" y1="121" x2="336" y2="121" marker-end="url(#aId)"/>
+
+        <rect class="w-kn" x="340" y="96" width="210" height="60" rx="10" stroke="currentColor" stroke-width="1.2"/>
+        <text class="s-t" x="445" y="120" text-anchor="middle" fill="currentColor">identity 51234</text>
+        <text class="s-ts" x="445" y="140" text-anchor="middle">one per unique label set</text>
+
+        <line class="s-flow" x1="554" y1="121" x2="596" y2="121" marker-end="url(#aId)"/>
+
+        <rect class="s-box" x="600" y="96" width="360" height="60" rx="10"/>
+        <text class="s-t" x="780" y="120" text-anchor="middle">allow 51234 → 51987 : 8080</text>
+        <text class="s-ts" x="780" y="140" text-anchor="middle">the rule names identities, never addresses</text>
+
+        <rect class="s-box" x="80" y="220" width="400" height="96" rx="10"/>
+        <text class="s-t" x="100" y="248" fill="currentColor">overlay — VXLAN or Geneve</text>
+        <text class="s-ts" x="100" y="270">the identity rides in the encapsulation header,</text>
+        <text class="s-ts" x="100" y="288">so it arrives with the packet</text>
+        <text class="s-ts" x="100" y="306">[ outer IP | UDP | VNI + identity | inner ]</text>
+
+        <rect class="s-box" x="560" y="220" width="400" height="96" rx="10"/>
+        <text class="s-t" x="580" y="248" fill="currentColor">direct routing — no encapsulation</text>
+        <text class="s-ts" x="580" y="270">nothing extra on the wire; the destination node</text>
+        <text class="s-ts" x="580" y="288">looks the source address up in its own map</text>
+        <text class="s-ts" x="580" y="306">ipcache: 10.244.3.47 → 51234</text>
+
+        <text class="s-ts" x="520" y="352" text-anchor="middle">either way the decision is made on identity — the address is only ever a lookup key</text>
+
+        <defs>
+          <marker id="aId" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="currentColor"/>
+          </marker>
+        </defs>
+      </g>
+    </svg>
+    <figcaption>A workload’s labels are collapsed into a numeric <b>security identity</b>, distributed cluster-wide, and policy is compiled to identity pairs. Two pods with identical labels on twelve different nodes share one identity and therefore one rule — which is why policy size tracks the number of <em>kinds</em> of workload, not the number of pods.</figcaption>
+  </figure>
+
+  <div class="duo">
+    <div class="card knc">
+      <div class="tag" style="color:var(--kn)">Why addresses failed here</div>
+      <ul>
+        <li>A pod address is allocated from its node’s CIDR and returned to the pool on termination. <b>It is a location, not a name.</b> A rule written against <code>10.244.3.47</code> protects whatever lands there in ninety seconds.</li>
+        <li>Rules would also have to be rewritten on every scale event. Identity moves the churn into a map that changes without touching policy.</li>
+        <li>Reserved identities cover what has no labels: <code>host</code>, <code>remote-node</code>, <code>world</code> for everything outside the cluster, and <code>unmanaged</code>.</li>
+      </ul>
+    </div>
+    <div class="card knc">
+      <div class="tag" style="color:var(--kn)">The trust model inverts</div>
+      <ul>
+        <li>In <a href="#s05" style="color:inherit">L3VPN</a> the core physically cannot mix two tenants — their routes live in different tables, so isolation survives a misconfiguration.</li>
+        <li>A Kubernetes pod network is <b>flat by default</b>: every pod can reach every pod, and <code>NetworkPolicy</code> is opt-in. Isolation exists only while the policy is right.</li>
+        <li>So this is the one mechanism in the guide where tenancy is a <em>decision evaluated per packet</em> rather than a structure that makes leaking impossible. Enormous flexibility, and nothing underneath it if the policy engine is wrong or absent.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<div class="part">
+  <div class="part-n">Coda</div>
+  <div class="part-t">One idea, five times</div>
+  <p class="part-d">The guide has now asked the same question at five scales and been given five different answers. Read together, they disagree about something fundamental.</p>
+</div>
+
+<section id="coda">
+  <div class="head">
+    <div class="eyebrow">Coda</div>
+    <h2>Where the tenant identifier lives</h2>
+  </div>
+
+  <div class="tablewrap">
+    <table>
+      <thead>
+        <tr><th>&nbsp;</th><th>VLAN</th><th>MPLS L3VPN</th><th>VXLAN</th><th>netns · VRF</th><th>identity</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="nm">identifier</td><td>VID</td><td>VPN label</td><td>VNI</td><td>struct net · table id</td><td>security identity</td></tr>
+        <tr><td class="nm">width</td><td class="num">12 bits</td><td class="num">20 bits</td><td class="num">24 bits</td><td class="num">32 bits</td><td class="num">unbounded</td></tr>
+        <tr><td class="nm">assigned by</td><td>the operator</td><td>the egress PE</td><td>the orchestrator</td><td>the kernel</td><td>the control plane</td></tr>
+        <tr><td class="nm">on the wire?</td><td>a tag in the frame</td><td>a shim in the packet</td><td>a UDP header</td><td><b>nothing</b></td><td>sometimes</td></tr>
+        <tr><td class="nm">shared core sees</td><td>a tagged frame</td><td>a label</td><td>a UDP flow</td><td>the same kernel</td><td>an address</td></tr>
+        <tr><td class="nm">boundary is</td><td>a broadcast domain</td><td>a VRF table</td><td>a bridge domain</td><td>a namespace</td><td>a policy engine</td></tr>
+        <tr><td class="nm">crosses a machine?</td><td>yes, one L2 domain</td><td>yes, globally</td><td>yes, over any IP</td><td><b>no</b></td><td>yes, with the map</td></tr>
+        <tr><td class="nm">fails as</td><td>4094, and spanning tree</td><td>a wrong route target</td><td>an MTU black hole</td><td>the wrong table bound</td><td>a stale identity</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <figure class="wide">
+    <svg viewBox="0 0 1040 330" role="img" aria-label="A spectrum from mechanisms that carry the tenant identifier in the packet to mechanisms that keep it nowhere on the wire, with the trade-off in what the shared infrastructure must understand versus what it must be trusted with.">
+      <text class="s-t" x="90" y="46">where the tenant identifier lives</text>
+
+      <line class="s-flow" x1="90" y1="170" x2="950" y2="170" marker-end="url(#aSp)" marker-start="url(#aSp)" style="color:var(--ink-soft)"/>
+
+      <g class="mp">
+        <line x1="150" y1="170" x2="150" y2="132" stroke="currentColor" stroke-width="1.5"/>
+        <text class="s-t" x="150" y="122" text-anchor="middle" fill="currentColor">VLAN</text>
+        <line x1="330" y1="170" x2="330" y2="106" stroke="currentColor" stroke-width="1.5"/>
+        <text class="s-t" x="330" y="96" text-anchor="middle" fill="currentColor">MPLS L3VPN</text>
+        <line x1="530" y1="170" x2="530" y2="132" stroke="currentColor" stroke-width="1.5"/>
+        <text class="s-t" x="530" y="122" text-anchor="middle" fill="currentColor">VXLAN</text>
+      </g>
+      <g class="kn">
+        <line x1="760" y1="170" x2="760" y2="106" stroke="currentColor" stroke-width="1.5"/>
+        <text class="s-t" x="760" y="96" text-anchor="middle" fill="currentColor">netns · VRF</text>
+        <line x1="910" y1="170" x2="910" y2="132" stroke="currentColor" stroke-width="1.5"/>
+        <text class="s-t" x="910" y="122" text-anchor="middle" fill="currentColor">identity</text>
+      </g>
+
+      <text class="s-ts" x="90" y="196">in the packet</text>
+      <text class="s-ts" x="950" y="196" text-anchor="end">nowhere on the wire</text>
+
+      <text class="s-t" x="90" y="248">the core understands the identifier,</text>
+      <text class="s-t" x="90" y="268">and nothing else</text>
+      <text class="s-ts" x="90" y="292">separate tables make leaking between</text>
+      <text class="s-ts" x="90" y="310">tenants structurally impossible</text>
+
+      <text class="s-t" x="950" y="248" text-anchor="end">the core understands everything,</text>
+      <text class="s-t" x="950" y="268" text-anchor="end">and carries no identifier at all</text>
+      <text class="s-ts" x="950" y="292" text-anchor="end">isolation exists only for as long as</text>
+      <text class="s-ts" x="950" y="310" text-anchor="end">the policy is correct</text>
+
+      <defs>
+        <marker id="aSp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0 0 L10 5 L0 10 z" fill="var(--ink-soft)"/>
+        </marker>
+      </defs>
+    </svg>
+    <figcaption>The trade is not about scale — 4094 versus 16 million is the least interesting row in the table. It is about <b>what you are asking the shared infrastructure to do</b>: understand a tenant identifier and nothing else, or understand everything and be trusted not to mix it up.</figcaption>
+  </figure>
+
+  <div class="note"><b>So the guide’s own refrain is wrong, and usefully so.</b> “Make the identifier travel with the packet” holds for the first three columns and breaks twice at the bottom: a namespace puts nothing on the wire, and identity-based policy resolves the tenant <em>after</em> the packet has already arrived. The honest version is one level up — <em>every scheme picks somewhere to keep the tenant identifier, and that choice decides whether isolation is a property of the structure or a property of the configuration.</em> MPLS chose the structure and pays for it in protocols. Kubernetes chose the configuration and pays for it in blast radius. Neither is the mistake; picking one without knowing which you picked is.</div>
+</section>
+
 <footer>
   <p style="margin-bottom:16px">Defaults and administrative distances shown are Cisco’s, and vary by vendor. Prefix and AS counts are order-of-magnitude figures for the global table. Kernel behaviour described is Linux ≥ 5.10.</p>
   <div class="next">
-    <span>still to come · network namespaces</span>
+    <span>still to come · bridge &amp; FDB</span>
     <span>MACsec &amp; 802.1X</span>
-    <span>bridge &amp; FDB</span>
     <span>conntrack &amp; NAT</span>
     <span>tc, qdiscs &amp; XDP</span>
     <span>NIC queues &amp; offloads</span>
