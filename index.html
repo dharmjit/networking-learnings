@@ -1,0 +1,1674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Packets, Paths and Labels</title>
+<meta name="description" content="A networking guide that works downward from the WAN to the kernel: gateway protocols, routing algorithms, MPLS and L3VPN, VLAN and VXLAN, and the host-side datapath.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#E8EBF0">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0D1117">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Packets, Paths and Labels">
+<meta property="og:description" content="A networking guide that works downward from the WAN to the kernel: gateway protocols, routing algorithms, MPLS and L3VPN, VLAN and VXLAN, and the host-side datapath.">
+<meta property="og:url" content="https://dharmjit.github.io/networking-learnings/">
+<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://dharmjit.github.io/networking-learnings/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%20100%22%3E%3Ctext%20y%3D%22.9em%22%20font-size%3D%2290%22%3E%F0%9F%A7%AD%3C%2Ftext%3E%3C%2Fsvg%3E">
+<style>
+:root{color-scheme:light dark}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --paper:#E8EBF0;
+  --surface:#FFFFFF;
+  --sunk:#DFE3EA;
+  --ink:#151B25;
+  --ink-soft:#5A6678;
+  --rule:#C7CEDB;
+  --dv:#A25E05;
+  --dv-wash:#F7E9D2;
+  --ls:#1A5AA3;
+  --ls-wash:#DDE7F5;
+  --pv:#8A2A66;
+  --pv-wash:#F3DDEC;
+  --mp:#0E6B62;
+  --mp-wash:#D6EBE7;
+  --kn:#4B3BB8;
+  --kn-wash:#E2DEF7;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --sans:"IBM Plex Sans","Helvetica Neue",Arial,sans-serif;
+  --shadow:0 1px 0 rgba(21,27,37,.08);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0D1117;
+    --surface:#161C25;
+    --sunk:#111720;
+    --ink:#E3E8F0;
+    --ink-soft:#94A1B4;
+    --rule:#28313E;
+    --dv:#E0A33F;
+    --dv-wash:#38290F;
+    --ls:#6FA6E4;
+    --ls-wash:#13243A;
+    --pv:#DC85BC;
+    --pv-wash:#331327;
+    --mp:#4FC2B2;
+    --mp-wash:#0C2B28;
+    --kn:#A79AF5;
+    --kn-wash:#1E1A3D;
+    --shadow:0 1px 0 rgba(0,0,0,.4);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0D1117;
+  --surface:#161C25;
+  --sunk:#111720;
+  --ink:#E3E8F0;
+  --ink-soft:#94A1B4;
+  --rule:#28313E;
+  --dv:#E0A33F;
+  --dv-wash:#38290F;
+  --ls:#6FA6E4;
+  --ls-wash:#13243A;
+  --pv:#DC85BC;
+  --pv-wash:#331327;
+  --mp:#4FC2B2;
+  --mp-wash:#0C2B28;
+  --kn:#A79AF5;
+  --kn-wash:#1E1A3D;
+  --shadow:0 1px 0 rgba(0,0,0,.4);
+}
+
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:16.5px;line-height:1.62;}
+.wrap{max-width:1060px;margin:0 auto;padding:56px 22px 90px;}
+
+h1{font-family:var(--mono);font-weight:600;font-size:clamp(2.1rem,5.4vw,3.4rem);line-height:1.04;letter-spacing:-.035em;margin:.15em 0 0;text-wrap:balance;}
+h2{font-family:var(--mono);font-weight:600;font-size:clamp(1.35rem,3vw,1.85rem);line-height:1.15;letter-spacing:-.03em;margin:0;text-wrap:balance;}
+h3{font-family:var(--mono);font-weight:600;font-size:1.02rem;letter-spacing:-.02em;margin:0;}
+p{margin:0;}
+.eyebrow{font-family:var(--mono);font-size:.72rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft);}
+.lede{font-size:clamp(1.05rem,2vw,1.22rem);color:var(--ink-soft);max-width:62ch;}
+.body{max-width:66ch;}
+.body + .body{margin-top:.85em;}
+em{color:var(--ink);font-style:normal;font-weight:600;}
+code{font-family:var(--mono);font-size:.9em;background:var(--sunk);padding:.12em .38em;border-radius:4px;}
+
+header.hero{display:flex;flex-direction:column;gap:16px;padding-bottom:38px;}
+.key{display:flex;flex-wrap:wrap;gap:10px 22px;padding-top:6px;}
+.key span{font-family:var(--mono);font-size:.78rem;display:flex;align-items:center;gap:8px;color:var(--ink-soft);}
+.key i{width:13px;height:13px;border-radius:3px;display:block;}
+
+section{display:flex;flex-direction:column;gap:22px;padding:46px 0;border-top:1px solid var(--rule);}
+.head{display:flex;flex-direction:column;gap:9px;}
+
+figure{margin:0;background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:20px 18px 16px;box-shadow:var(--shadow);overflow-x:auto;}
+figure svg{display:block;width:100%;height:auto;min-width:820px;}
+figure.wide svg{min-width:980px;}
+figcaption{font-family:var(--mono);font-size:.8rem;line-height:1.5;color:var(--ink-soft);margin-top:14px;max-width:78ch;}
+figcaption b{color:var(--ink);font-weight:500;}
+
+/* svg primitives */
+.s-box{fill:var(--surface);stroke:var(--rule);stroke-width:1.5;}
+.s-zone{fill:var(--sunk);stroke:var(--rule);stroke-width:1.5;}
+.s-node{fill:var(--surface);stroke:currentColor;stroke-width:2;}
+.s-link{stroke:currentColor;stroke-width:1.6;fill:none;opacity:.5;}
+.s-flow{stroke:currentColor;stroke-width:2.2;fill:none;}
+.s-t{font-family:var(--mono);font-size:13px;fill:var(--ink);}
+.s-ts{font-family:var(--mono);font-size:11.5px;fill:var(--ink-soft);}
+.s-tm{text-anchor:middle;}
+.s-te{text-anchor:end;}
+.s-cur{fill:currentColor;}
+.dv{color:var(--dv);}
+.ls{color:var(--ls);}
+.pv{color:var(--pv);}
+.mp{color:var(--mp);}
+.kn{color:var(--kn);}
+.f-dv{fill:var(--dv);}.f-ls{fill:var(--ls);}.f-pv{fill:var(--pv);}.f-mp{fill:var(--mp);}.f-kn{fill:var(--kn);}
+.w-dv{fill:var(--dv-wash);}.w-ls{fill:var(--ls-wash);}.w-pv{fill:var(--pv-wash);}.w-mp{fill:var(--mp-wash);}.w-kn{fill:var(--kn-wash);}
+
+/* two-up */
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:20px 20px 22px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:12px;}
+.card .tag{font-family:var(--mono);font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;font-weight:500;}
+.card ul{margin:0;padding-left:1.1em;display:flex;flex-direction:column;gap:7px;}
+.card ul.ord{list-style:none;padding-left:0;}
+.card ul.ord li{font-family:var(--mono);font-size:.86rem;}
+.card li{font-size:.96rem;}
+.card li b{font-weight:600;}
+.card.dvc{border-top:4px solid var(--dv);}
+.card.lsc{border-top:4px solid var(--ls);}
+.card.pvc{border-top:4px solid var(--pv);}
+.card.mpc{border-top:4px solid var(--mp);}
+.card.knc{border-top:4px solid var(--kn);}
+
+/* tables */
+.tablewrap{overflow-x:auto;border:1px solid var(--rule);border-radius:12px;background:var(--surface);box-shadow:var(--shadow);}
+table{width:100%;border-collapse:collapse;font-size:.9rem;min-width:680px;}
+th{font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;font-weight:500;color:var(--ink-soft);text-align:left;padding:13px 16px;border-bottom:1px solid var(--rule);vertical-align:bottom;}
+td{padding:13px 16px;border-bottom:1px solid var(--rule);vertical-align:top;}
+tbody tr:last-child td{border-bottom:0;}
+td.nm{font-family:var(--mono);font-weight:500;white-space:nowrap;}
+td.num{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--ink-soft);}
+.pill{font-family:var(--mono);font-size:.72rem;padding:3px 9px;border-radius:999px;white-space:nowrap;}
+.pill.dvp{background:var(--dv-wash);color:var(--dv);}
+.pill.lsp{background:var(--ls-wash);color:var(--ls);}
+.pill.pvp{background:var(--pv-wash);color:var(--pv);}
+.pill.knp{background:var(--kn-wash);color:var(--kn);}
+
+/* bit field */
+.bits{display:flex;border:1px solid var(--rule);border-radius:10px;overflow:hidden;background:var(--surface);box-shadow:var(--shadow);}
+.bit{padding:16px 12px;text-align:center;border-right:1px solid var(--rule);display:flex;flex-direction:column;gap:5px;}
+.bit:last-child{border-right:0;}
+.bit b{font-family:var(--mono);font-weight:600;font-size:.95rem;}
+.bit span{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);letter-spacing:.08em;}
+.bit.b20{flex:20 1 0;background:var(--mp-wash);}
+.bit.b3{flex:5 1 0;}
+.bit.b1{flex:4 1 0;}
+.bit.b8{flex:9 1 0;}
+.bit.q16{flex:15 1 0;}
+.bit.q3{flex:6 1 0;}
+.bit.q1{flex:5 1 0;}
+.bit.q12{flex:13 1 0;background:var(--mp-wash);}
+
+/* ladder */
+.ladder{display:flex;flex-direction:column;}
+.rung{display:grid;grid-template-columns:auto 1fr;gap:20px;padding:18px 2px;border-bottom:1px solid var(--rule);align-items:start;}
+.rung:first-child{border-top:1px solid var(--rule);}
+.rung .n{font-family:var(--mono);font-size:.95rem;font-weight:600;color:var(--ink-soft);padding-top:2px;}
+.rung h3{margin-bottom:4px;}
+.rung p{font-size:.96rem;color:var(--ink-soft);}
+.rung p b{color:var(--ink);font-weight:600;}
+
+/* parts + nav */
+.part{border-top:3px solid var(--ink);padding:38px 0 6px;display:flex;flex-direction:column;gap:11px;}
+.part-n{font-family:var(--mono);font-size:.72rem;letter-spacing:.24em;text-transform:uppercase;color:var(--ink-soft);}
+.part-t{font-family:var(--mono);font-weight:600;font-size:clamp(1.7rem,4vw,2.35rem);letter-spacing:-.035em;line-height:1.04;}
+.part-d{font-size:1.04rem;color:var(--ink-soft);max-width:62ch;}
+.part + section{border-top:0;padding-top:28px;}
+section[id]{scroll-margin-top:16px;}
+.toc{display:grid;grid-template-columns:repeat(4,1fr);gap:22px 30px;border-top:1px solid var(--rule);padding-top:24px;margin-top:14px;}
+.toc-h{font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:11px;}
+.toc ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:7px;}
+.toc li{font-size:.9rem;display:flex;gap:10px;}
+.toc .no{font-family:var(--mono);font-size:.78rem;color:var(--ink-soft);padding-top:2px;}
+.toc a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--rule);}
+.toc a:hover{border-bottom-color:var(--ink);}
+a:focus-visible{outline:2px solid var(--ink);outline-offset:3px;border-radius:2px;}
+pre.code{margin:0;background:var(--sunk);border:1px solid var(--rule);border-radius:10px;padding:17px 19px;overflow-x:auto;font-family:var(--mono);font-size:.82rem;line-height:1.7;}
+pre.code .c{color:var(--ink-soft);}
+pre.code .h{color:var(--kn);font-weight:500;}
+.next{display:flex;flex-wrap:wrap;gap:8px;}
+.next span{font-family:var(--mono);font-size:.75rem;padding:6px 13px;border:1px dashed var(--rule);border-radius:999px;color:var(--ink-soft);}
+
+/* origins */
+.hist{display:flex;flex-direction:column;border-top:1px solid var(--rule);}
+.hrow{display:grid;grid-template-columns:62px 1.05fr 1.7fr;gap:4px 24px;padding:12px 2px;border-bottom:1px solid var(--rule);align-items:baseline;}
+.hrow .yr{font-family:var(--mono);font-weight:600;font-size:.88rem;font-variant-numeric:tabular-nums;color:var(--ink-soft);}
+.hrow .what{font-family:var(--mono);font-size:.9rem;font-weight:500;line-height:1.4;}
+.hrow .who{display:block;font-weight:400;font-size:.78rem;color:var(--ink-soft);letter-spacing:.01em;}
+.hrow .why{font-size:.93rem;line-height:1.5;color:var(--ink-soft);}
+.hrow .why em{color:var(--ink);font-style:normal;font-weight:600;}
+
+/* spec strips */
+.specs{display:flex;flex-direction:column;border-top:1px solid var(--rule);}
+.spec{display:grid;grid-template-columns:200px 1fr;gap:10px 28px;padding:24px 2px;border-bottom:1px solid var(--rule);}
+.spec-id{display:flex;flex-direction:column;gap:8px;align-items:flex-start;}
+.spec-id h3{font-size:1.12rem;}
+.spec-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:16px 28px;}
+.spec-item .k{font-family:var(--mono);font-size:.64rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-soft);display:block;margin-bottom:4px;}
+.spec-item .v{font-size:.92rem;line-height:1.5;}
+.spec-item .v b{font-weight:600;}
+.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+
+.note{background:var(--sunk);border-left:3px solid var(--ink-soft);border-radius:0 10px 10px 0;padding:16px 20px;font-size:.97rem;max-width:74ch;}
+.note b{font-weight:600;}
+
+footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-family:var(--mono);font-size:.78rem;color:var(--ink-soft);}
+
+@media (max-width:980px){
+  .trio{grid-template-columns:1fr;}
+  .toc{grid-template-columns:1fr 1fr;}
+}
+@media (max-width:780px){
+  .duo{grid-template-columns:1fr;}
+  .hrow{grid-template-columns:56px 1fr;}
+  .hrow .why{grid-column:2;}
+  .toc{grid-template-columns:1fr;}
+  .spec{grid-template-columns:1fr;}
+  .rung{grid-template-columns:1fr;gap:4px;}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="eyebrow">A networking guide · from the WAN down to the kernel</div>
+  <h1>Packets, paths<br>and labels</h1>
+  <p class="lede">No router knows the whole internet. Every packet you send is handed between networks that don’t trust each other — and at the far end, between two stacks on one machine joined by nothing but a pointer. This guide works downward through both.</p>
+  <div class="key">
+    <span><i style="background:var(--dv)"></i> distance vector</span>
+    <span><i style="background:var(--ls)"></i> link state</span>
+    <span><i style="background:var(--pv)"></i> path vector</span>
+    <span><i style="background:var(--mp)"></i> labels · tags · overlays</span>
+    <span><i style="background:var(--kn)"></i> the host kernel</span>
+  </div>
+
+  <nav class="toc">
+    <div>
+      <div class="toc-h">I · Between networks</div>
+      <ul>
+        <li><span class="no">01</span><a href="#s01">The shape of it</a></li>
+        <li><span class="no">02</span><a href="#s02">The family tree</a></li>
+        <li><span class="no">03</span><a href="#s03">BGP, the exterior one</a></li>
+        <li><span class="no">04</span><a href="#s04">MPLS</a></li>
+        <li><span class="no">05</span><a href="#s05">One address, many tenants</a></li>
+        <li><span class="no">06</span><a href="#s06">Sessions all the way down</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="toc-h">II · Inside one network</div>
+      <ul>
+        <li><span class="no">07</span><a href="#s07">The two interior styles</a></li>
+        <li><span class="no">08</span><a href="#s08">Bookkeeping</a></li>
+        <li><span class="no">09</span><a href="#s09">Inside one router</a></li>
+        <li><span class="no">10</span><a href="#s10">Quick reference</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="toc-h">III · One wire, many networks</div>
+      <ul>
+        <li><span class="no">10</span><a href="#s10">VLAN — twelve bits</a></li>
+        <li><span class="no">11</span><a href="#s12">VXLAN &amp; EVPN</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="toc-h">IV · Inside one host</div>
+      <ul>
+        <li><span class="no">13</span><a href="#s13">Virtual Ethernet</a></li>
+      </ul>
+    </div>
+  </nav>
+</header>
+
+
+<section id="s00">
+  <div class="head">
+    <div class="eyebrow">Origins</div>
+    <h2>Who built this, and what for</h2>
+    <p class="lede">Almost nothing here was designed. Each piece was added by someone with a specific problem, on top of whatever was already deployed — which is why the result layers the way it does.</p>
+  </div>
+
+  <div class="hist">
+    <div class="hrow"><span class="yr">1956</span><span class="what">Bellman–Ford · Dijkstra<span class="who">Bellman, Ford, Moore · Dijkstra</span></span><span class="why">Two shortest-path algorithms, published before there was a network to run them on. Everything in Part II is packaging around these.</span></div>
+    <div class="hrow"><span class="yr">1982</span><span class="what" style="color:var(--pv)">EGP<span class="who">Eric Rosen, BBN · RFC 827</span></span><span class="why">Split the ARPANET into a core plus stub networks. It assumed a single core arranged as a tree — and the internet promptly stopped being either.</span></div>
+    <div class="hrow"><span class="yr">1983</span><span class="what" style="color:var(--dv)">RIP<span class="who">Xerox PARC, via Berkeley Unix</span></span><span class="why">Shipped as <code>routed</code> in 4.2BSD and was on every machine before anyone wrote it down. RFC 1058 <em>documented</em> it five years later rather than specifying it.</span></div>
+    <div class="hrow"><span class="yr">1985</span><span class="what">Spanning tree<span class="who">Radia Perlman, DEC</span></span><span class="why">Let Ethernet bridges have redundant links without melting down. The price is that the redundant link is blocked rather than used — the grievance that Part III eventually settles.</span></div>
+    <div class="hrow"><span class="yr">1987</span><span class="what" style="color:var(--ls)">IS-IS<span class="who">Radia Perlman, DEC · ISO 10589</span></span><span class="why">Link state for OSI’s CLNP, not for IP. That accident is why it still runs straight on layer 2, and why it absorbed IPv6 and segment routing without a new version.</span></div>
+    <div class="hrow"><span class="yr">1989</span><span class="what" style="color:var(--ls)">OSPF<span class="who">IETF, John Moy · RFC 1131</span></span><span class="why">The IETF wanted a link-state IGP that was IP-native and <em>open</em>, instead of adopting ISO’s. Both survived; the industry still runs one in enterprises and the other in carriers.</span></div>
+    <div class="hrow"><span class="yr">1989</span><span class="what" style="color:var(--pv)">BGP<span class="who">Kirk Lougheed, Cisco · Yakov Rekhter, IBM</span></span><span class="why">Sketched on napkins at an IETF lunch. EGP’s one-core tree could not describe a commercial internet where networks multi-home and choose who to carry.</span></div>
+    <div class="hrow"><span class="yr">1993</span><span class="what" style="color:var(--dv)">EIGRP<span class="who">Cisco, on Garcia-Luna-Aceves’s DUAL</span></span><span class="why">Distance vector without the counting: keep a provably loop-free backup so failover needs no conversation at all. Proprietary until Cisco published it in 2016.</span></div>
+    <div class="hrow"><span class="yr">1996</span><span class="what" style="color:var(--mp)">Tag switching → MPLS<span class="who">Cisco, Ipsilon, IBM · IETF WG 1997</span></span><span class="why">Built to forward at ATM speed without an IP lookup per hop. That reason expired within a decade; the labels stayed because they could mean <em>customer</em> and <em>engineered path</em>.</span></div>
+    <div class="hrow"><span class="yr">1998</span><span class="what" style="color:var(--mp)">802.1Q VLAN<span class="who">IEEE 802.1</span></span><span class="why">One switch serving many broadcast domains, standardised after years of incompatible vendor trunking. Twelve bits looked like plenty at the time.</span></div>
+    <div class="hrow"><span class="yr">1999</span><span class="what" style="color:var(--mp)">MPLS L3VPN<span class="who">Rosen &amp; Rekhter · RFC 2547</span></span><span class="why">Carriers wanted to sell a private IP network over a shared core without running a separate router — or a separate table — per customer.</span></div>
+    <div class="hrow"><span class="yr">2001</span><span class="what" style="color:var(--mp)">LDP<span class="who">IETF · RFC 3036</span></span><span class="why">A label for every IGP prefix, following the IGP’s own shortest path. No engineering, no configuration — and one more session per link to keep in sync.</span></div>
+    <div class="hrow"><span class="yr">2008</span><span class="what" style="color:var(--kn)">veth<span class="who">Pavel Emelyanov · Linux 2.6.24</span></span><span class="why">Network namespaces had arrived and there was no way to plug one into anything. The answer was two devices that are each other’s transmit path.</span></div>
+    <div class="hrow"><span class="yr">2010</span><span class="what">BFD<span class="who">Dave Katz &amp; Dave Ward · RFC 5880</span></span><span class="why">Every protocol’s own hello timer was too slow and none of them could be sped up safely. One heartbeat underneath all of them instead.</span></div>
+    <div class="hrow"><span class="yr">2014</span><span class="what" style="color:var(--mp)">VXLAN<span class="who">VMware, Cisco, Arista et al. · RFC 7348</span></span><span class="why">4094 VLANs is not a cloud. Wrapping the frame in UDP made a segment stop caring about cabling — and made the fabric a routed one.</span></div>
+    <div class="hrow"><span class="yr">2015</span><span class="what" style="color:var(--mp)">EVPN<span class="who">Sajassi et al. · RFC 7432</span></span><span class="why">Stop flooding in order to learn MAC addresses. Use BGP, which had spent twenty-five years learning how to distribute reachability.</span></div>
+    <div class="hrow"><span class="yr">2018</span><span class="what" style="color:var(--mp)">Segment routing<span class="who">Clarence Filsfils et al., Cisco · RFC 8402</span></span><span class="why">Delete LDP and RSVP-TE outright. Put the labels in the IGP and the path in the packet, so the core holds no per-flow state.</span></div>
+  </div>
+
+  <div class="note"><b>The pattern worth noticing:</b> nothing was ever replaced. RIP is still in the tree because it shipped with Unix; IS-IS runs the carrier core because it was built for a protocol nobody uses; BGP does jobs its name forbids. Each layer in this guide is a workaround for the layer beneath it that turned out to be permanent.</div>
+</section>
+
+<div class="part">
+  <div class="part-n">Part I</div>
+  <div class="part-t">Between networks</div>
+  <p class="part-d">Two administrations, no shared trust, and a boundary that gets negotiated rather than measured — plus the label-switched core that carries the result.</p>
+</div>
+
+<section id="s01">
+  <div class="head">
+    <div class="eyebrow">01 — The shape of it</div>
+    <h2>Two problems, not one</h2>
+    <p class="lede">Inside a network, routing is an engineering question: which way is fastest? Between networks, it is a business question: whose traffic am I willing to carry?</p>
+  </div>
+
+  <figure>
+    <svg viewBox="0 0 960 400" role="img" aria-label="Three autonomous systems, each running its own interior gateway protocol internally, joined at their borders by eBGP sessions.">
+      <rect class="s-zone" x="20" y="70" width="290" height="230" rx="14"/>
+      <rect class="s-zone" x="345" y="70" width="270" height="230" rx="14"/>
+      <rect class="s-zone" x="650" y="70" width="290" height="230" rx="14"/>
+
+      <text class="s-ts" x="20" y="54">AS 64500 · campus</text>
+      <text class="s-ts" x="345" y="54">AS 64510 · transit carrier</text>
+      <text class="s-ts" x="650" y="54">AS 64520 · cloud</text>
+
+      <g class="ls">
+        <text class="s-t" x="38" y="99" fill="currentColor">IGP · OSPF</text>
+        <text class="s-t" x="363" y="99" fill="currentColor">IGP · IS-IS</text>
+        <text class="s-t" x="668" y="99" fill="currentColor">IGP · OSPF</text>
+
+        <line class="s-link" x1="80" y1="165" x2="170" y2="250"/>
+        <line class="s-link" x1="170" y1="250" x2="272" y2="200"/>
+        <line class="s-link" x1="80" y1="165" x2="272" y2="200"/>
+        <line class="s-link" x1="400" y1="155" x2="480" y2="235"/>
+        <line class="s-link" x1="480" y1="235" x2="560" y2="155"/>
+        <line class="s-link" x1="400" y1="155" x2="560" y2="155"/>
+        <line class="s-link" x1="688" y1="200" x2="790" y2="250"/>
+        <line class="s-link" x1="790" y1="250" x2="880" y2="165"/>
+        <line class="s-link" x1="688" y1="200" x2="880" y2="165"/>
+
+        <circle class="s-node" cx="80" cy="165" r="13"/>
+        <circle class="s-node" cx="170" cy="250" r="13"/>
+        <circle class="s-node" cx="272" cy="200" r="13"/>
+        <circle class="s-node" cx="400" cy="155" r="13"/>
+        <circle class="s-node" cx="480" cy="235" r="13"/>
+        <circle class="s-node" cx="560" cy="155" r="13"/>
+        <circle class="s-node" cx="688" cy="200" r="13"/>
+        <circle class="s-node" cx="790" cy="250" r="13"/>
+        <circle class="s-node" cx="880" cy="165" r="13"/>
+      </g>
+
+      <g class="pv">
+        <line class="s-flow" x1="272" y1="200" x2="400" y2="155"/>
+        <line class="s-flow" x1="560" y1="155" x2="688" y2="200"/>
+        <rect class="s-box" x="308" y="166" width="56" height="22" rx="5"/>
+        <text class="s-ts" x="336" y="181" text-anchor="middle" fill="currentColor">eBGP</text>
+        <rect class="s-box" x="596" y="166" width="56" height="22" rx="5"/>
+        <text class="s-ts" x="624" y="181" text-anchor="middle" fill="currentColor">eBGP</text>
+      </g>
+
+      <g class="ls">
+        <line class="s-link" x1="30" y1="352" x2="74" y2="352"/>
+      </g>
+      <text class="s-ts" x="86" y="356">IGP adjacency — one owner, full trust, metric wins</text>
+      <g class="pv">
+        <line class="s-flow" x1="470" y1="352" x2="514" y2="352"/>
+      </g>
+      <text class="s-ts" x="526" y="356">eBGP session — two owners, no trust, policy wins</text>
+    </svg>
+    <figcaption>An <b>autonomous system</b> is one routing domain under one administration — a campus, a carrier, a cloud region. Inside, an <b>interior gateway protocol</b> (IGP) finds fast paths. At the edges, an <b>exterior gateway protocol</b> (EGP) — in practice only BGP — negotiates which prefixes cross the boundary at all.</figcaption>
+  </figure>
+
+  <div class="duo">
+    <div class="card lsc">
+      <div class="tag" style="color:var(--ls)">Interior · IGP</div>
+      <h3>Optimise</h3>
+      <ul>
+        <li>Scope: <b>one AS</b>, tens to thousands of routers.</li>
+        <li>Goal: the <b>cheapest path</b> by a metric — hops, bandwidth, delay.</li>
+        <li>Assumes every router is honest and configured by the same team.</li>
+        <li>Convergence in <b>milliseconds to seconds</b>; a flap is a local event.</li>
+        <li>RIP, EIGRP, OSPF, IS-IS.</li>
+      </ul>
+    </div>
+    <div class="card pvc">
+      <div class="tag" style="color:var(--pv)">Exterior · EGP</div>
+      <h3>Negotiate</h3>
+      <ul>
+        <li>Scope: <b>between ASes</b> — ~75,000 of them, ~1M prefixes.</li>
+        <li>Goal: the path your <b>contracts and policy</b> allow. Shortest is a tiebreak.</li>
+        <li>Assumes the neighbour may be wrong, hostile, or leaking.</li>
+        <li>Convergence in <b>seconds to minutes</b>; a flap is everyone’s event.</li>
+        <li>BGP-4. There is no second option.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+<section id="s02">
+  <div class="head">
+    <div class="eyebrow">02 — The family tree</div>
+    <h2>Three ways to answer “which way?”</h2>
+    <p class="lede">Every routing protocol differs on two axes: who you talk to, and what you tell them.</p>
+  </div>
+
+  <figure>
+    <svg viewBox="0 0 960 330" role="img" aria-label="Taxonomy: routing protocols split into interior gateway protocols, which are either distance vector (RIP, EIGRP) or link state (OSPF, IS-IS), and exterior gateway protocols, which are path vector (BGP-4).">
+      <rect class="s-box" x="380" y="14" width="200" height="44" rx="9"/>
+      <text class="s-t" x="480" y="41" text-anchor="middle">Routing protocols</text>
+
+      <polyline class="s-link" points="480,58 480,84 280,84 280,110" style="opacity:.6"/>
+      <polyline class="s-link" points="480,58 480,84 720,84 720,110" style="opacity:.6"/>
+
+      <rect class="s-box" x="155" y="110" width="250" height="44" rx="9"/>
+      <text class="s-t" x="280" y="137" text-anchor="middle">Interior — inside one AS</text>
+      <rect class="s-box" x="595" y="110" width="250" height="44" rx="9"/>
+      <text class="s-t" x="720" y="137" text-anchor="middle">Exterior — between ASes</text>
+
+      <polyline class="s-link" points="280,154 280,176 160,176 160,198" style="opacity:.6"/>
+      <polyline class="s-link" points="280,154 280,176 400,176 400,198" style="opacity:.6"/>
+      <line class="s-link" x1="720" y1="154" x2="720" y2="198" style="opacity:.6"/>
+
+      <g class="dv">
+        <rect class="s-box" x="60" y="198" width="200" height="44" rx="9"/>
+        <rect class="w-dv" x="60" y="198" width="200" height="5" rx="2.5"/>
+        <text class="s-t" x="160" y="225" text-anchor="middle" fill="currentColor">Distance vector</text>
+        <line class="s-link" x1="160" y1="242" x2="160" y2="266" style="opacity:.6"/>
+        <rect class="s-box" x="60" y="266" width="200" height="40" rx="9"/>
+        <text class="s-ts" x="160" y="291" text-anchor="middle" fill="currentColor">RIP · EIGRP</text>
+      </g>
+
+      <g class="ls">
+        <rect class="s-box" x="300" y="198" width="200" height="44" rx="9"/>
+        <rect class="w-ls" x="300" y="198" width="200" height="5" rx="2.5"/>
+        <text class="s-t" x="400" y="225" text-anchor="middle" fill="currentColor">Link state</text>
+        <line class="s-link" x1="400" y1="242" x2="400" y2="266" style="opacity:.6"/>
+        <rect class="s-box" x="300" y="266" width="200" height="40" rx="9"/>
+        <text class="s-ts" x="400" y="291" text-anchor="middle" fill="currentColor">OSPF · IS-IS</text>
+      </g>
+
+      <g class="pv">
+        <rect class="s-box" x="620" y="198" width="200" height="44" rx="9"/>
+        <rect class="w-pv" x="620" y="198" width="200" height="5" rx="2.5"/>
+        <text class="s-t" x="720" y="225" text-anchor="middle" fill="currentColor">Path vector</text>
+        <line class="s-link" x1="720" y1="242" x2="720" y2="266" style="opacity:.6"/>
+        <rect class="s-box" x="620" y="266" width="200" height="40" rx="9"/>
+        <text class="s-ts" x="720" y="291" text-anchor="middle" fill="currentColor">BGP-4</text>
+      </g>
+    </svg>
+    <figcaption>“Gateway protocol” is about <b>where</b> a protocol runs; “distance vector / link state / path vector” is about <b>how</b> it computes. EIGRP is a distance vector protocol with the reflexes of a link state one; BGP is a distance vector protocol that carries the whole path instead of just a number.</figcaption>
+  </figure>
+</section>
+<section id="s03">
+  <div class="head">
+    <div class="eyebrow">03 — The exterior one</div>
+    <h2>BGP: a distance vector protocol that shows its work</h2>
+    <p class="lede">Carrying the full AS path solves the loop problem outright — and doubles as the raw material for policy. Here is what actually moves between two speakers.</p>
+  </div>
+
+  <figure class="wide">
+    <svg viewBox="0 0 1040 400" role="img" aria-label="A prefix originated by AS 15169 is advertised across three more autonomous systems; each eBGP hop prepends its own AS number to AS_PATH and rewrites NEXT_HOP. An advertisement fed back to AS 3356 is discarded because its own AS number is already in the path.">
+      <text class="s-ts" x="20" y="30">UPDATE · 203.0.113.0/24 — every eBGP hop prepends its own AS number and rewrites the next hop</text>
+
+      <g class="pv">
+        <rect class="s-box" x="135" y="140" width="230" height="64" rx="8"/>
+        <text class="s-t" x="250" y="168" text-anchor="middle" fill="currentColor">AS_PATH  15169</text>
+        <text class="s-ts" x="250" y="188" text-anchor="middle">NEXT_HOP  198.51.100.1</text>
+
+        <rect class="s-box" x="395" y="140" width="230" height="64" rx="8"/>
+        <text class="s-t" x="510" y="168" text-anchor="middle" fill="currentColor">AS_PATH  3356 15169</text>
+        <text class="s-ts" x="510" y="188" text-anchor="middle">NEXT_HOP  198.51.100.5</text>
+
+        <rect class="s-box" x="655" y="140" width="230" height="64" rx="8"/>
+        <text class="s-t" x="770" y="168" text-anchor="middle" fill="currentColor">AS_PATH  64510 3356 15169</text>
+        <text class="s-ts" x="770" y="188" text-anchor="middle">NEXT_HOP  198.51.100.9</text>
+
+        <line x1="250" y1="204" x2="250" y2="276" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 5" opacity=".5"/>
+        <line x1="510" y1="204" x2="510" y2="276" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 5" opacity=".5"/>
+        <line x1="770" y1="204" x2="770" y2="276" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 5" opacity=".5"/>
+
+        <line class="s-flow" x1="214" y1="285" x2="282" y2="285" marker-end="url(#aBg)"/>
+        <line class="s-flow" x1="474" y1="285" x2="542" y2="285" marker-end="url(#aBg)"/>
+        <line class="s-flow" x1="734" y1="285" x2="802" y2="285" marker-end="url(#aBg)"/>
+
+        <path class="s-flow" d="M 640 320 Q 510 400 384 322" stroke-dasharray="6 6" marker-end="url(#aBg)"/>
+        <text class="s-ts" x="510" y="388" text-anchor="middle" fill="currentColor">fed back to 3356 — its own AS is already in the path, so it is discarded unread</text>
+
+        <defs>
+          <marker id="aBg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="currentColor"/>
+          </marker>
+        </defs>
+      </g>
+
+      <rect class="s-zone" x="30" y="250" width="180" height="70" rx="12"/>
+      <rect class="s-zone" x="290" y="250" width="180" height="70" rx="12"/>
+      <rect class="s-zone" x="550" y="250" width="180" height="70" rx="12"/>
+      <rect class="s-zone" x="810" y="250" width="180" height="70" rx="12"/>
+      <text class="s-t" x="120" y="282" text-anchor="middle">AS 15169</text>
+      <text class="s-ts" x="120" y="302" text-anchor="middle">origin</text>
+      <text class="s-t" x="380" y="282" text-anchor="middle">AS 3356</text>
+      <text class="s-ts" x="380" y="302" text-anchor="middle">transit</text>
+      <text class="s-t" x="640" y="282" text-anchor="middle">AS 64510</text>
+      <text class="s-ts" x="640" y="302" text-anchor="middle">transit</text>
+      <text class="s-t" x="900" y="282" text-anchor="middle">AS 64500</text>
+      <text class="s-ts" x="900" y="302" text-anchor="middle">you</text>
+    </svg>
+    <figcaption>The prefix never changes; the <b>path attributes</b> do. Each AS prepends itself, so the path is both a loop check and a distance metric — and because it is a list of <em>who</em> rather than a number, it is also the thing policy is written against. <b>NEXT_HOP</b> is rewritten at every eBGP hop, which is why your IGP has to know how to reach it.</figcaption>
+  </figure>
+
+  <figure class="wide">
+    <svg viewBox="0 0 1040 300" role="img" aria-label="Inside one BGP speaker: per-peer Adj-RIB-In tables feed import policy, then best-path selection, into a single Loc-RIB, then export policy and a per-peer Adj-RIB-Out.">
+      <text class="s-ts" x="90" y="62" text-anchor="middle">per peer</text>
+      <text class="s-ts" x="945" y="62" text-anchor="middle">per peer</text>
+
+      <g class="pv">
+        <rect class="s-box" x="20" y="76" width="140" height="52" rx="9"/>
+        <text class="s-t" x="90" y="98" text-anchor="middle" fill="currentColor">Adj-RIB-In</text>
+        <text class="s-ts" x="90" y="116" text-anchor="middle">peer A · untouched</text>
+        <rect class="s-box" x="20" y="140" width="140" height="52" rx="9"/>
+        <text class="s-t" x="90" y="162" text-anchor="middle" fill="currentColor">Adj-RIB-In</text>
+        <text class="s-ts" x="90" y="180" text-anchor="middle">peer B · untouched</text>
+
+        <rect class="s-box" x="191" y="76" width="140" height="116" rx="9"/>
+        <text class="s-t" x="261" y="122" text-anchor="middle" fill="currentColor">import policy</text>
+        <text class="s-ts" x="261" y="142" text-anchor="middle">drop, tag,</text>
+        <text class="s-ts" x="261" y="158" text-anchor="middle">set LOCAL_PREF</text>
+
+        <rect class="s-box" x="362" y="76" width="140" height="116" rx="9"/>
+        <text class="s-t" x="432" y="122" text-anchor="middle" fill="currentColor">best path</text>
+        <text class="s-ts" x="432" y="142" text-anchor="middle">the seven</text>
+        <text class="s-ts" x="432" y="158" text-anchor="middle">tiebreaks</text>
+
+        <rect class="w-pv" x="533" y="76" width="140" height="116" rx="9" stroke="currentColor" stroke-width="1.2"/>
+        <text class="s-t" x="603" y="122" text-anchor="middle" fill="currentColor">Loc-RIB</text>
+        <text class="s-ts" x="603" y="142" text-anchor="middle">one winner</text>
+        <text class="s-ts" x="603" y="158" text-anchor="middle">per prefix</text>
+
+        <rect class="s-box" x="704" y="76" width="140" height="116" rx="9"/>
+        <text class="s-t" x="774" y="122" text-anchor="middle" fill="currentColor">export policy</text>
+        <text class="s-ts" x="774" y="142" text-anchor="middle">prepend, filter,</text>
+        <text class="s-ts" x="774" y="158" text-anchor="middle">set MED</text>
+
+        <rect class="s-box" x="875" y="76" width="140" height="116" rx="9"/>
+        <text class="s-t" x="945" y="122" text-anchor="middle" fill="currentColor">Adj-RIB-Out</text>
+        <text class="s-ts" x="945" y="142" text-anchor="middle">peer C · what</text>
+        <text class="s-ts" x="945" y="158" text-anchor="middle">I will say</text>
+
+        <line class="s-flow" x1="160" y1="102" x2="187" y2="120" marker-end="url(#aBg2)"/>
+        <line class="s-flow" x1="160" y1="166" x2="187" y2="148" marker-end="url(#aBg2)"/>
+        <line class="s-flow" x1="331" y1="134" x2="358" y2="134" marker-end="url(#aBg2)"/>
+        <line class="s-flow" x1="502" y1="134" x2="529" y2="134" marker-end="url(#aBg2)"/>
+        <line class="s-flow" x1="673" y1="134" x2="700" y2="134" marker-end="url(#aBg2)"/>
+        <line class="s-flow" x1="844" y1="134" x2="871" y2="134" marker-end="url(#aBg2)"/>
+
+        <defs>
+          <marker id="aBg2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="currentColor"/>
+          </marker>
+        </defs>
+      </g>
+
+      <text class="s-ts" x="603" y="216" text-anchor="middle">also the candidate offered to the RIB, at AD 20 or 200</text>
+      <text class="s-t" x="520" y="262" text-anchor="middle">Only the winner is ever advertised.</text>
+      <text class="s-ts" x="520" y="282" text-anchor="middle">A BGP speaker tells its neighbours its conclusion, never its options — so a network’s alternative paths are invisible from outside it.</text>
+    </svg>
+    <figcaption>Three tables, not one. <b>Adj-RIB-In</b> keeps what each peer actually said, so a policy change can be re-applied without asking again. <b>Loc-RIB</b> holds one winner per prefix. <b>Adj-RIB-Out</b> is what this speaker will say to each peer, after export policy has had its turn — which is why the same prefix can leave with a different AS_PATH length for every neighbour.</figcaption>
+  </figure>
+
+  <div class="duo">
+    <div class="card pvc">
+      <div class="tag" style="color:var(--pv)">Why path vector</div>
+      <ul>
+        <li>Each advertisement carries <code>AS_PATH</code>, e.g. <code>64500 3356 15169</code>.</li>
+        <li>A router that sees <b>its own AS number</b> in the path drops the route. Loops die at the border, with no counting.</li>
+        <li>The path is also evidence: you can filter on who it crossed, prepend your own AS to look worse, or refuse it entirely.</li>
+        <li>Runs over <b>TCP 179</b>. Sessions are configured by hand, never discovered — and each one is a separate deliberate relationship.</li>
+      </ul>
+    </div>
+    <div class="card pvc">
+      <div class="tag" style="color:var(--pv)">Best-path order</div>
+      <ul class="ord">
+        <li>1 — highest <code>LOCAL_PREF</code> <em>(what I want)</em></li>
+        <li>2 — shortest <code>AS_PATH</code></li>
+        <li>3 — lowest <code>ORIGIN</code></li>
+        <li>4 — lowest <code>MED</code> <em>(what they asked for)</em></li>
+        <li>5 — eBGP beats iBGP</li>
+        <li>6 — lowest IGP cost to the next hop <em>(hot potato)</em></li>
+        <li>7 — oldest route, then lowest router ID</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="duo">
+    <div class="card pvc">
+      <div class="tag" style="color:var(--pv)">eBGP vs iBGP — the same protocol, different rules</div>
+      <ul>
+        <li><b>eBGP</b> — peer in another AS, normally directly connected (TTL 1 unless you ask for multihop). Prepend my ASN, rewrite <code>NEXT_HOP</code> to myself, re-advertise what policy allows.</li>
+        <li><b>iBGP</b> — peer inside my own AS, loopback to loopback, any number of IGP hops away. Do <em>not</em> prepend. Do <em>not</em> touch <code>NEXT_HOP</code> — it stays the far eBGP neighbour’s address, which your IGP must therefore be able to reach, or you configure <code>next-hop-self</code>.</li>
+        <li>The rule that shapes everything: <b>a route learned from one iBGP peer is never re-advertised to another iBGP peer.</b> AS_PATH does not grow inside an AS, so there is no loop detection — the prohibition has to be structural instead.</li>
+        <li>That forces a <b>full mesh</b>: <em>n</em>(<em>n</em>−1)/2 sessions. Route reflectors lift the rule and substitute <code>ORIGINATOR_ID</code> and <code>CLUSTER_LIST</code> as the loop check; confederations solve it by faking sub-ASes instead.</li>
+      </ul>
+    </div>
+    <div class="card pvc">
+      <div class="tag" style="color:var(--pv)">Four messages, and that is all</div>
+      <ul>
+        <li><b>OPEN</b> — my AS, my router ID, my hold time, my capabilities: 4-byte ASNs, which address families I speak, route refresh, add-path. A capability the other side rejects means no session at all.</li>
+        <li><b>UPDATE</b> — withdrawn prefixes, one set of path attributes, then every prefix sharing that set. Packing many NLRIs behind one attribute block is why a million-route table transfers in far fewer than a million messages.</li>
+        <li><b>KEEPALIVE</b> — every 60 s, a third of the hold timer. Carries nothing.</li>
+        <li><b>NOTIFICATION</b> — always fatal. An error code, then the session dies and every route learned over it is withdrawn at once.</li>
+        <li>The state machine is Idle → Connect → Active → OpenSent → OpenConfirm → <b>Established</b>. A session stuck in <em>Active</em> is not active; it is failing to connect and retrying — the worst-named state in networking.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="note"><b>Read the best-path order again:</b> path length is only step two, and it is measured in networks crossed, not milliseconds. A route through four small ASes can beat one through two huge ones. BGP was never trying to be fast — it was trying to be <em>agreeable</em>.</div>
+</section>
+<section id="s04">
+  <div class="head">
+    <div class="eyebrow">04 — MPLS</div>
+    <h2>Stop asking where, start asking which</h2>
+    <p class="lede">MPLS puts a short fixed label in front of the packet. Every router after the first one matches that label exactly, and never looks at the IP address again.</p>
+  </div>
+
+  <figure class="wide">
+    <svg viewBox="0 0 1040 250" role="img" aria-label="A packet enters an ingress label edge router which pushes label 17, a label switch router swaps it to 22, the penultimate router pops the label, and the egress router forwards plain IP.">
+      <g class="mp">
+        <line class="s-flow" x1="20" y1="150" x2="78" y2="150" marker-end="url(#aMp)" style="color:var(--ink-soft)"/>
+        <line class="s-flow" x1="182" y1="150" x2="338" y2="150" marker-end="url(#aMp)"/>
+        <line class="s-flow" x1="442" y1="150" x2="598" y2="150" marker-end="url(#aMp)"/>
+        <line class="s-flow" x1="702" y1="150" x2="858" y2="150" marker-end="url(#aMp)"/>
+        <line class="s-flow" x1="962" y1="150" x2="1020" y2="150" marker-end="url(#aMp)" style="color:var(--ink-soft)"/>
+
+        <text class="s-ts" x="20" y="132">IP in</text>
+        <text class="s-ts" x="1020" y="132" text-anchor="end">IP out</text>
+
+        <text class="s-ts" x="260" y="72" text-anchor="middle" fill="currentColor">push 17</text>
+        <text class="s-ts" x="520" y="72" text-anchor="middle" fill="currentColor">swap 17 → 22</text>
+        <text class="s-ts" x="780" y="72" text-anchor="middle" fill="currentColor">pop — penultimate hop</text>
+
+        <rect class="s-box" x="205" y="84" width="110" height="34" rx="6"/>
+        <rect class="w-mp" x="206" y="85" width="54" height="32" rx="5"/>
+        <line x1="260" y1="84" x2="260" y2="118" stroke="var(--rule)" stroke-width="1.5"/>
+        <text class="s-t" x="233" y="106" text-anchor="middle" fill="currentColor">17</text>
+        <text class="s-ts" x="288" y="106" text-anchor="middle">IP</text>
+
+        <rect class="s-box" x="465" y="84" width="110" height="34" rx="6"/>
+        <rect class="w-mp" x="466" y="85" width="54" height="32" rx="5"/>
+        <line x1="520" y1="84" x2="520" y2="118" stroke="var(--rule)" stroke-width="1.5"/>
+        <text class="s-t" x="493" y="106" text-anchor="middle" fill="currentColor">22</text>
+        <text class="s-ts" x="548" y="106" text-anchor="middle">IP</text>
+
+        <rect class="s-box" x="725" y="84" width="110" height="34" rx="6"/>
+        <text class="s-ts" x="780" y="106" text-anchor="middle">IP</text>
+
+        <rect class="s-box" x="84" y="122" width="98" height="56" rx="10"/>
+        <rect class="s-box" x="344" y="122" width="98" height="56" rx="10"/>
+        <rect class="s-box" x="604" y="122" width="98" height="56" rx="10"/>
+        <rect class="s-box" x="864" y="122" width="98" height="56" rx="10"/>
+        <text class="s-t" x="133" y="156" text-anchor="middle">LER</text>
+        <text class="s-t" x="393" y="156" text-anchor="middle">LSR</text>
+        <text class="s-t" x="653" y="156" text-anchor="middle">LSR</text>
+        <text class="s-t" x="913" y="156" text-anchor="middle">LER</text>
+
+        <text class="s-ts" x="133" y="204" text-anchor="middle">ingress edge</text>
+        <text class="s-ts" x="393" y="204" text-anchor="middle">core</text>
+        <text class="s-ts" x="653" y="204" text-anchor="middle">penultimate</text>
+        <text class="s-ts" x="913" y="204" text-anchor="middle">egress edge</text>
+        <text class="s-ts" x="133" y="222" text-anchor="middle">classifies into a FEC</text>
+        <text class="s-ts" x="523" y="222" text-anchor="middle">label lookup only — no IP lookup, no routing table consulted</text>
+        <text class="s-ts" x="913" y="222" text-anchor="middle">normal IP forwarding</text>
+        <defs>
+          <marker id="aMp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="currentColor"/>
+          </marker>
+        </defs>
+      </g>
+    </svg>
+    <figcaption>The ingress <b>LER</b> decides once which forwarding equivalence class (FEC) a packet belongs to and pushes a label. Core <b>LSRs</b> only swap labels. The second-to-last router pops it — <b>penultimate hop popping</b> — so the egress router isn’t asked to do two lookups.</figcaption>
+  </figure>
+
+  <div class="bits">
+    <div class="bit b20"><b>Label</b><span>20 bits</span></div>
+    <div class="bit b3"><b>TC</b><span>3 bits · QoS</span></div>
+    <div class="bit b1"><b>S</b><span>1 bit · bottom</span></div>
+    <div class="bit b8"><b>TTL</b><span>8 bits</span></div>
+  </div>
+  <p class="body">That is the whole MPLS header: <em>32 bits</em>, shimmed between the layer-2 frame and the IP packet — which is why MPLS is called “layer 2.5”. The <code>S</code> bit marks the bottom of the stack, because labels stack: an outer one for the tunnel across the core, an inner one identifying the customer at the far end.</p>
+
+  <div class="duo">
+    <div class="card mpc">
+      <div class="tag" style="color:var(--mp)">What a label buys you</div>
+      <ul>
+        <li><b>L3VPN.</b> The inner label names a customer VRF, so two customers can both use <code>10.0.0.0/8</code> across one core that never learns either.</li>
+        <li><b>Traffic engineering.</b> A path can be pinned away from the shortest route — something no IGP metric can express.</li>
+        <li><b>Fast reroute.</b> A pre-computed backup tunnel swings traffic in ~50 ms, before any protocol has reconverged.</li>
+        <li><b>Any payload.</b> Ethernet, ATM, IPv6 over an IPv4 core — the core only reads labels.</li>
+      </ul>
+    </div>
+    <div class="card mpc">
+      <div class="tag" style="color:var(--mp)">Who hands out the labels</div>
+      <ul>
+        <li><b>LDP</b> — follows the IGP’s shortest path. Simple, no engineering.</li>
+        <li><b>RSVP-TE</b> — signals an explicit path with bandwidth reserved. Powerful, and state-heavy in the core.</li>
+        <li><b>Segment routing (SR-MPLS)</b> — the modern answer: the IGP itself distributes labels, the ingress stacks them to describe the path, and the core holds <em>no per-flow state</em>.</li>
+        <li>MPLS never finds paths itself. It always rides an IGP — usually IS-IS or OSPF — and BGP for the VPN routes.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="note"><b>The common myth:</b> that MPLS exists because IP lookups were slow. That was true in 1997; today silicon does longest-prefix match at line rate. MPLS survived because a label can mean something an IP address cannot — <em>this customer</em>, <em>this engineered path</em>, <em>this backup tunnel</em>.</div>
+</section>
+<section id="s05">
+  <div class="head">
+    <div class="eyebrow">05 — Multi-tenancy</div>
+    <h2>One address, many tenants</h2>
+    <p class="lede">Two customers both use <code>10.0.0.0/8</code> and both cross the same core. Nothing collides, because in the core the packet is never routed by its address — the label carries the tenant.</p>
+  </div>
+
+  <figure class="wide">
+    <svg viewBox="0 0 1040 320" role="img" aria-label="Two VRFs on each provider edge router hold the same prefix. MP-BGP carries them as distinct VPNv4 routes, and a two-label stack crosses a core router that holds no tenant routes.">
+      <g class="pv">
+        <polyline class="s-flow" points="160,180 160,40 880,40 880,180" stroke-dasharray="6 6"/>
+        <rect class="s-box" x="418" y="28" width="204" height="24" rx="6"/>
+        <text class="s-ts" x="520" y="45" text-anchor="middle" fill="currentColor">MP-BGP session · VPNv4</text>
+        <text class="s-ts" x="520" y="72" text-anchor="middle" fill="currentColor">65000:1:10.0.0.0/8 → label 31 · RT 65000:1</text>
+        <text class="s-ts" x="520" y="88" text-anchor="middle" fill="currentColor">65000:2:10.0.0.0/8 → label 44 · RT 65000:2</text>
+      </g>
+
+      <rect class="s-box" x="350" y="108" width="180" height="34" rx="6"/>
+      <rect class="w-mp" x="351" y="109" width="58" height="32" rx="5"/>
+      <rect class="w-pv" x="409" y="109" width="58" height="32"/>
+      <line x1="409" y1="108" x2="409" y2="142" stroke="var(--rule)" stroke-width="1.5"/>
+      <line x1="467" y1="108" x2="467" y2="142" stroke="var(--rule)" stroke-width="1.5"/>
+      <text class="s-t" x="380" y="131" text-anchor="middle" fill="var(--mp)">22</text>
+      <text class="s-t" x="438" y="131" text-anchor="middle" fill="var(--pv)">31</text>
+      <text class="s-ts" x="498" y="131" text-anchor="middle">IP</text>
+
+      <text class="s-ts" x="556" y="122" fill="var(--mp)">outer 22 — how to reach PE2 · from LDP or SR</text>
+      <text class="s-ts" x="556" y="140" fill="var(--pv)">inner 31 — which VRF once there · from MP-BGP</text>
+      <line x1="440" y1="142" x2="440" y2="228" stroke="var(--ink-soft)" stroke-width="1.2" stroke-dasharray="4 5" opacity=".6"/>
+
+      <rect class="s-zone" x="60" y="180" width="200" height="112" rx="12"/>
+      <rect class="s-box" x="70" y="188" width="180" height="44" rx="8"/>
+      <rect class="s-box" x="70" y="240" width="180" height="44" rx="8"/>
+      <rect class="w-ls" x="70" y="188" width="5" height="44" rx="2.5"/>
+      <rect class="w-pv" x="70" y="240" width="5" height="44" rx="2.5"/>
+      <text class="s-ts" x="86" y="206">VRF blue</text>
+      <text class="s-t" x="86" y="223">10.0.0.0/8</text>
+      <text class="s-ts" x="86" y="258">VRF red</text>
+      <text class="s-t" x="86" y="275">10.0.0.0/8</text>
+
+      <rect class="s-zone" x="780" y="180" width="200" height="112" rx="12"/>
+      <rect class="s-box" x="790" y="188" width="180" height="44" rx="8"/>
+      <rect class="s-box" x="790" y="240" width="180" height="44" rx="8"/>
+      <rect class="w-ls" x="790" y="188" width="5" height="44" rx="2.5"/>
+      <rect class="w-pv" x="790" y="240" width="5" height="44" rx="2.5"/>
+      <text class="s-ts" x="806" y="206">VRF blue</text>
+      <text class="s-t" x="806" y="223">10.0.0.0/8</text>
+      <text class="s-ts" x="806" y="258">VRF red</text>
+      <text class="s-t" x="806" y="275">10.0.0.0/8</text>
+
+      <g class="mp">
+        <line class="s-flow" x1="260" y1="235" x2="536" y2="235" marker-end="url(#aMp2)"/>
+        <line class="s-flow" x1="650" y1="235" x2="776" y2="235" marker-end="url(#aMp2)"/>
+        <rect class="s-box" x="540" y="208" width="110" height="54" rx="10"/>
+        <text class="s-t" x="595" y="240" text-anchor="middle">P</text>
+        <defs>
+          <marker id="aMp2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="currentColor"/>
+          </marker>
+        </defs>
+      </g>
+
+      <text class="s-ts" x="160" y="308" text-anchor="middle">PE1 — the only router that knows the tenants</text>
+      <text class="s-ts" x="595" y="284" text-anchor="middle">holds no</text>
+      <text class="s-ts" x="595" y="300" text-anchor="middle">tenant routes</text>
+      <text class="s-ts" x="880" y="308" text-anchor="middle">PE2 — pops 31, looks up in blue’s table</text>
+    </svg>
+    <figcaption>The outer label is popped one hop early, so PE2 receives the packet with <b>only label 31</b> on top. That label — not the destination address — is what selects blue’s forwarding table. The same packet with label 44 would land in red’s.</figcaption>
+  </figure>
+
+  <div class="trio">
+    <div class="card mpc">
+      <div class="tag" style="color:var(--mp)">At the edge · VRF</div>
+      <ul>
+        <li>The PE keeps a <b>separate RIB and FIB per tenant</b>. Customer interfaces are bound to one VRF.</li>
+        <li>Blue’s <code>10.0.0.0/8</code> and red’s are rows in two different tables that never meet — no more magic than two network namespaces on one host.</li>
+        <li>P routers in the core hold <b>zero</b> tenant routes, which is the whole scaling argument.</li>
+      </ul>
+    </div>
+    <div class="card mpc">
+      <div class="tag" style="color:var(--mp)">In the control plane · RD and RT</div>
+      <ul>
+        <li>Both prefixes still have to cross one shared MP-BGP mesh, where identical NLRIs would collide.</li>
+        <li>An 8-byte <b>route distinguisher</b> is prepended to make a unique VPNv4 prefix: <code>65000:1:10.0.0.0/8</code>. Purely a uniquifier — it carries no policy.</li>
+        <li><b>Route targets</b> are the separate thing: communities attached on export, matched on import, deciding <em>which VRFs a route lands in</em>. RD = uniqueness. RT = membership, and therefore hub-and-spoke, extranet, shared services.</li>
+      </ul>
+    </div>
+    <div class="card mpc">
+      <div class="tag" style="color:var(--mp)">On the wire · two labels</div>
+      <ul>
+        <li><b>Outer</b> — the transport label, from LDP or SR, answering “how do I reach PE2”. It is all the core ever reads.</li>
+        <li><b>Inner</b> — the VPN label, allocated by PE2 and advertised with the route, answering “whose table do I use when I get there”.</li>
+        <li>No destination-IP lookup happens anywhere in the shared domain, which is exactly why the overlap is harmless.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="note"><b>The catch:</b> this buys isolation, not interoperability. Blue’s <code>10.1.1.1</code> and red’s still cannot talk to each other — joining them needs NAT or a shared-services VRF with non-overlapping addressing. Overlap is only free while the two tenants stay strangers. The same shape turns up in <a href="#s12" style="color:inherit"><em>VXLAN/EVPN</em></a>, where the VNI plays the VPN label’s part and the RD/RT model is borrowed wholesale: the tenant identifier has to travel <b>with</b> the packet, because the address stopped being unique.</div>
+</section>
+<section id="s06">
+  <div class="head">
+    <div class="eyebrow">06 — Sessions all the way down</div>
+    <h2>Four conversations, each useless without the one below</h2>
+    <p class="lede">Everything in this part runs at once, on the same routers, over the same links. What makes it work is the order — and what makes it fail is that the order is never enforced.</p>
+  </div>
+
+  <figure class="wide">
+    <svg viewBox="0 0 1040 400" role="img" aria-label="Session layers across two provider edge routers and two core routers: BFD and IGP adjacencies exist per link, LDP sessions exist per link, and one MP-BGP session runs end to end between the edge routers, skipping the core entirely.">
+      <line class="s-flow" x1="42" y1="100" x2="42" y2="304" marker-end="url(#aSt)" style="color:var(--ink-soft)"/>
+      <text class="s-ts" transform="rotate(-90 22 202)" x="22" y="202" text-anchor="middle">each layer needs the one below</text>
+
+      <g class="mp">
+        <rect class="w-mp" x="296" y="90" width="648" height="24" rx="6" stroke="currentColor" stroke-width="1.2" stroke-dasharray="5 5"/>
+        <text class="s-ts" x="620" y="106" text-anchor="middle" fill="currentColor">between the two ends only — and only if you need a pseudowire</text>
+        <text class="s-t" x="218" y="107" text-anchor="end" fill="currentColor">targeted LDP</text>
+      </g>
+
+      <g class="pv">
+        <rect class="w-pv" x="296" y="140" width="648" height="24" rx="6" stroke="currentColor" stroke-width="1.2"/>
+        <text class="s-ts" x="620" y="156" text-anchor="middle" fill="currentColor">VPNv4 routes + VPN labels · TCP 179 · loopback to loopback</text>
+        <text class="s-t" x="218" y="157" text-anchor="end" fill="currentColor">MP-BGP</text>
+      </g>
+
+      <g class="mp">
+        <rect class="w-mp" x="296" y="190" width="208" height="24" rx="6" stroke="currentColor" stroke-width="1.2"/>
+        <rect class="w-mp" x="516" y="190" width="208" height="24" rx="6" stroke="currentColor" stroke-width="1.2"/>
+        <rect class="w-mp" x="736" y="190" width="208" height="24" rx="6" stroke="currentColor" stroke-width="1.2"/>
+        <text class="s-ts" x="400" y="206" text-anchor="middle" fill="currentColor">label bindings · TCP 646</text>
+        <text class="s-ts" x="620" y="206" text-anchor="middle" fill="currentColor">label bindings · TCP 646</text>
+        <text class="s-ts" x="840" y="206" text-anchor="middle" fill="currentColor">label bindings · TCP 646</text>
+        <text class="s-t" x="218" y="207" text-anchor="end" fill="currentColor">LDP</text>
+      </g>
+
+      <g class="ls">
+        <rect class="w-ls" x="296" y="240" width="208" height="24" rx="6" stroke="currentColor" stroke-width="1.2"/>
+        <rect class="w-ls" x="516" y="240" width="208" height="24" rx="6" stroke="currentColor" stroke-width="1.2"/>
+        <rect class="w-ls" x="736" y="240" width="208" height="24" rx="6" stroke="currentColor" stroke-width="1.2"/>
+        <text class="s-ts" x="400" y="256" text-anchor="middle" fill="currentColor">adjacency · hello 10 s</text>
+        <text class="s-ts" x="620" y="256" text-anchor="middle" fill="currentColor">adjacency · hello 10 s</text>
+        <text class="s-ts" x="840" y="256" text-anchor="middle" fill="currentColor">adjacency · hello 10 s</text>
+        <text class="s-t" x="218" y="257" text-anchor="end" fill="currentColor">IGP</text>
+      </g>
+
+      <rect class="s-box" x="296" y="290" width="208" height="24" rx="6"/>
+      <rect class="s-box" x="516" y="290" width="208" height="24" rx="6"/>
+      <rect class="s-box" x="736" y="290" width="208" height="24" rx="6"/>
+      <text class="s-ts" x="400" y="306" text-anchor="middle">3 × 50 ms</text>
+      <text class="s-ts" x="620" y="306" text-anchor="middle">3 × 50 ms</text>
+      <text class="s-ts" x="840" y="306" text-anchor="middle">3 × 50 ms</text>
+      <text class="s-t" x="218" y="307" text-anchor="end">BFD</text>
+
+      <rect class="s-zone" x="225" y="330" width="130" height="54" rx="10"/>
+      <rect class="s-zone" x="445" y="330" width="130" height="54" rx="10"/>
+      <rect class="s-zone" x="665" y="330" width="130" height="54" rx="10"/>
+      <rect class="s-zone" x="885" y="330" width="130" height="54" rx="10"/>
+      <text class="s-t" x="290" y="354" text-anchor="middle">PE1</text>
+      <text class="s-ts" x="290" y="372" text-anchor="middle">edge</text>
+      <text class="s-t" x="510" y="354" text-anchor="middle">P1</text>
+      <text class="s-ts" x="510" y="372" text-anchor="middle">no BGP</text>
+      <text class="s-t" x="730" y="354" text-anchor="middle">P2</text>
+      <text class="s-ts" x="730" y="372" text-anchor="middle">no BGP</text>
+      <text class="s-t" x="950" y="354" text-anchor="middle">PE2</text>
+      <text class="s-ts" x="950" y="372" text-anchor="middle">edge</text>
+
+      <defs>
+        <marker id="aSt" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0 0 L10 5 L0 10 z" fill="var(--ink-soft)"/>
+        </marker>
+      </defs>
+    </svg>
+    <figcaption>Bar length is who the conversation is with. <b>BFD, the IGP and LDP are per link</b> — one of each between every adjacent pair. <b>MP-BGP is end to end</b>, PE to PE, passing straight over the core routers, which is why a P router never learns a tenant route. Turn on segment routing and the LDP band disappears: the IGP carries the labels itself.</figcaption>
+  </figure>
+
+  <p class="body">A pedantic but load-bearing distinction: OSPF and IS-IS form <em>adjacencies</em>, not sessions. There is no TCP — OSPF rides IP protocol 89 with its own acknowledgement scheme, IS-IS sits straight on layer 2 — and they discover each other with multicast hellos. <b>LDP and BGP have real TCP sessions</b>, on ports 646 and 179, terminated on loopbacks. That difference is why an IGP adjacency survives things a session does not, and why a session can be down while the adjacency beside it looks perfect.</p>
+
+  <div class="ladder">
+    <div class="rung">
+      <div class="n">01</div>
+      <div>
+        <h3>The link, then BFD</h3>
+        <p>Interface up. <b>BFD</b> starts a bare heartbeat — typically 3 × 50 ms — that every protocol above subscribes to instead of running its own slow timers. It carries no routing information at all; its entire job is to say <em>down</em> in 150 ms rather than 40 seconds.</p>
+      </div>
+    </div>
+    <div class="rung">
+      <div class="n">02</div>
+      <div>
+        <h3>IGP adjacency</h3>
+        <p>Hellos, database sync, SPF. The important output is not the transit routes — it is that <b>every loopback in the network is now reachable</b>, because every session above is going to be built between loopbacks.</p>
+      </div>
+    </div>
+    <div class="rung">
+      <div class="n">03</div>
+      <div>
+        <h3>LDP session</h3>
+        <p>Discovery is per link — hellos to <code>224.0.0.2</code> on UDP 646. The session itself is <b>TCP 646 between the two loopbacks</b>, opened by the higher LSR-ID. Both ends then advertise a label for <em>every</em> prefix in the IGP, unsolicited, whether or not they are the next hop for it.</p>
+      </div>
+    </div>
+    <div class="rung">
+      <div class="n">04</div>
+      <div>
+        <h3>MP-BGP session</h3>
+        <p>PE to PE, or PE to route reflector, <b>TCP 179 loopback to loopback</b> — a session that exists only because step 02 made those loopbacks reachable. VPN routes arrive carrying their VPN labels, and each one’s BGP next hop resolves to an LSP that step 03 already built.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="trio">
+    <div class="card mpc">
+      <div class="tag" style="color:var(--mp)">LDP, concretely</div>
+      <ul>
+        <li><b>Downstream unsolicited</b> with liberal retention: every LSR hands out a label for every IGP prefix to every peer, and keeps every label it is given — including ones it cannot currently use.</li>
+        <li>That is deliberate waste. When the IGP moves the next hop, the label for the new path is <b>already in the table</b>, so the LSP follows in milliseconds.</li>
+        <li>Keepalive 60 s, hold 180 s — the same rhythm as BGP, and the same three-minute hole without BFD.</li>
+        <li>The LSR-ID is a loopback, so <code>mpls ldp router-id Loopback0 force</code> is not a formality: an unreachable loopback breaks LDP while every interface and adjacency still looks perfectly healthy.</li>
+      </ul>
+    </div>
+    <div class="card lsc">
+      <div class="tag" style="color:var(--ls)">When the order slips</div>
+      <ul>
+        <li><b>LDP–IGP sync</b> (RFC 5443) is the classic. A restored link converges in the IGP in milliseconds and starts attracting traffic — but LDP takes seconds to bring up its session and exchange bindings, so the packets arrive somewhere with no label and are dropped. <em>A repaired link that black-holes traffic.</em></li>
+        <li>The fix is to make the IGP lie: advertise the link at <b>max metric</b> until LDP signals that it is ready, then drop to the real cost.</li>
+        <li>Failures cascade downward-up: one flapping link → IGP loses a loopback → LDP session drops → LSP gone → every VPN riding it black-holes. Four layers of consequence from one interface.</li>
+      </ul>
+    </div>
+    <div class="card mpc">
+      <div class="tag" style="color:var(--mp)">What SR deletes</div>
+      <ul>
+        <li>Segment routing distributes labels <b>inside the IGP itself</b> — a prefix-SID is just another TLV in an IS-IS LSP or an OSPF opaque LSA.</li>
+        <li>So there is no LDP. No second session per link, no second set of timers, no second thing to get out of sync with the first.</li>
+        <li>The whole class of bug that RFC 5443 patches simply cannot occur: if the IGP has converged, the labels have converged, because they arrived in the same update.</li>
+        <li>RSVP-TE goes too, along with its per-LSP soft state refreshed every 30 s in every core router.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="note"><b>Count them on one PE in a modest network:</b> four IGP adjacencies, four LDP sessions, four BFD sessions, two iBGP sessions to route reflectors — fourteen conversations, each with its own timers, its own liveness detection and its own opinion about whether the neighbour is up. <em>iBGP</em> is why the reflectors exist: a full mesh of <em>n</em> PEs needs <em>n</em>(<em>n</em>−1)/2 sessions, which is 4,950 at a hundred PEs. And every one of these is a session you can forget to configure on exactly one side.</div>
+</section>
+
+<div class="part">
+  <div class="part-n">Part II</div>
+  <div class="part-t">Inside one network</div>
+  <p class="part-d">One owner, full trust, and a free hand to optimise. This is the only place a metric means what it says.</p>
+</div>
+
+<section id="s07">
+  <div class="head">
+    <div class="eyebrow">07 — The two interior styles</div>
+    <h2>Tell your neighbours everything, or tell everyone one thing</h2>
+    <p class="lede">This single choice decides the memory a router needs, how fast the network heals, and how badly it fails.</p>
+  </div>
+
+  <figure>
+    <svg viewBox="0 0 960 330" role="img" aria-label="Left: a distance vector router sends its whole conclusion table only to its direct neighbours. Right: a link state router floods one description of its own links to every router, and each builds the same map.">
+      <line x1="480" y1="20" x2="480" y2="310" stroke="var(--rule)" stroke-width="1.5" stroke-dasharray="5 6"/>
+
+      <g class="dv">
+        <text class="s-t" x="40" y="40" fill="currentColor" style="letter-spacing:.12em">DISTANCE VECTOR</text>
+        <text class="s-ts" x="40" y="62">Talk only to neighbours — but hand them your conclusions.</text>
+
+        <line class="s-flow" x1="215" y1="165" x2="140" y2="165" marker-end="url(#aDv)"/>
+        <line class="s-flow" x1="265" y1="165" x2="340" y2="165" marker-end="url(#aDv)"/>
+
+        <circle class="s-node" cx="100" cy="165" r="20" style="color:var(--ink-soft)"/>
+        <circle class="s-node" cx="240" cy="165" r="24"/>
+        <circle class="s-node" cx="380" cy="165" r="20" style="color:var(--ink-soft)"/>
+        <text class="s-t" x="100" y="170" text-anchor="middle">X</text>
+        <text class="s-t" x="240" y="170" text-anchor="middle">Y</text>
+        <text class="s-t" x="380" y="170" text-anchor="middle">Z</text>
+
+        <rect class="w-dv" x="150" y="200" width="180" height="58" rx="8"/>
+        <text class="s-ts" x="240" y="222" text-anchor="middle" fill="currentColor">“10.0.0.0/8 → cost 4, via me”</text>
+        <text class="s-ts" x="240" y="242" text-anchor="middle" fill="currentColor">…and 300 more rows, every 30 s</text>
+
+        <text class="s-ts" x="240" y="292" text-anchor="middle">Y never sees Z’s neighbours. It trusts Z’s arithmetic.</text>
+      </g>
+
+      <g class="ls">
+        <text class="s-t" x="520" y="40" fill="currentColor" style="letter-spacing:.12em">LINK STATE</text>
+        <text class="s-ts" x="520" y="62">Talk to everyone — but only about what you can see.</text>
+
+        <line class="s-flow" x1="690" y1="150" x2="600" y2="112" marker-end="url(#aLs)"/>
+        <line class="s-flow" x1="690" y1="180" x2="600" y2="218" marker-end="url(#aLs)"/>
+        <line class="s-flow" x1="750" y1="150" x2="840" y2="112" marker-end="url(#aLs)"/>
+        <line class="s-flow" x1="750" y1="180" x2="840" y2="218" marker-end="url(#aLs)"/>
+
+        <circle class="s-node" cx="720" cy="165" r="24"/>
+        <text class="s-t" x="720" y="170" text-anchor="middle">S</text>
+        <circle class="s-node" cx="580" cy="105" r="18" style="color:var(--ink-soft)"/>
+        <circle class="s-node" cx="580" cy="225" r="18" style="color:var(--ink-soft)"/>
+        <circle class="s-node" cx="860" cy="105" r="18" style="color:var(--ink-soft)"/>
+        <circle class="s-node" cx="860" cy="225" r="18" style="color:var(--ink-soft)"/>
+
+        <rect class="w-ls" x="630" y="252" width="180" height="38" rx="8"/>
+        <text class="s-ts" x="720" y="276" text-anchor="middle" fill="currentColor">LSA: “my links, my costs”</text>
+
+        <text class="s-ts" x="720" y="318" text-anchor="middle">Every router ends up holding the same database, then computes alone.</text>
+      </g>
+
+      <defs>
+        <marker id="aDv" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0 0 L10 5 L0 10 z" class="f-dv"/>
+        </marker>
+        <marker id="aLs" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0 0 L10 5 L0 10 z" class="f-ls"/>
+        </marker>
+      </defs>
+    </svg>
+    <figcaption>The same network, two philosophies. Distance vector floods <b>conclusions</b> one hop at a time; link state floods <b>observations</b> everywhere and lets each router draw its own conclusion.</figcaption>
+  </figure>
+
+  <div class="duo">
+    <div class="card dvc">
+      <div class="tag" style="color:var(--dv)">Distance vector · Bellman–Ford</div>
+      <ul>
+        <li><b>Knows:</b> a number and a next hop per destination. Nothing about the topology.</li>
+        <li><b>Sends:</b> its entire table, <b>only to direct neighbours</b>, on a timer.</li>
+        <li><b>Computes:</b> my cost = my link + their claim. Keep the smallest.</li>
+        <li><b>Fails as:</b> <em>count to infinity</em> — two routers quote each other’s stale route upward, one hop per round, while packets loop.</li>
+        <li><b>Patched by:</b> split horizon, poison reverse, triggered updates, and a low ceiling (RIP: 16 = unreachable).</li>
+        <li><b>Costs:</b> almost no CPU or memory. Cheap routers, slow truth.</li>
+      </ul>
+    </div>
+    <div class="card lsc">
+      <div class="tag" style="color:var(--ls)">Link state · Dijkstra</div>
+      <ul>
+        <li><b>Knows:</b> the full graph — every router, link and cost in its area.</li>
+        <li><b>Sends:</b> one LSA describing <b>only its own links</b>, flooded reliably to all.</li>
+        <li><b>Computes:</b> shortest-path tree over the database, rooted at itself.</li>
+        <li><b>Fails as:</b> flooding storms and SPF churn when a flapping link keeps re-triggering every router at once.</li>
+        <li><b>Patched by:</b> <em>areas</em> (OSPF) and <em>levels</em> (IS-IS) that cut the graph into summarised pieces.</li>
+        <li><b>Costs:</b> real CPU and memory. Expensive routers, fast truth.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>&nbsp;</th><th>Distance vector</th><th>Link state</th><th>Path vector</th></tr></thead>
+      <tbody>
+        <tr><td class="nm">What you store</td><td>one row per destination</td><td>the whole topology graph</td><td>every path you were offered</td></tr>
+        <tr><td class="nm">Who you tell</td><td>direct neighbours only</td><td>every router in the area</td><td>configured peers only</td></tr>
+        <tr><td class="nm">What you tell</td><td>your whole table</td><td>your own links</td><td>prefix + full AS path + attributes</td></tr>
+        <tr><td class="nm">When</td><td>periodic, e.g. 30 s</td><td>on change, plus refresh</td><td>on change, incremental</td></tr>
+        <tr><td class="nm">Loop defence</td><td>hop ceiling and hacks</td><td>impossible — everyone shares one map</td><td>see your own AS number, discard</td></tr>
+        <tr><td class="nm">Picks by</td><td class="num">metric</td><td class="num">metric</td><td class="num">policy, then metric</td></tr>
+        <tr><td class="nm">Scales to</td><td>tens of routers</td><td>hundreds per area</td><td>the entire internet</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+<section id="s08">
+  <div class="head">
+    <div class="eyebrow">08 — Bookkeeping</div>
+    <h2>Every protocol keeps its own books</h2>
+    <p class="lede">A protocol’s database is not the routing table. Each one maintains a private view, argues with its peers inside that view, and submits a single candidate per prefix to the router it happens to be running on.</p>
+  </div>
+
+  <figure>
+    <svg viewBox="0 0 960 330" role="img" aria-label="Four protocol databases each feed one candidate route into the router's RIB, chosen by administrative distance; the RIB is then compiled into the FIB in hardware.">
+      <text class="s-ts" x="20" y="22">CONTROL PLANE — deciding</text>
+      <text class="s-ts" x="700" y="22">DATA PLANE — doing</text>
+      <line x1="676" y1="34" x2="676" y2="300" stroke="var(--rule)" stroke-width="1.5" stroke-dasharray="5 6"/>
+
+      <rect class="s-box" x="20" y="40" width="250" height="52" rx="9"/>
+      <rect class="s-box" x="20" y="104" width="250" height="52" rx="9"/>
+      <rect class="s-box" x="20" y="168" width="250" height="52" rx="9"/>
+      <rect class="s-box" x="20" y="232" width="250" height="52" rx="9"/>
+
+      <g class="dv">
+        <text class="s-t" x="38" y="62" fill="currentColor">RIPv2</text>
+        <text class="s-ts" x="38" y="80">one flat table + expiry timers</text>
+        <text class="s-t" x="38" y="126" fill="currentColor">EIGRP</text>
+        <text class="s-ts" x="38" y="144">neighbour + topology + routing</text>
+        <polyline class="s-flow" points="270,66 350,66 350,162"/>
+        <polyline class="s-flow" points="270,130 350,130 350,162"/>
+        <text class="s-ts" x="278" y="57" fill="currentColor">AD 120</text>
+        <text class="s-ts" x="278" y="121" fill="currentColor">AD 90</text>
+      </g>
+      <g class="ls">
+        <text class="s-t" x="38" y="190" fill="currentColor">OSPF · IS-IS</text>
+        <text class="s-ts" x="38" y="208">link-state database + SPF tree</text>
+        <polyline class="s-flow" points="270,194 350,194 350,162"/>
+        <text class="s-ts" x="278" y="185" fill="currentColor">AD 110 / 115</text>
+      </g>
+      <g class="pv">
+        <text class="s-t" x="38" y="254" fill="currentColor">BGP</text>
+        <text class="s-ts" x="38" y="272">Adj-RIB-In → policy → Loc-RIB</text>
+        <polyline class="s-flow" points="270,258 350,258 350,162"/>
+        <text class="s-ts" x="278" y="249" fill="currentColor">AD 20 · 200</text>
+      </g>
+
+      <line class="s-flow" x1="350" y1="162" x2="428" y2="162" marker-end="url(#aInk)" style="color:var(--ink-soft)"/>
+
+      <rect class="s-box" x="430" y="124" width="200" height="76" rx="10"/>
+      <text class="s-t" x="530" y="156" text-anchor="middle">RIB · routing table</text>
+      <text class="s-ts" x="530" y="176" text-anchor="middle">one winner per prefix</text>
+
+      <line class="s-flow" x1="630" y1="162" x2="710" y2="162" marker-end="url(#aInk)" style="color:var(--ink-soft)"/>
+      <rect class="s-box" x="641" y="140" width="58" height="20" rx="5"/>
+      <text class="s-ts" x="670" y="154" text-anchor="middle">install</text>
+
+      <rect class="s-box" x="712" y="124" width="228" height="76" rx="10"/>
+      <text class="s-t" x="826" y="156" text-anchor="middle">FIB · forwarding table</text>
+      <text class="s-ts" x="826" y="176" text-anchor="middle">compiled into hardware</text>
+      <line class="s-flow" x1="826" y1="200" x2="826" y2="250" marker-end="url(#aInk)" style="color:var(--ink-soft)"/>
+      <text class="s-ts" x="826" y="272" text-anchor="middle">every packet, at line rate,</text>
+      <text class="s-ts" x="826" y="288" text-anchor="middle">consulting no protocol at all</text>
+
+      <defs>
+        <marker id="aInk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0 0 L10 5 L0 10 z" fill="var(--ink-soft)"/>
+        </marker>
+      </defs>
+    </svg>
+    <figcaption>Four protocols can be running at once, each holding a different amount of the truth. They never compare metrics with each other — <b>administrative distance</b> decides whose candidate gets installed, and only the RIB’s winners are ever compiled into the FIB.</figcaption>
+  </figure>
+
+  <div class="specs">
+
+    <div class="spec">
+      <div class="spec-id">
+        <h3 style="color:var(--dv)">RIPv2</h3>
+        <span class="pill dvp">distance vector</span>
+      </div>
+      <div class="spec-grid">
+        <div class="spec-item"><span class="k">Keeps</span><span class="v">One flat table: destination, metric, next hop, three timers. No neighbour list, no topology.</span></div>
+        <div class="spec-item"><span class="k">Finds neighbours</span><span class="v">It doesn’t. Anything multicasting to <code>224.0.0.9</code> is believed.</span></div>
+        <div class="spec-item"><span class="k">On the wire</span><span class="v">Its <b>entire table</b>, 25 routes per datagram, UDP 520.</span></div>
+        <div class="spec-item"><span class="k">Cadence</span><span class="v">Every <b>30 s</b> whether anything changed or not, plus a triggered update on change.</span></div>
+        <div class="spec-item"><span class="k">Stays fresh by</span><span class="v">Silence. A route expires after 180 s unheard and is flushed at 240 s — absence is the only failure signal.</span></div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div class="spec-id">
+        <h3 style="color:var(--dv)">EIGRP</h3>
+        <span class="pill dvp">distance vector</span>
+      </div>
+      <div class="spec-grid">
+        <div class="spec-item"><span class="k">Keeps</span><span class="v">Three tables: <b>neighbours</b>, <b>topology</b> (every path heard, with its reported distance), and the routing table (successors only).</span></div>
+        <div class="spec-item"><span class="k">Finds neighbours</span><span class="v">Hello every 5 s, hold 15 s, on <code>224.0.0.10</code> / IP proto 88.</span></div>
+        <div class="spec-item"><span class="k">On the wire</span><span class="v">Only what changed, only to the routers affected, over its own reliable transport with sequence numbers and acks.</span></div>
+        <div class="spec-item"><span class="k">Cadence</span><span class="v"><b>Never periodic.</b> Silence means nothing has changed.</span></div>
+        <div class="spec-item"><span class="k">Stays fresh by</span><span class="v">DUAL. A neighbour whose reported distance is lower than my current cost is provably not looping back through me — that <em>feasible successor</em> takes over instantly. With none, the route goes ACTIVE and the router must query its neighbours and wait.</span></div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div class="spec-id">
+        <h3 style="color:var(--ls)">OSPF</h3>
+        <span class="pill lsp">link state</span>
+      </div>
+      <div class="spec-grid">
+        <div class="spec-item"><span class="k">Keeps</span><span class="v">The <b>LSDB</b> — every LSA in the area, byte-identical on every router — plus a neighbour table and the SPF tree it derives from it.</span></div>
+        <div class="spec-item"><span class="k">Finds neighbours</span><span class="v">Hello every 10 s, dead at 40 s. The adjacency climbs Down → Init → 2-Way → ExStart → Exchange → Loading → <b>Full</b>, and only then is the database trusted.</span></div>
+        <div class="spec-item"><span class="k">On the wire</span><span class="v">LSAs, flooded hop by hop and <b>acknowledged</b>. On a LAN a DR and BDR are elected so <em>n</em> routers form 2<em>n</em> adjacencies instead of <em>n</em>².</span></div>
+        <div class="spec-item"><span class="k">Cadence</span><span class="v">On change — plus each LSA is re-originated every 30 min and expires at 60 min.</span></div>
+        <div class="spec-item"><span class="k">Stays fresh by</span><span class="v">Sequence number, age and checksum on every LSA: the newer copy always wins, and the flood stops when a router already has it. SPF then re-runs over the database.</span></div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div class="spec-id">
+        <h3 style="color:var(--ls)">IS-IS</h3>
+        <span class="pill lsp">link state</span>
+      </div>
+      <div class="spec-grid">
+        <div class="spec-item"><span class="k">Keeps</span><span class="v">One LSDB <b>per level</b> — L1 inside an area, L2 for the backbone — and the same Dijkstra on top of each.</span></div>
+        <div class="spec-item"><span class="k">Finds neighbours</span><span class="v">IIH hellos every 10 s. A <b>DIS</b> is elected on a LAN with no backup: election is preemptive and simply re-runs.</span></div>
+        <div class="spec-item"><span class="k">On the wire</span><span class="v">LSPs built from <b>TLVs</b> — which is why IS-IS absorbed IPv6 and segment routing without a new protocol version.</span></div>
+        <div class="spec-item"><span class="k">Cadence</span><span class="v">On change, with a 15-min refresh and a 20-min lifetime.</span></div>
+        <div class="spec-item"><span class="k">Stays fresh by</span><span class="v">The DIS multicasts a <b>CSNP</b> — a complete index of the database — every 10 s. A router that spots a gap asks for the missing LSP with a PSNP. Continuous summary instead of per-update bookkeeping.</span></div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div class="spec-id">
+        <h3 style="color:var(--pv)">BGP-4</h3>
+        <span class="pill pvp">path vector</span>
+      </div>
+      <div class="spec-grid">
+        <div class="spec-item"><span class="k">Keeps</span><span class="v">Three RIBs: <b>Adj-RIB-In</b> per peer (what they said, untouched), <b>Loc-RIB</b> (what I believe after import policy and best-path), <b>Adj-RIB-Out</b> per peer (what I’ll say back after export policy).</span></div>
+        <div class="spec-item"><span class="k">Finds neighbours</span><span class="v">Never. Every peer is configured by hand, by address and AS number, and the session is a plain TCP connection to port 179.</span></div>
+        <div class="spec-item"><span class="k">On the wire</span><span class="v">One full table dump when the session comes up — then <b>only UPDATEs</b>, each carrying new prefixes and explicit withdrawals.</span></div>
+        <div class="spec-item"><span class="k">Cadence</span><span class="v">Incremental, forever. Keepalive every 60 s, hold timer 180 s.</span></div>
+        <div class="spec-item"><span class="k">Stays fresh by</span><span class="v">The TCP session itself. Routes live exactly as long as the session does; when it drops, everything learned over it is withdrawn at once. To re-apply changed policy you ask the peer for a <b>Route Refresh</b> — there is no periodic re-send to wait for.</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="note"><b>The pattern:</b> the older protocols are <em>periodic</em> — they re-send everything on a timer, and silence means death. Everything designed after 1990 is <em>event-driven</em> — send once, acknowledge, then say nothing until something actually changes, and detect failure with a separate, much faster hello. That shift is most of why convergence went from minutes to milliseconds.</div>
+</section>
+<section id="s09">
+  <div class="head">
+    <div class="eyebrow">09 — Inside one router</div>
+    <h2>How the winner is actually chosen</h2>
+    <p class="lede">Protocols only propose. A single router may hear about the same destination from four of them at once.</p>
+  </div>
+
+  <div class="ladder">
+    <div class="rung">
+      <div class="n">01</div>
+      <div>
+        <h3>Longest prefix match</h3>
+        <p>Decided <b>before</b> any protocol matters. <code>10.1.2.0/24</code> beats <code>10.0.0.0/8</code> for one packet, even if the /8 came from a “better” protocol. More specific always wins.</p>
+      </div>
+    </div>
+    <div class="rung">
+      <div class="n">02</div>
+      <div>
+        <h3>Administrative distance</h3>
+        <p>Same prefix from two protocols? The one you trust more wins. Cisco’s defaults: <b>connected 0, static 1, eBGP 20, EIGRP 90, OSPF 110, IS-IS 115, RIP 120, iBGP 200</b>. It is a local preference, not part of any protocol.</p>
+      </div>
+    </div>
+    <div class="rung">
+      <div class="n">03</div>
+      <div>
+        <h3>Metric</h3>
+        <p>Same prefix, same protocol, two paths? Now the protocol’s own arithmetic decides — OSPF cost, IS-IS metric, EIGRP’s composite, RIP hops. Metrics are <b>never comparable across protocols</b>, which is exactly why step 02 exists.</p>
+      </div>
+    </div>
+    <div class="rung">
+      <div class="n">04</div>
+      <div>
+        <h3>RIB, then FIB</h3>
+        <p>The winner is installed in the <b>routing table (RIB)</b> — the control plane’s conclusion. It is then compiled into the <b>forwarding table (FIB)</b> in hardware, which is what actually moves packets, millions per second, without consulting anything.</p>
+      </div>
+    </div>
+  </div>
+</section>
+<section id="s10">
+  <div class="head">
+    <div class="eyebrow">10 — Quick reference</div>
+    <h2>The protocols, with their real numbers</h2>
+  </div>
+
+  <div class="tablewrap">
+    <table>
+      <thead>
+        <tr><th>Protocol</th><th>Family</th><th>Metric</th><th>Runs on</th><th>Converges</th><th>Where you meet it</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="nm">RIPv2</td>
+          <td><span class="pill dvp">IGP · distance vector</span></td>
+          <td>hop count, max 15</td>
+          <td class="num">UDP 520 · 224.0.0.9</td>
+          <td class="num">~30 s per hop</td>
+          <td>small flat networks, textbooks</td>
+        </tr>
+        <tr>
+          <td class="nm">EIGRP</td>
+          <td><span class="pill dvp">IGP · distance vector</span></td>
+          <td>composite: bandwidth + delay</td>
+          <td class="num">IP proto 88</td>
+          <td class="num">sub-second</td>
+          <td>Cisco enterprise estates</td>
+        </tr>
+        <tr>
+          <td class="nm">OSPFv2/v3</td>
+          <td><span class="pill lsp">IGP · link state</span></td>
+          <td>cost = ref-bandwidth ÷ link</td>
+          <td class="num">IP proto 89</td>
+          <td class="num">tens of ms</td>
+          <td>enterprise, data centres</td>
+        </tr>
+        <tr>
+          <td class="nm">IS-IS</td>
+          <td><span class="pill lsp">IGP · link state</span></td>
+          <td>wide metric, 24-bit</td>
+          <td class="num">directly on layer 2</td>
+          <td class="num">tens of ms</td>
+          <td>carrier cores, large fabrics</td>
+        </tr>
+        <tr>
+          <td class="nm">BGP-4</td>
+          <td><span class="pill pvp">EGP · path vector</span></td>
+          <td>policy first, AS_PATH second</td>
+          <td class="num">TCP 179</td>
+          <td class="num">seconds to minutes</td>
+          <td>every network boundary on earth</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="body">Two of these have outlived their category. <em>IS-IS</em> won the carrier core because it doesn’t ride on IP and can carry new address families without a new protocol version. <em>BGP</em> escaped the border entirely — it now distributes VPN routes, EVPN MAC addresses and data-centre fabrics <em>inside</em> networks, doing a job its name says it shouldn’t.</p>
+</section>
+<div class="part">
+  <div class="part-n">Part III</div>
+  <div class="part-t">One wire, many networks</div>
+  <p class="part-d">Section 05 solved this for routes: give every tenant its own table and carry an identifier with the packet. Two layers down, the same answer gets rebuilt twice — once in twelve bits, once in twenty-four.</p>
+</div>
+
+<section id="s11">
+  <div class="head">
+    <div class="eyebrow">11 — VLAN</div>
+    <h2>Twelve bits that split a switch</h2>
+    <p class="lede">One physical Ethernet, many broadcast domains. A four-byte tag, inserted on the way in and removed on the way out, so the hosts on either end never learn they were sharing.</p>
+  </div>
+
+  <figure class="wide">
+    <svg viewBox="0 0 1040 340" role="img" aria-label="Hosts on VLAN 10 and VLAN 20 connect to switches by untagged access ports; the trunk between the switches carries the same frames with an 802.1Q tag identifying which VLAN each belongs to.">
+      <g class="mp">
+        <rect class="s-box" x="390" y="52" width="260" height="36" rx="7"/>
+        <rect class="w-mp" x="391" y="53" width="148" height="34" rx="6"/>
+        <line x1="539" y1="52" x2="539" y2="88" stroke="var(--rule)" stroke-width="1.5"/>
+        <text class="s-t" x="465" y="75" text-anchor="middle" fill="currentColor">0x8100 · VID 10</text>
+        <text class="s-ts" x="594" y="75" text-anchor="middle">Ethernet frame</text>
+
+        <rect class="s-box" x="390" y="96" width="260" height="36" rx="7"/>
+        <rect class="w-mp" x="391" y="97" width="148" height="34" rx="6"/>
+        <line x1="539" y1="96" x2="539" y2="132" stroke="var(--rule)" stroke-width="1.5"/>
+        <text class="s-t" x="465" y="119" text-anchor="middle" fill="currentColor">0x8100 · VID 20</text>
+        <text class="s-ts" x="594" y="119" text-anchor="middle">Ethernet frame</text>
+
+        <line x1="520" y1="132" x2="520" y2="172" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 5" opacity=".7"/>
+        <line class="s-flow" x1="380" y1="180" x2="660" y2="180"/>
+        <text class="s-ts" x="520" y="204" text-anchor="middle" fill="currentColor">trunk — tagged</text>
+      </g>
+
+      <rect class="s-zone" x="230" y="140" width="150" height="150" rx="12"/>
+      <rect class="s-zone" x="660" y="140" width="150" height="150" rx="12"/>
+      <text class="s-t" x="305" y="240" text-anchor="middle">switch A</text>
+      <text class="s-t" x="735" y="240" text-anchor="middle">switch B</text>
+      <text class="s-ts" x="305" y="262" text-anchor="middle">access ports</text>
+      <text class="s-ts" x="735" y="262" text-anchor="middle">access ports</text>
+
+      <rect class="s-box" x="30" y="150" width="150" height="46" rx="8"/>
+      <text class="s-ts" x="46" y="170">host · VLAN 10</text>
+      <text class="s-t" x="46" y="188">10.1.1.5</text>
+      <rect class="s-box" x="30" y="234" width="150" height="46" rx="8"/>
+      <text class="s-ts" x="46" y="254">host · VLAN 20</text>
+      <text class="s-t" x="46" y="272">10.1.1.5</text>
+
+      <rect class="s-box" x="860" y="150" width="150" height="46" rx="8"/>
+      <text class="s-ts" x="876" y="170">host · VLAN 10</text>
+      <text class="s-t" x="876" y="188">10.1.1.6</text>
+      <rect class="s-box" x="860" y="234" width="150" height="46" rx="8"/>
+      <text class="s-ts" x="876" y="254">host · VLAN 20</text>
+      <text class="s-t" x="876" y="272">10.1.1.6</text>
+
+      <line class="s-link" x1="180" y1="173" x2="230" y2="173" style="opacity:1"/>
+      <line class="s-link" x1="180" y1="257" x2="230" y2="257" style="opacity:1"/>
+      <line class="s-link" x1="810" y1="173" x2="860" y2="173" style="opacity:1"/>
+      <line class="s-link" x1="810" y1="257" x2="860" y2="257" style="opacity:1"/>
+      <text class="s-ts" x="205" y="165" text-anchor="middle">untagged</text>
+      <text class="s-ts" x="205" y="249" text-anchor="middle">untagged</text>
+      <text class="s-ts" x="835" y="165" text-anchor="middle">untagged</text>
+      <text class="s-ts" x="835" y="249" text-anchor="middle">untagged</text>
+
+      <text class="s-ts" x="520" y="320" text-anchor="middle">both VLANs use 10.1.1.0/24 · neither can see the other · one cable carries both</text>
+    </svg>
+    <figcaption>The tag is pushed at the ingress access port and popped at the egress one, so it exists <b>only between switches</b>. An access port belongs to exactly one VLAN; a trunk carries many and must be told which. Get that mismatched at one end and you have built a black hole that pings fine.</figcaption>
+  </figure>
+
+  <div class="bits">
+    <div class="bit q16"><b>TPID 0x8100</b><span>16 bits</span></div>
+    <div class="bit q3"><b>PCP</b><span>3 bits · priority</span></div>
+    <div class="bit q1"><b>DEI</b><span>1 bit</span></div>
+    <div class="bit q12"><b>VID</b><span>12 bits · 4094 usable</span></div>
+  </div>
+  <p class="body">Four bytes, wedged in after the source MAC — so a tagged frame is 1522 bytes on a 1500-byte network, which is why switches quietly grew a “baby giant” MTU. <code>PCP</code> is the class-of-service field every QoS design starts from. <code>VID</code> is the whole point, and its twelve bits are the reason the rest of this part exists: <em>0</em> and <em>4095</em> are reserved, leaving <b>4094</b> segments per L2 domain.</p>
+
+  <div class="trio">
+    <div class="card mpc">
+      <div class="tag" style="color:var(--mp)">On Linux</div>
+      <ul>
+        <li><code>ip link add link eth0 name eth0.100 type vlan id 100</code> makes a subinterface — its own netdev, MAC, MTU and sysctls, tagging everything it sends.</li>
+        <li>A bridge can do it the switch way instead: <code>bridge vlan add dev eth0 vid 100 pvid untagged</code> gives you real access and trunk ports.</li>
+        <li>NICs insert and strip tags in hardware, so <code>tcpdump</code> on the host often shows <b>no tag at all</b> on a frame that definitely had one.</li>
+      </ul>
+    </div>
+    <div class="card mpc">
+      <div class="tag" style="color:var(--mp)">Where it bites</div>
+      <ul>
+        <li>The <b>native VLAN</b> — the one VLAN that travels untagged on a trunk — is a mismatch waiting to happen, and the basis of the classic double-tagging attack.</li>
+        <li><b>QinQ</b> (802.1ad, TPID 0x88a8) stacks a provider tag over the customer’s. Same trick as an MPLS label stack, four bytes at a time.</li>
+        <li>Every switch along the path must carry the VLAN. The domain has to be <b>physically contiguous</b>, which is how a VLAN quietly becomes a cabling constraint.</li>
+      </ul>
+    </div>
+    <div class="card mpc">
+      <div class="tag" style="color:var(--mp)">Why it ran out</div>
+      <ul>
+        <li><b>4094 is small.</b> A cloud region has more tenants than that before lunch.</li>
+        <li>Spanning tree blocks links to keep the L2 domain loop-free, so a fabric buys bandwidth it is not allowed to use.</li>
+        <li>Every switch in the domain learns <b>every MAC</b> in it. The table is finite and the failure mode is flooding.</li>
+        <li>A VLAN cannot cross a router, so an L2 segment cannot span two datacentres — which is exactly what people wanted next.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="s12">
+  <div class="head">
+    <div class="eyebrow">12 — VXLAN</div>
+    <h2>An Ethernet segment inside a UDP packet</h2>
+    <p class="lede">Wrap the whole frame in an ordinary IP packet and the L2 domain stops being a cabling problem. Twenty-four bits of tenant id instead of twelve, and a routed fabric underneath that can use every link it has.</p>
+  </div>
+
+  <figure class="wide">
+    <svg viewBox="0 0 1040 430" role="img" aria-label="Guests believe they share one flat layer 2 segment. In reality each host runs a VTEP that wraps their frames in an outer IP and UDP header carrying a VNI, and the underlay only ever forwards UDP between two host addresses.">
+      <rect class="s-box" x="60" y="38" width="920" height="86" rx="12" stroke-dasharray="6 6"/>
+      <text class="s-ts" x="80" y="60">what the guests see — one flat L2 segment · VNI 5000</text>
+      <rect class="s-box" x="110" y="70" width="150" height="40" rx="7"/>
+      <text class="s-t" x="185" y="95" text-anchor="middle">10.1.1.5</text>
+      <rect class="s-box" x="280" y="70" width="150" height="40" rx="7"/>
+      <text class="s-t" x="355" y="95" text-anchor="middle">10.1.1.6</text>
+      <rect class="s-box" x="610" y="70" width="150" height="40" rx="7"/>
+      <text class="s-t" x="685" y="95" text-anchor="middle">10.1.1.7</text>
+      <rect class="s-box" x="780" y="70" width="150" height="40" rx="7"/>
+      <text class="s-t" x="855" y="95" text-anchor="middle">10.1.1.8</text>
+
+      <text class="s-ts" x="520" y="158" text-anchor="middle">what the wire actually carries — 50 bytes of it is new</text>
+      <g class="mp">
+        <rect class="s-box" x="200" y="170" width="640" height="38" rx="7"/>
+        <rect class="w-mp" x="510" y="171" width="140" height="36"/>
+        <line x1="300" y1="170" x2="300" y2="208" stroke="var(--rule)" stroke-width="1.5"/>
+        <line x1="400" y1="170" x2="400" y2="208" stroke="var(--rule)" stroke-width="1.5"/>
+        <line x1="510" y1="170" x2="510" y2="208" stroke="var(--rule)" stroke-width="1.5"/>
+        <line x1="650" y1="170" x2="650" y2="208" stroke="var(--rule)" stroke-width="1.5"/>
+        <text class="s-ts" x="250" y="194" text-anchor="middle">outer eth</text>
+        <text class="s-ts" x="350" y="194" text-anchor="middle">outer IP</text>
+        <text class="s-ts" x="455" y="194" text-anchor="middle">UDP 4789</text>
+        <text class="s-t" x="580" y="194" text-anchor="middle" fill="currentColor">VNI 5000</text>
+        <text class="s-ts" x="745" y="194" text-anchor="middle">the original frame, untouched</text>
+      </g>
+
+      <line x1="200" y1="124" x2="200" y2="252" stroke="var(--ink-soft)" stroke-width="1.2" stroke-dasharray="4 5" opacity=".55"/>
+      <line x1="840" y1="124" x2="840" y2="252" stroke="var(--ink-soft)" stroke-width="1.2" stroke-dasharray="4 5" opacity=".55"/>
+
+      <rect class="s-zone" x="60" y="252" width="280" height="120" rx="12"/>
+      <text class="s-ts" x="78" y="274">host A</text>
+      <rect class="s-box" x="78" y="286" width="244" height="38" rx="8"/>
+      <text class="s-t" x="94" y="310">bridge + vxlan0 · VTEP</text>
+      <rect class="s-box" x="78" y="330" width="244" height="32" rx="8"/>
+      <text class="s-ts" x="94" y="351">eth0 · 10.0.0.11</text>
+
+      <rect class="s-zone" x="700" y="252" width="280" height="120" rx="12"/>
+      <text class="s-ts" x="718" y="274">host B</text>
+      <rect class="s-box" x="718" y="286" width="244" height="38" rx="8"/>
+      <text class="s-t" x="734" y="310">bridge + vxlan0 · VTEP</text>
+      <rect class="s-box" x="718" y="330" width="244" height="32" rx="8"/>
+      <text class="s-ts" x="734" y="351">eth0 · 10.0.0.12</text>
+
+      <rect class="s-box" x="440" y="286" width="160" height="56" rx="10"/>
+      <text class="s-t" x="520" y="310" text-anchor="middle">routed fabric</text>
+      <text class="s-ts" x="520" y="328" text-anchor="middle">ECMP, no STP</text>
+      <line class="s-flow" x1="340" y1="314" x2="436" y2="314" marker-end="url(#aVx)" style="color:var(--ink-soft)"/>
+      <line class="s-flow" x1="600" y1="314" x2="696" y2="314" marker-end="url(#aVx)" style="color:var(--ink-soft)"/>
+      <text class="s-ts" x="520" y="400" text-anchor="middle">the underlay sees one thing: a UDP packet from 10.0.0.11 to 10.0.0.12</text>
+
+      <defs>
+        <marker id="aVx" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0 0 L10 5 L0 10 z" fill="var(--ink-soft)"/>
+        </marker>
+      </defs>
+    </svg>
+    <figcaption>A <b>VTEP</b> — the tunnel endpoint, in the host kernel or in a switch ASIC — wraps each frame and picks a remote VTEP to send it to. The fabric between them is plain routed IP, so every link is usable and spanning tree is gone. The 24-bit <b>VNI</b> is the tenant id: <b>16.7 million</b> segments instead of 4094.</figcaption>
+  </figure>
+
+  <p class="body">The encapsulation costs <em>50 bytes</em> — 14 outer Ethernet, 20 outer IP, 8 UDP, 8 VXLAN — so a guest on a 1500-byte underlay must be told to use <b>1450</b>, or the fabric must run jumbo frames. Nothing announces this. It presents as small packets working and large ones vanishing, which is the single most common VXLAN outage there is.</p>
+
+  <pre class="code"><span class="c"># a VTEP, with no flooding and no multicast</span>
+$ ip link add vxlan0 type vxlan id <span class="h">5000</span> dstport <span class="h">4789</span> local 10.0.0.11 nolearning
+$ bridge fdb show dev vxlan0
+00:1a:4b:7c:2e:91 dst <span class="h">10.0.0.12</span> self permanent   <span class="c"># inner MAC → remote VTEP</span>
+00:00:00:00:00:00 dst <span class="h">10.0.0.13</span> self permanent   <span class="c"># all-zero = flood to this VTEP too</span></pre>
+  <p class="body">Note <code>dstport 4789</code>. Linux’s VXLAN driver predates the IANA assignment and still defaults to <b>8472</b> — two vendors, two ports, no packets, and nothing in the logs to say so.</p>
+
+  <div class="trio">
+    <div class="card mpc">
+      <div class="tag" style="color:var(--mp)">Who knows where a MAC lives</div>
+      <ul>
+        <li><b>Flood and learn.</b> Multicast in the underlay, classic Ethernet behaviour. Requires multicast, which most fabrics do not offer.</li>
+        <li><b>Head-end replication.</b> A static list of remote VTEPs; unknown frames are unicast to each in turn. Simple, and it scales like <em>n</em>².</li>
+        <li><b>EVPN.</b> A control plane instead of flooding — and it is <a href="#s03" style="color:inherit">BGP</a> again, advertising MACs the way it advertises prefixes.</li>
+      </ul>
+    </div>
+    <div class="card mpc">
+      <div class="tag" style="color:var(--mp)">EVPN, concretely</div>
+      <ul>
+        <li><b>Type 2</b> — a MAC, optionally with its IP. “This address is behind me.” Replaces learning entirely.</li>
+        <li><b>Type 3</b> — inclusive multicast: “I have VNI 5000, send me its broadcast.” Builds the flood list automatically.</li>
+        <li><b>Type 5</b> — an IP prefix, for routing between VNIs rather than bridging within one.</li>
+        <li>RD and RT do the same jobs they do in <a href="#s05" style="color:inherit">L3VPN</a> — uniqueness and membership — because it is the same machinery.</li>
+      </ul>
+    </div>
+    <div class="card mpc">
+      <div class="tag" style="color:var(--mp)">What it costs</div>
+      <ul>
+        <li>Encapsulation in software is real CPU. Offload (<code>tx-udp_tnl-segmentation</code>) moves it into the NIC; without it, throughput falls off a cliff.</li>
+        <li>The outer <b>UDP source port is a hash of the inner flow</b> — that is the only entropy the underlay has for ECMP. A NIC that gets it wrong pins every tunnel to one path.</li>
+        <li>Your troubleshooting tools now lie: a <code>tcpdump</code> on the underlay shows UDP, not the traffic you care about.</li>
+        <li>Broadcast and unknown-unicast still happen, and now they cost a replication to every VTEP that holds the VNI.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="note"><b>Read this next to section 05 and it is the same architecture twice.</b> The VNI is the VPN label; the VTEP is the PE; the routed fabric is the P core that knows nothing about tenants; MP-BGP distributes membership in both. MPLS built it for carriers with label switching in the middle; VXLAN rebuilt it for datacentres with plain IP in the middle, because every device already knew how to forward that. <em>Give each tenant its own table, and make the identifier travel with the packet</em> — that is the whole idea, at every layer this guide visits.</div>
+</section>
+
+<div class="part">
+  <div class="part-n">Part IV</div>
+  <div class="part-t">Inside one host</div>
+  <p class="part-d">The last three metres. Below the NIC, a link stops being a cable and becomes namespaces, pointers and softirqs.</p>
+</div>
+
+<section id="s13">
+  <div class="head">
+    <div class="eyebrow">13 — Virtual Ethernet</div>
+    <h2>A cable that is really a pointer</h2>
+    <p class="lede">Below the NIC, the same problem repeats at a thousandth of the scale: two network stacks on one machine that need a link between them. The kernel’s answer is a pair of devices that are each other’s transmit path.</p>
+  </div>
+
+  <figure class="wide">
+    <svg viewBox="0 0 1120 430" role="img" aria-label="A packet leaves a pod's network stack through eth0, crosses into the host namespace by a direct function call into the peer device, and climbs the host stack through tc, netfilter and the bridge before reaching the physical NIC. A tc-BPF program can redirect straight to the wire, skipping the rest.">
+      <rect class="s-zone" x="30" y="50" width="310" height="330" rx="14"/>
+      <rect class="s-zone" x="700" y="50" width="310" height="330" rx="14"/>
+      <text class="s-ts" x="48" y="76">netns · pod</text>
+      <text class="s-ts" x="718" y="76">netns · host</text>
+
+      <g class="kn">
+        <rect class="s-box" x="48" y="92" width="250" height="42" rx="8"/>
+        <text class="s-t" x="64" y="118">socket · application</text>
+        <rect class="s-box" x="48" y="146" width="250" height="42" rx="8"/>
+        <text class="s-t" x="64" y="172">TCP / UDP</text>
+        <rect class="s-box" x="48" y="200" width="250" height="42" rx="8"/>
+        <text class="s-t" x="64" y="226">IP output · route lookup</text>
+        <rect class="s-box" x="48" y="254" width="250" height="42" rx="8"/>
+        <text class="s-t" x="64" y="280">qdisc · noqueue</text>
+        <rect class="s-box" x="48" y="308" width="250" height="42" rx="8"/>
+        <rect class="w-kn" x="48" y="308" width="5" height="42" rx="2.5"/>
+        <text class="s-t" x="64" y="327" fill="currentColor">eth0</text>
+        <text class="s-ts" x="64" y="343">veth_xmit()</text>
+        <line class="s-flow" x1="318" y1="96" x2="318" y2="344" marker-end="url(#aKn)"/>
+
+        <rect class="s-box" x="718" y="308" width="250" height="42" rx="8"/>
+        <rect class="w-kn" x="718" y="308" width="5" height="42" rx="2.5"/>
+        <text class="s-t" x="734" y="327" fill="currentColor">veth9a3f21</text>
+        <text class="s-ts" x="734" y="343">napi_gro_receive()</text>
+        <rect class="s-box" x="718" y="254" width="250" height="42" rx="8"/>
+        <text class="s-t" x="734" y="280">tc ingress · eBPF</text>
+        <rect class="s-box" x="718" y="200" width="250" height="42" rx="8"/>
+        <text class="s-t" x="734" y="219">netfilter</text>
+        <text class="s-ts" x="734" y="235">conntrack · nat · rules</text>
+        <rect class="s-box" x="718" y="146" width="250" height="42" rx="8"/>
+        <text class="s-t" x="734" y="172">bridge cni0 — or IP route</text>
+        <rect class="s-box" x="718" y="92" width="250" height="42" rx="8"/>
+        <text class="s-t" x="734" y="118">eth0 → the wire</text>
+        <line class="s-flow" x1="690" y1="330" x2="690" y2="100" marker-end="url(#aKn)"/>
+
+        <line class="s-flow" x1="340" y1="329" x2="684" y2="329" marker-end="url(#aKn)"/>
+        <text class="s-t" x="512" y="272" text-anchor="middle" fill="currentColor">veth_xmit() → rcu_dereference(peer)</text>
+        <text class="s-ts" x="512" y="292" text-anchor="middle">then straight into the peer’s receive path</text>
+        <text class="s-ts" x="512" y="366" text-anchor="middle">no wire · no queue · no copy · same CPU, same softirq</text>
+
+        <polyline class="s-flow" points="968,275 1040,275 1040,113 982,113" stroke-dasharray="6 6" marker-end="url(#aKn)"/>
+        <text class="s-ts" transform="rotate(-90 1068 196)" x="1068" y="196" text-anchor="middle" fill="currentColor">tc-BPF · bpf_redirect_neigh()</text>
+
+        <defs>
+          <marker id="aKn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="currentColor"/>
+          </marker>
+        </defs>
+      </g>
+    </svg>
+    <figcaption>A veth pair is not a cable. <b>veth_xmit()</b> follows an RCU pointer to its peer and hands the skb to that device’s receive path — <b>napi_gro_receive()</b> where GRO or XDP is enabled, otherwise the per-CPU backlog. The crossing itself is nearly free; the cost is that the packet traverses a <b>full network stack twice</b>, once per namespace. A tc-BPF program at the host-side ingress hook is how that second traversal gets skipped.</figcaption>
+  </figure>
+
+  <p class="body">Create one and you get two devices at once — <code>ip link add v0 type veth peer name v1</code> — because they are one kernel object with two faces. Put one end in a container’s namespace, leave the other in the host’s, and you have the standard pod interface. Delete either end and both disappear.</p>
+
+  <pre class="code"><span class="c"># in the pod — which host device is the other end?</span>
+$ cat /sys/class/net/eth0/iflink
+<span class="h">12</span>
+
+<span class="c"># on the host — that ifindex, and the namespace it reaches back into</span>
+$ ip -d link show | grep -A1 '^12:'
+<span class="h">12</span>: veth9a3f21@if<span class="h">2</span>: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue master cni0
+    link/ether 5a:c2:1f:0b:77:e4 link-netnsid 0</pre>
+  <p class="body"><code>@if2</code> is the peer’s ifindex <em>in the other namespace</em> — the pod’s <code>eth0</code>. That cross-reference is the only reliable way to map a container interface to its host-side device when you are staring at <code>tcpdump</code> output on a busy node.</p>
+
+  <div class="trio">
+    <div class="card knc">
+      <div class="tag" style="color:var(--kn)">What it costs</div>
+      <ul>
+        <li><b>Two stack traversals</b> per packet — routing, netfilter and conntrack run again on the host side. This, not the handoff, is the overhead.</li>
+        <li><b>GSO passthrough:</b> 64 KB super-packets cross unsegmented, so bulk throughput looks excellent while packets-per-second workloads do not improve at all.</li>
+        <li><b>Checksums are never computed.</b> The link cannot corrupt anything, so the stack skips it — which is why <code>tcpdump</code> reports “incorrect” checksums on a perfectly healthy pod.</li>
+        <li>veth is set <code>IFF_NO_QUEUE</code>, so the default qdisc is <b>noqueue</b>. Shaping has to be added deliberately, on the host-side device, usually <code>tbf</code> plus an <code>ifb</code> for the other direction.</li>
+      </ul>
+    </div>
+    <div class="card knc">
+      <div class="tag" style="color:var(--kn)">What surprises people</div>
+      <ul>
+        <li>Moving a device into a namespace <b>brings it down and flushes its addresses and routes</b>. Configure after the move, never before.</li>
+        <li>Per-namespace sysctls reset too — <code>rp_filter</code>, <code>accept_ra</code>, <code>forwarding</code> are all properties of the new netns, not the device.</li>
+        <li>Counters read backwards: the host-side veth’s <b>RX is the pod’s egress</b>. Half of all pod bandwidth dashboards have this inverted.</li>
+        <li>MTU is per device and both ends must agree, or you get a black hole that only shows up on large frames.</li>
+        <li>With <code>br_netfilter</code> loaded, bridged frames traverse iptables <em>as well</em> — surprising, required by kube-proxy, and a real cost per packet.</li>
+      </ul>
+    </div>
+    <div class="card knc">
+      <div class="tag" style="color:var(--kn)">When you reach past it</div>
+      <ul>
+        <li><b>tc-BPF redirect.</b> Cilium’s <code>bpf_redirect_peer()</code> drops a pod-to-pod packet straight into the target namespace, and <code>bpf_redirect_neigh()</code> sends it to the wire — skipping the host’s routing and netfilter entirely. Same veth, half the work.</li>
+        <li><b>macvlan / ipvlan.</b> One device, no bridge, no second traversal — at the price of the host being unable to filter or even talk to the pod.</li>
+        <li><b>SR-IOV VF.</b> A hardware slice of the NIC handed to the pod. The kernel path disappears, and so does everything built on it.</li>
+        <li><b>tap</b> is the sibling that delivers to userspace instead of another namespace — the same idea, terminating in a VM’s virtio-net rather than a second stack.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="note"><b>On a GPU node this path is the slow lane on purpose.</b> RoCE traffic never enters it: the verbs datapath bypasses the kernel stack completely, which is why an RDMA pod gets an <em>SR-IOV VF alongside</em> its veth rather than instead of it. The veth carries control traffic, health checks and anything that needs a Service IP; the fabric carries the tensors, and the two never meet in the stack.</div>
+</section>
+
+<footer>
+  <p style="margin-bottom:16px">Defaults and administrative distances shown are Cisco’s, and vary by vendor. Prefix and AS counts are order-of-magnitude figures for the global table. Kernel behaviour described is Linux ≥ 5.10.</p>
+  <div class="next">
+    <span>still to come · network namespaces</span>
+    <span>MACsec &amp; 802.1X</span>
+    <span>bridge &amp; FDB</span>
+    <span>conntrack &amp; NAT</span>
+    <span>tc, qdiscs &amp; XDP</span>
+    <span>NIC queues &amp; offloads</span>
+    <span>RDMA &amp; kernel bypass</span>
+  </div>
+</footer>
+
+</div>
+</body>
+</html>
