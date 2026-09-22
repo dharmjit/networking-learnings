@@ -294,7 +294,7 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
       <div class="rail-h">I · Between networks</div>
         <a href="#s01"><span>01</span>The shape of it</a>
         <a href="#s02"><span>02</span>The family tree</a>
-        <a href="#s03"><span>03</span>BGP</a>
+        <a href="#s03"><span>03</span>BGP, the exterior one</a>
         <a href="#s04"><span>04</span>MPLS</a>
         <a href="#s05"><span>05</span>One address, many tenants</a>
         <a href="#s06"><span>06</span>Sessions all the way down</a>
@@ -308,15 +308,16 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
     </div>
     <div class="rail-g">
       <div class="rail-h">III · One wire, many networks</div>
-        <a href="#s11"><span>11</span>VLAN</a>
+        <a href="#s11"><span>11</span>VLAN — twelve bits</a>
         <a href="#s12"><span>12</span>VXLAN &amp; EVPN</a>
+        <a href="#s13"><span>13</span>EVPN control plane</a>
     </div>
     <div class="rail-g">
       <div class="rail-h">IV · When the network becomes software</div>
-        <a href="#s13"><span>13</span>Virtual Ethernet</a>
-        <a href="#s14"><span>14</span>Network namespaces</a>
-        <a href="#s15"><span>15</span>VRF on Linux</a>
-        <a href="#s16"><span>16</span>Identity, not address</a>
+        <a href="#s14"><span>14</span>Virtual Ethernet</a>
+        <a href="#s15"><span>15</span>Network namespaces</a>
+        <a href="#s16"><span>16</span>VRF on Linux</a>
+        <a href="#s17"><span>17</span>Identity, not address</a>
     </div>
     <div class="rail-g">
         <a href="#coda"><span>—</span>Coda · one idea, five times</a>
@@ -362,18 +363,18 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
     <div>
       <div class="toc-h">III · One wire, many networks</div>
       <ul>
-        <li><span class="no">10</span><a href="#s10">VLAN — twelve bits</a></li>
-        <li><span class="no">11</span><a href="#s12">VXLAN &amp; EVPN</a></li>
+        <li><span class="no">11</span><a href="#s11">VLAN — twelve bits</a></li>
+        <li><span class="no">12</span><a href="#s12">VXLAN &amp; EVPN</a></li>
+        <li><span class="no">13</span><a href="#s13">EVPN control plane</a></li>
       </ul>
     </div>
     <div>
       <div class="toc-h">IV · When the network becomes software</div>
       <ul>
-        <li><span class="no">13</span><a href="#s13">Virtual Ethernet</a></li>
-        <li><span class="no">14</span><a href="#s14">Network namespaces</a></li>
-        <li><span class="no">15</span><a href="#s15">VRF on Linux</a></li>
-        <li><span class="no">16</span><a href="#s16">Identity, not address</a></li>
-        <li><span class="no">—</span><a href="#coda">Coda · one idea, five times</a></li>
+        <li><span class="no">14</span><a href="#s14">Virtual Ethernet</a></li>
+        <li><span class="no">15</span><a href="#s15">Network namespaces</a></li>
+        <li><span class="no">16</span><a href="#s16">VRF on Linux</a></li>
+        <li><span class="no">17</span><a href="#s17">Identity, not address</a></li>
       </ul>
     </div>
   </nav>
@@ -917,7 +918,7 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
       <div class="tag" style="color:var(--mp)">At the edge · VRF</div>
       <ul>
         <li>The PE keeps a <b>separate RIB and FIB per tenant</b>. Customer interfaces are bound to one VRF.</li>
-        <li>Blue’s <code>10.0.0.0/8</code> and red’s are rows in two different tables that never meet — no more magic than <a href="#s14" style="color:inherit">two network namespaces</a> on one host — and Linux has the VRF abstraction itself, in <a href="#s15" style="color:inherit">section 15</a>.</li>
+        <li>Blue’s <code>10.0.0.0/8</code> and red’s are rows in two different tables that never meet — no more magic than <a href="#s15" style="color:inherit">two network namespaces</a> on one host — and Linux has the VRF abstraction itself, in <a href="#s16" style="color:inherit">section 16</a>.</li>
         <li>P routers in the core hold <b>zero</b> tenant routes, which is the whole scaling argument.</li>
       </ul>
     </div>
@@ -1753,16 +1754,123 @@ $ bridge fdb show dev vxlan0
   </details>
 </section>
 
+<section id="s13">
+  <details open>
+    <summary>
+      <div class="eyebrow">13 — EVPN</div>
+      <h2>The underlay has to stay boring</h2>
+    </summary>
+    <div class="sec-body">
+      <p class="lede">VXLAN moves the packet. Something still has to decide where to send it — and that job is split across two routing protocols that must never be handed each other’s work.</p>
+
+  <figure class="wide">
+    <svg viewBox="0 0 1040 380" role="img" aria-label="One leaf switch holds three routing tables: a global table fed by the underlay protocol, and two tenant VRFs fed by MP-BGP EVPN. A dashed arc shows that the EVPN sessions themselves depend on a loopback learned from the global table.">
+      <g class="ls">
+        <rect class="s-box" x="40" y="70" width="260" height="72" rx="10"/>
+        <text class="s-t" x="58" y="98" fill="currentColor">Underlay</text>
+        <text class="s-ts" x="58" y="117">IGP, or eBGP</text>
+        <text class="s-ts" x="58" y="134">loopbacks and links only</text>
+        <line class="s-flow" x1="300" y1="106" x2="412" y2="118" marker-end="url(#aEv)"/>
+      </g>
+      <g class="pv">
+        <rect class="s-box" x="40" y="240" width="260" height="72" rx="10"/>
+        <text class="s-t" x="58" y="268" fill="currentColor">Overlay</text>
+        <text class="s-ts" x="58" y="287">MP-BGP EVPN</text>
+        <text class="s-ts" x="58" y="304">every tenant route</text>
+        <line class="s-flow" x1="300" y1="258" x2="412" y2="206" marker-end="url(#aEv)"/>
+        <line class="s-flow" x1="300" y1="294" x2="412" y2="292" marker-end="url(#aEv)"/>
+      </g>
+
+      <path d="M 412 142 C 330 168, 215 188, 172 236" fill="none" stroke="var(--ink-soft)" stroke-width="1.3" stroke-dasharray="5 5" marker-end="url(#aEvSoft)"/>
+      <text class="s-ts" x="44" y="208">EVPN sessions bind to a loopback from that table</text>
+      <text class="s-ts" x="44" y="224">the overlay rides the underlay, never the reverse</text>
+
+      <rect class="s-zone" x="400" y="46" width="600" height="294" rx="14"/>
+      <text class="s-ts" x="420" y="70">one leaf switch</text>
+
+      <rect class="s-box" x="420" y="88" width="560" height="66" rx="10"/>
+      <text class="s-t" x="440" y="116">global routing table</text>
+      <text class="s-ts" x="440" y="136">~36 routes — and that number does not grow with tenants</text>
+
+      <g class="mp">
+        <rect class="w-mp" x="420" y="174" width="560" height="66" rx="10" stroke="currentColor" stroke-width="1.2"/>
+        <text class="s-t" x="440" y="202" fill="currentColor">VRF blue</text>
+        <text class="s-ts" x="440" y="222">10.0.0.0/8 and its endpoints · imported by RT blue</text>
+        <rect class="w-mp" x="420" y="260" width="560" height="66" rx="10" stroke="currentColor" stroke-width="1.2"/>
+        <text class="s-t" x="440" y="288" fill="currentColor">VRF red</text>
+        <text class="s-ts" x="440" y="308">10.0.0.0/8 and its endpoints · imported by RT red</text>
+      </g>
+
+      <text class="s-ts" x="520" y="366" text-anchor="middle">tenant churn never touches the global table — which is the entire point</text>
+
+      <defs>
+        <marker id="aEv" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0 0 L10 5 L0 10 z" fill="currentColor"/>
+        </marker>
+        <marker id="aEvSoft" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0 0 L10 5 L0 10 z" fill="var(--ink-soft)"/>
+        </marker>
+      </defs>
+    </svg>
+    <figcaption>Three tables in one box, fed by two protocols that never mix. Two of them hold the same prefix. The dashed arc is the dependency that decides everything else: <b>the sessions carrying tenant routes are built on a loopback the underlay made reachable</b> — so if tenant churn could shake the underlay, it would shake the sessions carrying the tenants.</figcaption>
+  </figure>
+
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Route type</th><th>Carries</th><th>What it replaces</th></tr></thead>
+      <tbody>
+        <tr><td class="nm">Type 2</td><td>a MAC, optionally with its IP and its VNI</td><td>flood-and-learn, and ARP flooding with it</td></tr>
+        <tr><td class="nm">Type 3</td><td>inclusive multicast — “I hold VNI 5000, send me its broadcast”</td><td>hand-built flood lists and underlay multicast groups</td></tr>
+        <tr><td class="nm">Type 5</td><td>an IP prefix, in a VRF</td><td>routing <em>between</em> subnets rather than bridging within one</td></tr>
+        <tr><td class="nm">Type 1 · 4</td><td>Ethernet auto-discovery and Ethernet segment routes</td><td>the guesswork in dual-homing a server to two leaves</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="trio">
+    <div class="card mpc">
+      <div class="tag" style="color:var(--mp)">Two kinds of VNI</div>
+      <ul>
+        <li>Each subnet gets an <b>L2VNI</b> — its bridge domain. Traffic <em>within</em> a subnet is encapsulated in it.</li>
+        <li>Each VRF gets one <b>L3VNI</b> — its routing domain on the wire. Traffic <em>between</em> subnets is encapsulated in that instead, and the egress leaf does its own lookup on arrival. This is <b>symmetric IRB</b>.</li>
+        <li>The alternative, asymmetric IRB, encapsulates into the <em>destination</em> subnet’s L2VNI — which forces the ingress leaf to hold ARP state for every subnet it might ever send to. It works, and it stops scaling early.</li>
+        <li>So a tenant with four subnets has four L2VNIs and exactly one L3VNI.</li>
+      </ul>
+    </div>
+    <div class="card mpc">
+      <div class="tag" style="color:var(--mp)">The anycast gateway</div>
+      <ul>
+        <li>The same gateway address <em>and the same MAC</em> are configured on every leaf holding that subnet.</li>
+        <li>So a VM’s default gateway is always on its own leaf, one hop away. Inter-subnet traffic is routed at the source rack and encapsulated straight to the destination — it never hairpins to a central router.</li>
+        <li>Move the VM to another rack and nothing in it changes: same gateway IP, same gateway MAC, no ARP re-resolution, no reconfiguration.</li>
+        <li>Combined with Type 2 routes, leaves also answer ARP locally instead of flooding it — the broadcast domain stops behaving like one.</li>
+      </ul>
+    </div>
+    <div class="card lsc">
+      <div class="tag" style="color:var(--ls)">Why not just use the IGP</div>
+      <ul>
+        <li><b>Overlapping addresses are incoherent in an IGP.</b> One database, one metric space, no VRF concept in flooding. BGP copes because the RD makes the NLRIs distinct and the RT files them.</li>
+        <li><b>Blast radius.</b> An IGP floods to everyone and every router runs SPF on every change. Tenant endpoints in the IGP means every leaf recomputes its tree whenever a VM moves.</li>
+        <li><b>And the dependency.</b> The BGP sessions carrying tenant routes are built on loopbacks the IGP advertises. Tenant churn reaching the IGP would shake the sessions carrying the tenants — a loop you cannot have.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="note"><b>Three things that bite, in rough order of how long they take to find.</b> A route reflector holds no VRF for your tenants, so RT import finds no match and the default behaviour on many platforms is to <em>discard</em> the route — silently breaking the overlay until route-target filtering is disabled on the RRs. Route distinguishers should stay auto-derived per switch: that is what lets a reflector keep several paths to one prefix from different leaves, and pinning a single RD across leaves collapses your ECMP at the reflector. And the underlay MTU must carry the tenant MTU plus the encapsulation, or you get the familiar shape — pings fine, large transfers vanish.</div>
+    </div>
+  </details>
+</section>
+
 <div class="part">
   <div class="part-n">Part IV</div>
   <div class="part-t">When the network becomes software</div>
   <p class="part-d">The last three metres, where a cable is a pointer, a stack is a struct, a routing table is a device and a tenant is a number in a map. Not all of it is host-scoped — one of these is a router concept and one is a cluster concept — but this is where you meet them as code.</p>
 </div>
 
-<section id="s13">
+<section id="s14">
   <details open>
     <summary>
-      <div class="eyebrow">13 — Virtual Ethernet</div>
+      <div class="eyebrow">14 — Virtual Ethernet</div>
       <h2>A cable that is really a pointer</h2>
     </summary>
     <div class="sec-body">
@@ -1871,10 +1979,10 @@ $ ip -d link show | grep -A1 '^12:'
   </details>
 </section>
 
-<section id="s14">
+<section id="s15">
   <details open>
     <summary>
-      <div class="eyebrow">14 — Network namespaces</div>
+      <div class="eyebrow">15 — Network namespaces</div>
       <h2>Not a filter over the stack — another copy of it</h2>
     </summary>
     <div class="sec-body">
@@ -1950,7 +2058,7 @@ default via 10.244.3.1 dev eth0
     <div class="card knc">
       <div class="tag" style="color:var(--kn)">What it costs</div>
       <ul>
-        <li>Crossing a boundary needs a <em>device</em>, so every packet pays the two full stack traversals from <a href="#s13" style="color:inherit">section 13</a>.</li>
+        <li>Crossing a boundary needs a <em>device</em>, so every packet pays the two full stack traversals from <a href="#s14" style="color:inherit">section 14</a>.</li>
         <li>Each namespace carries its own conntrack accounting and its own copy of every sysctl you thought you had set. A node-wide tuning change reaches none of them.</li>
         <li>Debugging tools are namespace-blind by default: <code>ss</code>, <code>tcpdump</code> and <code>conntrack -L</code> all report the namespace you happen to be in, which is usually the wrong one.</li>
       </ul>
@@ -1968,10 +2076,10 @@ default via 10.244.3.1 dev eth0
   </details>
 </section>
 
-<section id="s15">
+<section id="s16">
   <details open>
     <summary>
-      <div class="eyebrow">15 — VRF on Linux</div>
+      <div class="eyebrow">16 — VRF on Linux</div>
       <h2>The same idea, one layer down</h2>
     </summary>
     <div class="sec-body">
@@ -2068,10 +2176,10 @@ $ ip rule show
   </details>
 </section>
 
-<section id="s16">
+<section id="s17">
   <details open>
     <summary>
-      <div class="eyebrow">16 — Identity, not address</div>
+      <div class="eyebrow">17 — Identity, not address</div>
       <h2>When the address stops meaning anything</h2>
     </summary>
     <div class="sec-body">
