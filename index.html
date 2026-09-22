@@ -105,8 +105,19 @@ header.hero{display:flex;flex-direction:column;gap:16px;padding-bottom:38px;}
 .key span{font-family:var(--mono);font-size:.78rem;display:flex;align-items:center;gap:8px;color:var(--ink-soft);}
 .key i{width:13px;height:13px;border-radius:3px;display:block;}
 
-section{display:flex;flex-direction:column;gap:22px;padding:46px 0;border-top:1px solid var(--rule);}
-.head{display:flex;flex-direction:column;gap:9px;}
+section{display:block;padding:46px 0;border-top:1px solid var(--rule);}
+section > details{display:block;}
+section > details > summary{list-style:none;cursor:pointer;display:flex;flex-direction:column;gap:9px;position:relative;padding-right:46px;}
+section > details > summary::-webkit-details-marker{display:none;}
+section > details > summary::after{content:"";position:absolute;right:10px;top:50%;width:10px;height:10px;border-right:1.5px solid var(--ink-soft);border-bottom:1.5px solid var(--ink-soft);transform:translateY(-75%) rotate(45deg);transition:transform .18s ease,border-color .18s ease;}
+section > details[open] > summary::after{transform:translateY(-25%) rotate(-135deg);}
+section > details > summary:hover::after{border-color:var(--ink);}
+section > details > summary:focus-visible{outline:2px solid var(--ink);outline-offset:6px;border-radius:4px;}
+.sec-body{display:flex;flex-direction:column;gap:22px;padding-top:9px;}
+.foldall{font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;color:var(--ink-soft);background:none;border:1px solid var(--rule);border-radius:999px;padding:7px 15px;cursor:pointer;align-self:flex-start;}
+.foldall:hover{color:var(--ink);border-color:var(--ink-soft);}
+.foldall:focus-visible{outline:2px solid var(--ink);outline-offset:3px;}
+.rail .foldall{width:100%;margin-top:4px;}
 
 figure{margin:0;background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:20px 18px 16px;box-shadow:var(--shadow);overflow-x:auto;}
 figure svg{display:block;width:100%;height:auto;min-width:820px;}
@@ -302,6 +313,7 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
     <div class="rail-g">
         <a href="#coda"><span>—</span>Coda · one idea, five times</a>
     </div>
+  <button class="foldall" type="button">Collapse all</button>
 </nav>
 
 <div class="wrap">
@@ -357,15 +369,18 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
       </ul>
     </div>
   </nav>
+  <button class="foldall" type="button">Collapse all</button>
 </header>
 
 
 <section id="s00">
-  <div class="head">
-    <div class="eyebrow">Origins</div>
-    <h2>Who built this, and what for</h2>
-    <p class="lede">Almost nothing here was designed. Each piece was added by someone with a specific problem, on top of whatever was already deployed — which is why the result layers the way it does.</p>
-  </div>
+  <details open>
+    <summary>
+      <div class="eyebrow">Origins</div>
+      <h2>Who built this, and what for</h2>
+    </summary>
+    <div class="sec-body">
+      <p class="lede">Almost nothing here was designed. Each piece was added by someone with a specific problem, on top of whatever was already deployed — which is why the result layers the way it does.</p>
 
   <div class="hist">
     <div class="hrow"><span class="yr">1956</span><span class="what">Bellman–Ford · Dijkstra<span class="who">Bellman, Ford, Moore · Dijkstra</span></span><span class="why">Two shortest-path algorithms, published before there was a network to run them on. Everything in Part II is packaging around these.</span></div>
@@ -388,6 +403,8 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
   </div>
 
   <div class="note"><b>The pattern worth noticing:</b> nothing was ever replaced. RIP is still in the tree because it shipped with Unix; IS-IS runs the carrier core because it was built for a protocol nobody uses; BGP does jobs its name forbids. Each layer in this guide is a workaround for the layer beneath it that turned out to be permanent.</div>
+    </div>
+  </details>
 </section>
 
 <div class="part">
@@ -397,11 +414,13 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
 </div>
 
 <section id="s01">
-  <div class="head">
-    <div class="eyebrow">01 — The shape of it</div>
-    <h2>Two problems, not one</h2>
-    <p class="lede">Inside a network, routing is an engineering question: which way is fastest? Between networks, it is a business question: whose traffic am I willing to carry?</p>
-  </div>
+  <details open>
+    <summary>
+      <div class="eyebrow">01 — The shape of it</div>
+      <h2>Two problems, not one</h2>
+    </summary>
+    <div class="sec-body">
+      <p class="lede">Inside a network, routing is an engineering question: which way is fastest? Between networks, it is a business question: whose traffic am I willing to carry?</p>
 
   <figure>
     <svg viewBox="0 0 960 400" role="img" aria-label="Three autonomous systems, each running its own interior gateway protocol internally, joined at their borders by eBGP sessions.">
@@ -484,13 +503,17 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
       </ul>
     </div>
   </div>
+    </div>
+  </details>
 </section>
 <section id="s02">
-  <div class="head">
-    <div class="eyebrow">02 — The family tree</div>
-    <h2>Three ways to answer “which way?”</h2>
-    <p class="lede">Every routing protocol differs on two axes: who you talk to, and what you tell them.</p>
-  </div>
+  <details open>
+    <summary>
+      <div class="eyebrow">02 — The family tree</div>
+      <h2>Three ways to answer “which way?”</h2>
+    </summary>
+    <div class="sec-body">
+      <p class="lede">Every routing protocol differs on two axes: who you talk to, and what you tell them.</p>
 
   <figure>
     <svg viewBox="0 0 960 330" role="img" aria-label="Taxonomy: routing protocols split into interior gateway protocols, which are either distance vector (RIP, EIGRP) or link state (OSPF, IS-IS), and exterior gateway protocols, which are path vector (BGP-4).">
@@ -538,13 +561,17 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
     </svg>
     <figcaption>“Gateway protocol” is about <b>where</b> a protocol runs; “distance vector / link state / path vector” is about <b>how</b> it computes. EIGRP is a distance vector protocol with the reflexes of a link state one; BGP is a distance vector protocol that carries the whole path instead of just a number.</figcaption>
   </figure>
+    </div>
+  </details>
 </section>
 <section id="s03">
-  <div class="head">
-    <div class="eyebrow">03 — The exterior one</div>
-    <h2>BGP: a distance vector protocol that shows its work</h2>
-    <p class="lede">Carrying the full AS path solves the loop problem outright — and doubles as the raw material for policy. Here is what actually moves between two speakers.</p>
-  </div>
+  <details open>
+    <summary>
+      <div class="eyebrow">03 — The exterior one</div>
+      <h2>BGP: a distance vector protocol that shows its work</h2>
+    </summary>
+    <div class="sec-body">
+      <p class="lede">Carrying the full AS path solves the loop problem outright — and doubles as the raw material for policy. Here is what actually moves between two speakers.</p>
 
   <figure class="wide">
     <svg viewBox="0 0 1040 400" role="img" aria-label="A prefix originated by AS 15169 is advertised across three more autonomous systems; each eBGP hop prepends its own AS number to AS_PATH and rewrites NEXT_HOP. An advertisement fed back to AS 3356 is discarded because its own AS number is already in the path.">
@@ -703,13 +730,17 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
   </div>
 
   <div class="note"><b>Read the best-path order again:</b> path length is only step two, and it is measured in networks crossed, not milliseconds. A route through four small ASes can beat one through two huge ones. BGP was never trying to be fast — it was trying to be <em>agreeable</em>.</div>
+    </div>
+  </details>
 </section>
 <section id="s04">
-  <div class="head">
-    <div class="eyebrow">04 — MPLS</div>
-    <h2>Stop asking where, start asking which</h2>
-    <p class="lede">MPLS puts a short fixed label in front of the packet. Every router after the first one matches that label exactly, and never looks at the IP address again.</p>
-  </div>
+  <details open>
+    <summary>
+      <div class="eyebrow">04 — MPLS</div>
+      <h2>Stop asking where, start asking which</h2>
+    </summary>
+    <div class="sec-body">
+      <p class="lede">MPLS puts a short fixed label in front of the packet. Every router after the first one matches that label exactly, and never looks at the IP address again.</p>
 
   <figure class="wide">
     <svg viewBox="0 0 1040 250" role="img" aria-label="A packet enters an ingress label edge router which pushes label 17, a label switch router swaps it to 22, the penultimate router pops the label, and the egress router forwards plain IP.">
@@ -798,13 +829,17 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
   </div>
 
   <div class="note"><b>The common myth:</b> that MPLS exists because IP lookups were slow. That was true in 1997; today silicon does longest-prefix match at line rate. MPLS survived because a label can mean something an IP address cannot — <em>this customer</em>, <em>this engineered path</em>, <em>this backup tunnel</em>.</div>
+    </div>
+  </details>
 </section>
 <section id="s05">
-  <div class="head">
-    <div class="eyebrow">05 — Multi-tenancy</div>
-    <h2>One address, many tenants</h2>
-    <p class="lede">Two customers both use <code>10.0.0.0/8</code> and both cross the same core. Nothing collides, because in the core the packet is never routed by its address — the label carries the tenant.</p>
-  </div>
+  <details open>
+    <summary>
+      <div class="eyebrow">05 — Multi-tenancy</div>
+      <h2>One address, many tenants</h2>
+    </summary>
+    <div class="sec-body">
+      <p class="lede">Two customers both use <code>10.0.0.0/8</code> and both cross the same core. Nothing collides, because in the core the packet is never routed by its address — the label carries the tenant.</p>
 
   <figure class="wide">
     <svg viewBox="0 0 1040 320" role="img" aria-label="Two VRFs on each provider edge router hold the same prefix. MP-BGP carries them as distinct VPNv4 routes, and a two-label stack crosses a core router that holds no tenant routes.">
@@ -897,13 +932,17 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
   </div>
 
   <div class="note"><b>The catch:</b> this buys isolation, not interoperability. Blue’s <code>10.1.1.1</code> and red’s still cannot talk to each other — joining them needs NAT or a shared-services VRF with non-overlapping addressing. Overlap is only free while the two tenants stay strangers. The same shape turns up in <a href="#s12" style="color:inherit"><em>VXLAN/EVPN</em></a>, where the VNI plays the VPN label’s part and the RD/RT model is borrowed wholesale: the tenant identifier has to travel <b>with</b> the packet, because the address stopped being unique.</div>
+    </div>
+  </details>
 </section>
 <section id="s06">
-  <div class="head">
-    <div class="eyebrow">06 — Sessions all the way down</div>
-    <h2>Four conversations, each useless without the one below</h2>
-    <p class="lede">Everything in this part runs at once, on the same routers, over the same links. What makes it work is the order — and what makes it fail is that the order is never enforced.</p>
-  </div>
+  <details open>
+    <summary>
+      <div class="eyebrow">06 — Sessions all the way down</div>
+      <h2>Four conversations, each useless without the one below</h2>
+    </summary>
+    <div class="sec-body">
+      <p class="lede">Everything in this part runs at once, on the same routers, over the same links. What makes it work is the order — and what makes it fail is that the order is never enforced.</p>
 
   <figure class="wide">
     <svg viewBox="0 0 1040 400" role="img" aria-label="Session layers across two provider edge routers and two core routers: BFD and IGP adjacencies exist per link, LDP sessions exist per link, and one MP-BGP session runs end to end between the edge routers, skipping the core entirely.">
@@ -1035,6 +1074,8 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
   </div>
 
   <div class="note"><b>Count them on one PE in a modest network:</b> four IGP adjacencies, four LDP sessions, four BFD sessions, two iBGP sessions to route reflectors — fourteen conversations, each with its own timers, its own liveness detection and its own opinion about whether the neighbour is up. <em>iBGP</em> is why the reflectors exist: a full mesh of <em>n</em> PEs needs <em>n</em>(<em>n</em>−1)/2 sessions, which is 4,950 at a hundred PEs. And every one of these is a session you can forget to configure on exactly one side.</div>
+    </div>
+  </details>
 </section>
 
 <div class="part">
@@ -1044,11 +1085,13 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
 </div>
 
 <section id="s07">
-  <div class="head">
-    <div class="eyebrow">07 — The two interior styles</div>
-    <h2>Tell your neighbours everything, or tell everyone one thing</h2>
-    <p class="lede">This single choice decides the memory a router needs, how fast the network heals, and how badly it fails.</p>
-  </div>
+  <details open>
+    <summary>
+      <div class="eyebrow">07 — The two interior styles</div>
+      <h2>Tell your neighbours everything, or tell everyone one thing</h2>
+    </summary>
+    <div class="sec-body">
+      <p class="lede">This single choice decides the memory a router needs, how fast the network heals, and how badly it fails.</p>
 
   <figure>
     <svg viewBox="0 0 960 330" role="img" aria-label="Left: a distance vector router sends its whole conclusion table only to its direct neighbours. Right: a link state router floods one description of its own links to every router, and each builds the same map.">
@@ -1148,13 +1191,17 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
       </tbody>
     </table>
   </div>
+    </div>
+  </details>
 </section>
 <section id="s08">
-  <div class="head">
-    <div class="eyebrow">08 — Bookkeeping</div>
-    <h2>Every protocol keeps its own books</h2>
-    <p class="lede">A protocol’s database is not the routing table. Each one maintains a private view, argues with its peers inside that view, and submits a single candidate per prefix to the router it happens to be running on.</p>
-  </div>
+  <details open>
+    <summary>
+      <div class="eyebrow">08 — Bookkeeping</div>
+      <h2>Every protocol keeps its own books</h2>
+    </summary>
+    <div class="sec-body">
+      <p class="lede">A protocol’s database is not the routing table. Each one maintains a private view, argues with its peers inside that view, and submits a single candidate per prefix to the router it happens to be running on.</p>
 
   <figure>
     <svg viewBox="0 0 960 330" role="img" aria-label="Four protocol databases each feed one candidate route into the router's RIB, chosen by administrative distance; the RIB is then compiled into the FIB in hardware.">
@@ -1291,13 +1338,17 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
   </div>
 
   <div class="note"><b>The pattern:</b> the older protocols are <em>periodic</em> — they re-send everything on a timer, and silence means death. Everything designed after 1990 is <em>event-driven</em> — send once, acknowledge, then say nothing until something actually changes, and detect failure with a separate, much faster hello. That shift is most of why convergence went from minutes to milliseconds.</div>
+    </div>
+  </details>
 </section>
 <section id="s09">
-  <div class="head">
-    <div class="eyebrow">09 — Inside one router</div>
-    <h2>How the winner is actually chosen</h2>
-    <p class="lede">Protocols only propose. A single router may hear about the same destination from four of them at once.</p>
-  </div>
+  <details open>
+    <summary>
+      <div class="eyebrow">09 — Inside one router</div>
+      <h2>How the winner is actually chosen</h2>
+    </summary>
+    <div class="sec-body">
+      <p class="lede">Protocols only propose. A single router may hear about the same destination from four of them at once.</p>
 
   <div class="ladder">
     <div class="rung">
@@ -1329,12 +1380,16 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
       </div>
     </div>
   </div>
+    </div>
+  </details>
 </section>
 <section id="s10">
-  <div class="head">
-    <div class="eyebrow">10 — Quick reference</div>
-    <h2>The protocols, with their real numbers</h2>
-  </div>
+  <details open>
+    <summary>
+      <div class="eyebrow">10 — Quick reference</div>
+      <h2>The protocols, with their real numbers</h2>
+    </summary>
+    <div class="sec-body">
 
   <div class="tablewrap">
     <table>
@@ -1387,6 +1442,8 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
   </div>
 
   <p class="body">Two of these have outlived their category. <em>IS-IS</em> won the carrier core because it doesn’t ride on IP and can carry new address families without a new protocol version. <em>BGP</em> escaped the border entirely — it now distributes VPN routes, EVPN MAC addresses and data-centre fabrics <em>inside</em> networks, doing a job its name says it shouldn’t.</p>
+    </div>
+  </details>
 </section>
 <div class="part">
   <div class="part-n">Part III</div>
@@ -1395,11 +1452,13 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
 </div>
 
 <section id="s11">
-  <div class="head">
-    <div class="eyebrow">11 — VLAN</div>
-    <h2>Twelve bits that split a switch</h2>
-    <p class="lede">One physical Ethernet, many broadcast domains. A four-byte tag, inserted on the way in and removed on the way out, so the hosts on either end never learn they were sharing.</p>
-  </div>
+  <details open>
+    <summary>
+      <div class="eyebrow">11 — VLAN</div>
+      <h2>Twelve bits that split a switch</h2>
+    </summary>
+    <div class="sec-body">
+      <p class="lede">One physical Ethernet, many broadcast domains. A four-byte tag, inserted on the way in and removed on the way out, so the hosts on either end never learn they were sharing.</p>
 
   <figure class="wide">
     <svg viewBox="0 0 1040 340" role="img" aria-label="Hosts on VLAN 10 and VLAN 20 connect to switches by untagged access ports; the trunk between the switches carries the same frames with an 802.1Q tag identifying which VLAN each belongs to.">
@@ -1491,14 +1550,18 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
       </ul>
     </div>
   </div>
+    </div>
+  </details>
 </section>
 
 <section id="s12">
-  <div class="head">
-    <div class="eyebrow">12 — VXLAN</div>
-    <h2>An Ethernet segment inside a UDP packet</h2>
-    <p class="lede">Wrap the whole frame in an ordinary IP packet and the L2 domain stops being a cabling problem. Twenty-four bits of tenant id instead of twelve, and a routed fabric underneath that can use every link it has.</p>
-  </div>
+  <details open>
+    <summary>
+      <div class="eyebrow">12 — VXLAN</div>
+      <h2>An Ethernet segment inside a UDP packet</h2>
+    </summary>
+    <div class="sec-body">
+      <p class="lede">Wrap the whole frame in an ordinary IP packet and the L2 domain stops being a cabling problem. Twenty-four bits of tenant id instead of twelve, and a routed fabric underneath that can use every link it has.</p>
 
   <figure class="wide">
     <svg viewBox="0 0 1040 430" role="img" aria-label="Guests believe they share one flat layer 2 segment. In reality each host runs a VTEP that wraps their frames in an outer IP and UDP header carrying a VNI, and the underlay only ever forwards UDP between two host addresses.">
@@ -1600,6 +1663,8 @@ $ bridge fdb show dev vxlan0
   </div>
 
   <div class="note"><b>Read this next to section 05 and it is the same architecture twice.</b> The VNI is the VPN label; the VTEP is the PE; the routed fabric is the P core that knows nothing about tenants; MP-BGP distributes membership in both. MPLS built it for carriers with label switching in the middle; VXLAN rebuilt it for datacentres with plain IP in the middle, because every device already knew how to forward that. <em>Give each tenant its own table, and make the identifier travel with the packet</em> — that is the whole idea, at every layer this guide visits.</div>
+    </div>
+  </details>
 </section>
 
 <div class="part">
@@ -1609,11 +1674,13 @@ $ bridge fdb show dev vxlan0
 </div>
 
 <section id="s13">
-  <div class="head">
-    <div class="eyebrow">13 — Virtual Ethernet</div>
-    <h2>A cable that is really a pointer</h2>
-    <p class="lede">Below the NIC, the same problem repeats at a thousandth of the scale: two network stacks on one machine that need a link between them. The kernel’s answer is a pair of devices that are each other’s transmit path.</p>
-  </div>
+  <details open>
+    <summary>
+      <div class="eyebrow">13 — Virtual Ethernet</div>
+      <h2>A cable that is really a pointer</h2>
+    </summary>
+    <div class="sec-body">
+      <p class="lede">Below the NIC, the same problem repeats at a thousandth of the scale: two network stacks on one machine that need a link between them. The kernel’s answer is a pair of devices that are each other’s transmit path.</p>
 
   <figure class="wide">
     <svg viewBox="0 0 1120 430" role="img" aria-label="A packet leaves a pod's network stack through eth0, crosses into the host namespace by a direct function call into the peer device, and climbs the host stack through tc, netfilter and the bridge before reaching the physical NIC. A tc-BPF program can redirect straight to the wire, skipping the rest.">
@@ -1714,14 +1781,18 @@ $ ip -d link show | grep -A1 '^12:'
   </div>
 
   <div class="note"><b>On a GPU node this path is the slow lane on purpose.</b> RoCE traffic never enters it: the verbs datapath bypasses the kernel stack completely, which is why an RDMA pod gets an <em>SR-IOV VF alongside</em> its veth rather than instead of it. The veth carries control traffic, health checks and anything that needs a Service IP; the fabric carries the tensors, and the two never meet in the stack.</div>
+    </div>
+  </details>
 </section>
 
 <section id="s14">
-  <div class="head">
-    <div class="eyebrow">14 — Network namespaces</div>
-    <h2>Not a filter over the stack — another copy of it</h2>
-    <p class="lede">The kernel’s answer to tenancy is the most thorough one in this guide and the only one that puts nothing on the wire at all.</p>
-  </div>
+  <details open>
+    <summary>
+      <div class="eyebrow">14 — Network namespaces</div>
+      <h2>Not a filter over the stack — another copy of it</h2>
+    </summary>
+    <div class="sec-body">
+      <p class="lede">The kernel’s answer to tenancy is the most thorough one in this guide and the only one that puts nothing on the wire at all.</p>
 
   <figure class="wide">
     <svg viewBox="0 0 1040 430" role="img" aria-label="Two network namespaces side by side, each holding its own devices, routing tables, neighbour table, netfilter rules and conntrack, sysctls, port space and sockets. A veth pair is the only path between them.">
@@ -1807,14 +1878,18 @@ default via 10.244.3.1 dev eth0
       </ul>
     </div>
   </div>
+    </div>
+  </details>
 </section>
 
 <section id="s15">
-  <div class="head">
-    <div class="eyebrow">15 — VRF on Linux</div>
-    <h2>The same idea, one layer down</h2>
-    <p class="lede">You have already met VRF, in <a href="#s05" style="color:inherit">section 05</a>, as what a provider edge router keeps per tenant. It is not a host concept and has no scale of its own — a PE, a switch and a laptop all mean the same thing by it. What is specific here is the implementation, and what it buys: separate routing tables, but one firewall, one conntrack and one agent that can see all of them.</p>
-  </div>
+  <details open>
+    <summary>
+      <div class="eyebrow">15 — VRF on Linux</div>
+      <h2>The same idea, one layer down</h2>
+    </summary>
+    <div class="sec-body">
+      <p class="lede">You have already met VRF, in <a href="#s05" style="color:inherit">section 05</a>, as what a provider edge router keeps per tenant. It is not a host concept and has no scale of its own — a PE, a switch and a laptop all mean the same thing by it. What is specific here is the implementation, and what it buys: separate routing tables, but one firewall, one conntrack and one agent that can see all of them.</p>
 
   <figure class="wide">
     <svg viewBox="0 0 1040 400" role="img" aria-label="Inside one network namespace, netfilter, sockets and sysctls are shared, while three separate routing tables are selected by an ip rule according to which VRF device an interface is enslaved to.">
@@ -1903,14 +1978,18 @@ $ ip rule show
       </ul>
     </div>
   </div>
+    </div>
+  </details>
 </section>
 
 <section id="s16">
-  <div class="head">
-    <div class="eyebrow">16 — Identity, not address</div>
-    <h2>When the address stops meaning anything</h2>
-    <p class="lede">Every mechanism so far assumes an address identifies a tenant. In a cluster it identifies nothing: pod addresses are handed out from a node’s range and reused within seconds.</p>
-  </div>
+  <details open>
+    <summary>
+      <div class="eyebrow">16 — Identity, not address</div>
+      <h2>When the address stops meaning anything</h2>
+    </summary>
+    <div class="sec-body">
+      <p class="lede">Every mechanism so far assumes an address identifies a tenant. In a cluster it identifies nothing: pod addresses are handed out from a node’s range and reused within seconds.</p>
 
   <figure class="wide">
     <svg viewBox="0 0 1040 380" role="img" aria-label="A pod's labels are hashed into a numeric security identity; policy is written between identities. In overlay mode the identity travels in the encapsulation header, in direct routing mode the destination node resolves the source address to an identity from its local map.">
@@ -1975,6 +2054,8 @@ $ ip rule show
       </ul>
     </div>
   </div>
+    </div>
+  </details>
 </section>
 
 <div class="part">
@@ -1984,10 +2065,12 @@ $ ip rule show
 </div>
 
 <section id="coda">
-  <div class="head">
-    <div class="eyebrow">Coda</div>
-    <h2>Where the tenant identifier lives</h2>
-  </div>
+  <details open>
+    <summary>
+      <div class="eyebrow">Coda</div>
+      <h2>Where the tenant identifier lives</h2>
+    </summary>
+    <div class="sec-body">
 
   <div class="tablewrap">
     <table>
@@ -2051,6 +2134,8 @@ $ ip rule show
   </figure>
 
   <div class="note"><b>So the guide’s own refrain is wrong, and usefully so.</b> “Make the identifier travel with the packet” holds for the first three columns and breaks twice at the bottom: a namespace puts nothing on the wire, and identity-based policy resolves the tenant <em>after</em> the packet has already arrived. The honest version is one level up — <em>every scheme picks somewhere to keep the tenant identifier, and that choice decides whether isolation is a property of the structure or a property of the configuration.</em> MPLS chose the structure and pays for it in protocols. Kubernetes chose the configuration and pays for it in blast radius. Neither is the mistake; picking one without knowing which you picked is.</div>
+    </div>
+  </details>
 </section>
 
 <footer>
@@ -2092,6 +2177,35 @@ $ ip rule show
     var r = rail.getBoundingClientRect(), t = a.getBoundingClientRect();
     if (t.top < r.top + 8 || t.bottom > r.bottom - 8) rail.scrollTop += (t.top - r.top) - r.height / 2;
   }
+  var dets = [].slice.call(document.querySelectorAll('section > details'));
+  var buttons = [].slice.call(document.querySelectorAll('.foldall'));
+  function setAll(open){
+    dets.forEach(function(d){ d.open = open; });
+    buttons.forEach(function(b){
+      b.textContent = open ? 'Collapse all' : 'Expand all';
+      b.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    spy();
+  }
+  buttons.forEach(function(b){
+    b.addEventListener('click', function(){
+      setAll(!dets.some(function(d){ return d.open; }));
+    });
+  });
+  function openTarget(hash){
+    if (!hash || hash.length < 2) return;
+    var el = document.getElementById(hash.slice(1));
+    var d = el && el.querySelector('details');
+    if (d) d.open = true;
+  }
+  document.addEventListener('click', function(e){
+    var a = e.target.closest ? e.target.closest('a[href^="#"]') : null;
+    if (a) openTarget(a.getAttribute('href'));
+  });
+  addEventListener('hashchange', function(){ openTarget(location.hash); spy(); });
+  addEventListener('beforeprint', function(){ setAll(true); });
+  openTarget(location.hash);
+
   function onScroll(){ if (!ticking){ ticking = true; requestAnimationFrame(spy); } }
   addEventListener('scroll', onScroll, { passive: true });
   addEventListener('resize', onScroll);
