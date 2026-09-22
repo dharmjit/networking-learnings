@@ -5,7 +5,8 @@ segmentation that divides a wire, down to the kernel on a single host.
 
 **Read it → https://dharmjit.github.io/networking-learnings/**
 
-One self-contained HTML file. No build step, no framework, no JavaScript, no dependencies.
+One self-contained HTML file. No build step, no framework, no dependencies — the only
+script is a few lines of scroll-spy for the contents rail.
 Every diagram is hand-authored inline SVG. The only external request is to Google Fonts.
 
 ## What's in it

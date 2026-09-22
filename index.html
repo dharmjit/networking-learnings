@@ -186,6 +186,21 @@ td.num{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--ink
 .rung p{font-size:.96rem;color:var(--ink-soft);}
 .rung p b{color:var(--ink);font-weight:600;}
 
+/* contents rail */
+.rail{display:none;}
+.rail-title{display:block;font-family:var(--mono);font-size:.82rem;font-weight:600;letter-spacing:-.025em;line-height:1.3;color:var(--ink);text-decoration:none;margin-bottom:24px;}
+.rail-g{margin-bottom:18px;}
+.rail-h{font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);line-height:1.4;margin-bottom:7px;padding-left:12px;}
+.rail-g a{display:flex;gap:9px;font-size:.8rem;line-height:1.35;color:var(--ink-soft);text-decoration:none;padding:4px 0 4px 10px;border-left:2px solid transparent;}
+.rail-g a span{font-family:var(--mono);font-size:.72rem;opacity:.75;flex:none;}
+.rail-g a:hover{color:var(--ink);}
+.rail-g a.on{color:var(--ink);border-left-color:var(--ink);font-weight:500;}
+.rail-g a.on span{opacity:1;}
+@media (min-width:1180px){
+  body{padding-left:252px;}
+  .rail{display:block;position:fixed;top:0;left:0;width:252px;height:100vh;overflow-y:auto;box-sizing:border-box;padding:36px 20px 44px;border-right:1px solid var(--rule);background:var(--paper);}
+}
+
 /* parts + nav */
 .part{border-top:3px solid var(--ink);padding:38px 0 6px;display:flex;flex-direction:column;gap:11px;}
 .part-n{font-family:var(--mono);font-size:.72rem;letter-spacing:.24em;text-transform:uppercase;color:var(--ink-soft);}
@@ -244,13 +259,54 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
   .spec{grid-template-columns:1fr;}
   .rung{grid-template-columns:1fr;gap:4px;}
 }
+@media (min-width:1180px){
+  .toc{display:none;}
+}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;}}
 </style>
 </head>
 <body>
+<nav class="rail" aria-label="Contents">
+  <a class="rail-title" href="#top">Packets, Paths<br>and Labels</a>
+    <div class="rail-g">
+        <a href="#s00"><span>—</span>Origins</a>
+    </div>
+    <div class="rail-g">
+      <div class="rail-h">I · Between networks</div>
+        <a href="#s01"><span>01</span>The shape of it</a>
+        <a href="#s02"><span>02</span>The family tree</a>
+        <a href="#s03"><span>03</span>BGP</a>
+        <a href="#s04"><span>04</span>MPLS</a>
+        <a href="#s05"><span>05</span>One address, many tenants</a>
+        <a href="#s06"><span>06</span>Sessions all the way down</a>
+    </div>
+    <div class="rail-g">
+      <div class="rail-h">II · Inside one network</div>
+        <a href="#s07"><span>07</span>The two interior styles</a>
+        <a href="#s08"><span>08</span>Bookkeeping</a>
+        <a href="#s09"><span>09</span>Inside one router</a>
+        <a href="#s10"><span>10</span>Quick reference</a>
+    </div>
+    <div class="rail-g">
+      <div class="rail-h">III · One wire, many networks</div>
+        <a href="#s11"><span>11</span>VLAN</a>
+        <a href="#s12"><span>12</span>VXLAN &amp; EVPN</a>
+    </div>
+    <div class="rail-g">
+      <div class="rail-h">IV · When the network becomes software</div>
+        <a href="#s13"><span>13</span>Virtual Ethernet</a>
+        <a href="#s14"><span>14</span>Network namespaces</a>
+        <a href="#s15"><span>15</span>VRF on Linux</a>
+        <a href="#s16"><span>16</span>Identity, not address</a>
+    </div>
+    <div class="rail-g">
+        <a href="#coda"><span>—</span>Coda · one idea, five times</a>
+    </div>
+</nav>
+
 <div class="wrap">
 
-<header class="hero">
+<header class="hero" id="top">
   <div class="eyebrow">A networking guide · from the WAN down to the kernel</div>
   <h1>Packets, paths<br>and labels</h1>
   <p class="lede">No router knows the whole internet. Every packet you send is handed between networks that don’t trust each other — and at the far end, between two stacks on one machine joined by nothing but a pointer. This guide works downward through both.</p>
@@ -2010,5 +2066,37 @@ $ ip rule show
 </footer>
 
 </div>
+<script>
+(function(){
+  var rail = document.querySelector('.rail');
+  if (!rail) return;
+  var secs = [].slice.call(document.querySelectorAll('section[id]'));
+  var links = {};
+  secs.forEach(function(sec){
+    var a = rail.querySelector('a[href="#' + sec.id + '"]');
+    if (a) links[sec.id] = a;
+  });
+  var active = null, ticking = false;
+  function spy(){
+    ticking = false;
+    var cur = secs[0];
+    for (var i = 0; i < secs.length; i++){
+      if (secs[i].getBoundingClientRect().top <= 140) cur = secs[i];
+    }
+    var a = links[cur.id];
+    if (!a || a === active) return;
+    if (active) active.classList.remove('on');
+    a.classList.add('on');
+    active = a;
+    if (!rail.offsetHeight) return;
+    var r = rail.getBoundingClientRect(), t = a.getBoundingClientRect();
+    if (t.top < r.top + 8 || t.bottom > r.bottom - 8) rail.scrollTop += (t.top - r.top) - r.height / 2;
+  }
+  function onScroll(){ if (!ticking){ ticking = true; requestAnimationFrame(spy); } }
+  addEventListener('scroll', onScroll, { passive: true });
+  addEventListener('resize', onScroll);
+  spy();
+})();
+</script>
 </body>
 </html>
