@@ -114,6 +114,14 @@ section > details[open] > summary::after{transform:translateY(-25%) rotate(-135d
 section > details > summary:hover::after{border-color:var(--ink);}
 section > details > summary:focus-visible{outline:2px solid var(--ink);outline-offset:6px;border-radius:4px;}
 .sec-body{display:flex;flex-direction:column;gap:22px;padding-top:9px;}
+.demo{display:flex;flex-direction:column;gap:16px;}
+.demo-controls{display:flex;flex-wrap:wrap;align-items:center;gap:14px;}
+.demo-btn{font-family:var(--mono);font-size:.82rem;font-weight:500;background:var(--ink);color:var(--paper);border:0;border-radius:999px;padding:10px 20px;cursor:pointer;}
+.demo-btn:hover{opacity:.86;}
+.demo-btn:focus-visible{outline:2px solid var(--ink);outline-offset:3px;}
+.demo-btn.ghost{background:none;color:var(--ink-soft);border:1px solid var(--rule);}
+.demo-btn.ghost:hover{color:var(--ink);opacity:1;}
+.demo-round{font-family:var(--mono);font-size:.82rem;color:var(--ink-soft);font-variant-numeric:tabular-nums;}
 .foldall{font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;color:var(--ink-soft);background:none;border:1px solid var(--rule);border-radius:999px;padding:7px 15px;cursor:pointer;align-self:flex-start;}
 .foldall:hover{color:var(--ink);border-color:var(--ink-soft);}
 .foldall:focus-visible{outline:2px solid var(--ink);outline-offset:3px;}
@@ -1151,6 +1159,84 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
     </svg>
     <figcaption>The same network, two philosophies. Distance vector floods <b>conclusions</b> one hop at a time; link state floods <b>observations</b> everywhere and lets each router draw its own conclusion.</figcaption>
   </figure>
+
+  <div class="demo">
+    <figure class="wide">
+      <svg viewBox="0 0 1040 360" role="img" aria-label="The same five-router chain converging under distance vector on the left and link state on the right, stepped one round at a time, with an elapsed-time readout for each.">
+        <line x1="520" y1="24" x2="520" y2="336" stroke="var(--rule)" stroke-width="1.5" stroke-dasharray="5 6"/>
+        <g class="dv">
+          <text class="s-t" x="40" y="42" fill="currentColor" style="letter-spacing:.12em">DISTANCE VECTOR</text>
+          <text class="s-ts" x="40" y="62">cost to E, as each router believes it</text>
+          <line class="s-link" x1="79" y1="150" x2="146" y2="150" style="opacity:1"/>
+          <line class="s-link" x1="184" y1="150" x2="251" y2="150" style="opacity:1"/>
+          <line class="s-link" x1="289" y1="150" x2="356" y2="150" style="opacity:1"/>
+          <line class="s-link" x1="394" y1="150" x2="461" y2="150" style="opacity:1"/>
+          <circle class="s-node" cx="60" cy="150" r="19"/>
+          <text class="s-t" x="60" y="156" text-anchor="middle">A</text>
+          <rect id="dvbox0" class="s-box" x="27" y="180" width="66" height="26" rx="6"/>
+          <text id="dv0" class="s-ts" x="60" y="198" text-anchor="middle">?</text>
+          <circle class="s-node" cx="165" cy="150" r="19"/>
+          <text class="s-t" x="165" y="156" text-anchor="middle">B</text>
+          <rect id="dvbox1" class="s-box" x="132" y="180" width="66" height="26" rx="6"/>
+          <text id="dv1" class="s-ts" x="165" y="198" text-anchor="middle">?</text>
+          <circle class="s-node" cx="270" cy="150" r="19"/>
+          <text class="s-t" x="270" y="156" text-anchor="middle">C</text>
+          <rect id="dvbox2" class="s-box" x="237" y="180" width="66" height="26" rx="6"/>
+          <text id="dv2" class="s-ts" x="270" y="198" text-anchor="middle">?</text>
+          <circle class="s-node" cx="375" cy="150" r="19"/>
+          <text class="s-t" x="375" y="156" text-anchor="middle">D</text>
+          <rect id="dvbox3" class="s-box" x="342" y="180" width="66" height="26" rx="6"/>
+          <text id="dv3" class="s-ts" x="375" y="198" text-anchor="middle">?</text>
+          <circle class="s-node" cx="480" cy="150" r="19"/>
+          <text class="s-t" x="480" y="156" text-anchor="middle">E</text>
+          <rect id="dvbox4" class="s-box" x="447" y="180" width="66" height="26" rx="6"/>
+          <text id="dv4" class="s-ts" x="480" y="198" text-anchor="middle">?</text>
+          <text id="dvNote1" class="s-ts" x="40" y="252">D is directly connected to E, so it already knows.</text>
+          <text id="dvNote2" class="s-ts" x="40" y="270">Nobody else has heard of E at all.</text>
+          <text class="s-ts" x="40" y="312">elapsed</text>
+          <text id="dvClock" class="s-t" x="40" y="334" fill="currentColor">0 s</text>
+        </g>
+        <g class="ls">
+          <text class="s-t" x="575" y="42" fill="currentColor" style="letter-spacing:.12em">LINK STATE</text>
+          <text class="s-ts" x="575" y="62">LSAs held, out of the five in the network</text>
+          <line class="s-link" x1="614" y1="150" x2="679" y2="150" style="opacity:1"/>
+          <line class="s-link" x1="717" y1="150" x2="782" y2="150" style="opacity:1"/>
+          <line class="s-link" x1="820" y1="150" x2="885" y2="150" style="opacity:1"/>
+          <line class="s-link" x1="923" y1="150" x2="988" y2="150" style="opacity:1"/>
+          <circle class="s-node" cx="595" cy="150" r="19"/>
+          <text class="s-t" x="595" y="156" text-anchor="middle">A</text>
+          <rect id="lsbox0" class="s-box" x="562" y="180" width="66" height="26" rx="6"/>
+          <text id="ls0" class="s-ts" x="595" y="198" text-anchor="middle">?</text>
+          <circle class="s-node" cx="698" cy="150" r="19"/>
+          <text class="s-t" x="698" y="156" text-anchor="middle">B</text>
+          <rect id="lsbox1" class="s-box" x="665" y="180" width="66" height="26" rx="6"/>
+          <text id="ls1" class="s-ts" x="698" y="198" text-anchor="middle">?</text>
+          <circle class="s-node" cx="801" cy="150" r="19"/>
+          <text class="s-t" x="801" y="156" text-anchor="middle">C</text>
+          <rect id="lsbox2" class="s-box" x="768" y="180" width="66" height="26" rx="6"/>
+          <text id="ls2" class="s-ts" x="801" y="198" text-anchor="middle">?</text>
+          <circle class="s-node" cx="904" cy="150" r="19"/>
+          <text class="s-t" x="904" y="156" text-anchor="middle">D</text>
+          <rect id="lsbox3" class="s-box" x="871" y="180" width="66" height="26" rx="6"/>
+          <text id="ls3" class="s-ts" x="904" y="198" text-anchor="middle">?</text>
+          <circle class="s-node" cx="1007" cy="150" r="19"/>
+          <text class="s-t" x="1007" y="156" text-anchor="middle">E</text>
+          <rect id="lsbox4" class="s-box" x="974" y="180" width="66" height="26" rx="6"/>
+          <text id="ls4" class="s-ts" x="1007" y="198" text-anchor="middle">?</text>
+          <text id="lsNote1" class="s-ts" x="575" y="252">Every router originates one LSA describing its own links.</text>
+          <text id="lsNote2" class="s-ts" x="575" y="270">So far each holds only its own.</text>
+          <text class="s-ts" x="575" y="312">elapsed</text>
+          <text id="lsClock" class="s-t" x="575" y="334" fill="currentColor">0 ms</text>
+        </g>
+      </svg>
+      <figcaption>Five routers in a line, every link costing 1. <b>Same topology, same four rounds, same number of hops</b> — information cannot outrun the wire in either scheme. What differs is the clock, and what each router is left holding. RIP's timer is the worst case; triggered updates shorten it, but the hop-by-hop crawl remains.</figcaption>
+    </figure>
+    <div class="demo-controls">
+      <button class="demo-btn" id="demoNext" type="button">Next round</button>
+      <button class="demo-btn ghost" id="demoReset" type="button">Reset</button>
+      <span class="demo-round" id="demoRound">Round 0 of 4</span>
+    </div>
+  </div>
 
   <div class="duo">
     <div class="card dvc">
@@ -2210,6 +2296,52 @@ $ ip rule show
   addEventListener('scroll', onScroll, { passive: true });
   addEventListener('resize', onScroll);
   spy();
+})();
+(function(){
+  var next = document.getElementById('demoNext');
+  if (!next) return;
+  var DV = [['?','?','?','1','dest'],['?','?','2','1','dest'],['?','3','2','1','dest'],
+            ['4','3','2','1','dest'],['4','3','2','1','dest']];
+  var LS = [['1/5','1/5','1/5','1/5','1/5'],['2/5','3/5','3/5','3/5','2/5'],
+            ['3/5','4/5','5/5','4/5','3/5'],['4/5','5/5','5/5','5/5','4/5'],
+            ['5/5','5/5','5/5','5/5','5/5']];
+  var DVC = ['0 s','30 s','60 s','90 s','120 s'];
+  var LSC = ['0 ms','~1 ms','~2 ms','~3 ms','~4 ms'];
+  var DVN = [
+    ['D is directly connected to E, so it already knows.','Nobody else has heard of E at all.'],
+    ['D sends its whole table. C adds its own link: 1 + 1 = 2.','A and B still know nothing.'],
+    ['C sends its table. B records 3.','The knowledge crawls exactly one hop per round.'],
+    ['B sends its table. A records 4. Converged.','A holds one number and one arrow.'],
+    ['Converged — and A cannot answer a single question','about the topology it is routing across.']];
+  var LSN = [
+    ['Every router originates one LSA describing its own links.','So far each holds only its own.'],
+    ['LSAs flood outward unchanged, and are acknowledged.','Neighbours now hold three of the five.'],
+    ['C, in the middle, already has the complete database.','It runs SPF once and has every destination at once.'],
+    ['The flood reaches the far ends of the chain.',''],
+    ['Every router holds the same five LSAs.','Identical databases, each computed independently.']];
+  var step = 0;
+  function paint(){
+    for (var i = 0; i < 5; i++){
+      var dChanged = step > 0 && DV[step][i] !== DV[step-1][i];
+      var lChanged = step > 0 && LS[step][i] !== LS[step-1][i];
+      document.getElementById('dv' + i).textContent = DV[step][i];
+      document.getElementById('ls' + i).textContent = LS[step][i];
+      document.getElementById('dvbox' + i).setAttribute('fill', dChanged ? 'var(--dv-wash)' : 'var(--surface)');
+      document.getElementById('lsbox' + i).setAttribute('fill', lChanged ? 'var(--ls-wash)' : 'var(--surface)');
+    }
+    document.getElementById('dvClock').textContent = DVC[step];
+    document.getElementById('lsClock').textContent = LSC[step];
+    document.getElementById('dvNote1').textContent = DVN[step][0];
+    document.getElementById('dvNote2').textContent = DVN[step][1];
+    document.getElementById('lsNote1').textContent = LSN[step][0];
+    document.getElementById('lsNote2').textContent = LSN[step][1];
+    document.getElementById('demoRound').textContent = 'Round ' + step + ' of 4';
+    next.disabled = step === 4;
+    next.style.opacity = step === 4 ? '.45' : '';
+  }
+  next.addEventListener('click', function(){ if (step < 4){ step++; paint(); } });
+  document.getElementById('demoReset').addEventListener('click', function(){ step = 0; paint(); });
+  paint();
 })();
 </script>
 </body>
