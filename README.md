@@ -20,7 +20,7 @@ Every diagram is hand-authored inline SVG. The only external request is to Googl
 | **II · Inside one network** | 07 Distance vector vs link state · 08 Bookkeeping · 09 Inside one router · 10 Quick reference |
 | **III · One wire, many networks** | 11 VLAN · 12 VXLAN · 13 EVPN control plane |
 | **IV · When the network becomes software** | 14 Virtual Ethernet · 15 Network namespaces · 16 VRF on Linux · 17 Identity, not address |
-| **V · A datacentre, end to end** | 18 A neocloud, built — 128 GPU nodes, 16 storage nodes, fifteen racks, four fabrics |
+| **V · A datacentre, end to end** | 18 A neocloud, built — 64 GPU nodes, 8 storage nodes, eleven racks, four fabrics |
 | **Coda** | One idea, five times |
 
 The through-line: give each tenant its own table, and make the identifier travel with the
