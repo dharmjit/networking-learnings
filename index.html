@@ -114,6 +114,20 @@ section > details[open] > summary::after{transform:translateY(-25%) rotate(-135d
 section > details > summary:hover::after{border-color:var(--ink);}
 section > details > summary:focus-visible{outline:2px solid var(--ink);outline-offset:6px;border-radius:4px;}
 .sec-body{display:flex;flex-direction:column;gap:22px;padding-top:9px;}
+.seq{display:flex;justify-content:space-between;gap:24px;border-top:1px solid var(--rule);padding-top:18px;margin-top:6px;}
+.seq a{display:flex;flex-direction:column;gap:3px;text-decoration:none;color:var(--ink);font-size:.92rem;max-width:47%;}
+.seq a span{font-family:var(--mono);font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);}
+.seq a:hover span{color:var(--ink);}
+.seq-next{margin-left:auto;text-align:right;align-items:flex-end;}
+.g{border-bottom:1px dotted var(--ink-soft);cursor:help;position:relative;font-style:normal;}
+.g::after{content:attr(data-def);position:absolute;left:50%;bottom:calc(100% + 11px);transform:translateX(-50%);width:290px;padding:11px 14px;background:var(--ink);color:var(--paper);font-family:var(--sans);font-size:.8rem;font-weight:400;line-height:1.45;text-align:left;border-radius:8px;opacity:0;visibility:hidden;transition:opacity .14s ease;z-index:30;pointer-events:none;}
+.g::before{content:"";position:absolute;left:50%;bottom:calc(100% + 5px);transform:translateX(-50%);border:6px solid transparent;border-top-color:var(--ink);opacity:0;visibility:hidden;transition:opacity .14s ease;z-index:30;pointer-events:none;}
+.g:hover::after,.g:hover::before,.g:focus-visible::after,.g:focus-visible::before{opacity:1;visibility:visible;}
+.g:focus-visible{outline:2px solid var(--ink);outline-offset:2px;border-radius:2px;}
+.gloss{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px 32px;margin:0;}
+.gloss > div{display:flex;flex-direction:column;gap:4px;}
+.gloss dt{font-family:var(--mono);font-weight:500;font-size:.92rem;}
+.gloss dd{margin:0;font-size:.92rem;line-height:1.5;color:var(--ink-soft);}
 .demo{display:flex;flex-direction:column;gap:16px;}
 .demo-controls{display:flex;flex-wrap:wrap;align-items:center;gap:14px;}
 .demo-btn{font-family:var(--mono);font-size:.82rem;font-weight:500;background:var(--ink);color:var(--paper);border:0;border-radius:999px;padding:10px 20px;cursor:pointer;}
@@ -321,6 +335,7 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
     </div>
     <div class="rail-g">
         <a href="#coda"><span>—</span>Coda · one idea, five times</a>
+        <a href="#glossary"><span>—</span>Glossary</a>
     </div>
   <button class="foldall" type="button">Collapse all</button>
 </nav>
@@ -412,6 +427,9 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
   </div>
 
   <div class="note"><b>The pattern worth noticing:</b> nothing was ever replaced. RIP is still in the tree because it shipped with Unix; IS-IS runs the carrier core because it was built for a protocol nobody uses; BGP does jobs its name forbids. Each layer in this guide is a workaround for the layer beneath it that turned out to be permanent.</div>
+      <nav class="seq">
+        <a class="seq-next" href="#s01"><span>Next</span>01 — The shape of it</a>
+      </nav>
     </div>
   </details>
 </section>
@@ -512,6 +530,10 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
       </ul>
     </div>
   </div>
+      <nav class="seq">
+        <a class="seq-prev" href="#s00"><span>Previous</span>Origins</a>
+        <a class="seq-next" href="#s02"><span>Next</span>02 — The family tree</a>
+      </nav>
     </div>
   </details>
 </section>
@@ -570,6 +592,10 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
     </svg>
     <figcaption>“Gateway protocol” is about <b>where</b> a protocol runs; “distance vector / link state / path vector” is about <b>how</b> it computes. EIGRP is a distance vector protocol with the reflexes of a link state one; BGP is a distance vector protocol that carries the whole path instead of just a number.</figcaption>
   </figure>
+      <nav class="seq">
+        <a class="seq-prev" href="#s01"><span>Previous</span>01 — The shape of it</a>
+        <a class="seq-next" href="#s03"><span>Next</span>03 — BGP, the exterior one</a>
+      </nav>
     </div>
   </details>
 </section>
@@ -739,6 +765,10 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
   </div>
 
   <div class="note"><b>Read the best-path order again:</b> path length is only step two, and it is measured in networks crossed, not milliseconds. A route through four small ASes can beat one through two huge ones. BGP was never trying to be fast — it was trying to be <em>agreeable</em>.</div>
+      <nav class="seq">
+        <a class="seq-prev" href="#s02"><span>Previous</span>02 — The family tree</a>
+        <a class="seq-next" href="#s04"><span>Next</span>04 — MPLS</a>
+      </nav>
     </div>
   </details>
 </section>
@@ -838,6 +868,10 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
   </div>
 
   <div class="note"><b>The common myth:</b> that MPLS exists because IP lookups were slow. That was true in 1997; today silicon does longest-prefix match at line rate. MPLS survived because a label can mean something an IP address cannot — <em>this customer</em>, <em>this engineered path</em>, <em>this backup tunnel</em>.</div>
+      <nav class="seq">
+        <a class="seq-prev" href="#s03"><span>Previous</span>03 — BGP, the exterior one</a>
+        <a class="seq-next" href="#s05"><span>Next</span>05 — One address, many tenants</a>
+      </nav>
     </div>
   </details>
 </section>
@@ -941,6 +975,10 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
   </div>
 
   <div class="note"><b>The catch:</b> this buys isolation, not interoperability. Blue’s <code>10.1.1.1</code> and red’s still cannot talk to each other — joining them needs NAT or a shared-services VRF with non-overlapping addressing. Overlap is only free while the two tenants stay strangers. The same shape turns up in <a href="#s12" style="color:inherit"><em>VXLAN/EVPN</em></a>, where the VNI plays the VPN label’s part and the RD/RT model is borrowed wholesale: the tenant identifier has to travel <b>with</b> the packet, because the address stopped being unique.</div>
+      <nav class="seq">
+        <a class="seq-prev" href="#s04"><span>Previous</span>04 — MPLS</a>
+        <a class="seq-next" href="#s06"><span>Next</span>06 — Sessions all the way down</a>
+      </nav>
     </div>
   </details>
 </section>
@@ -1083,6 +1121,10 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
   </div>
 
   <div class="note"><b>Count them on one PE in a modest network:</b> four IGP adjacencies, four LDP sessions, four BFD sessions, two iBGP sessions to route reflectors — fourteen conversations, each with its own timers, its own liveness detection and its own opinion about whether the neighbour is up. <em>iBGP</em> is why the reflectors exist: a full mesh of <em>n</em> PEs needs <em>n</em>(<em>n</em>−1)/2 sessions, which is 4,950 at a hundred PEs. And every one of these is a session you can forget to configure on exactly one side.</div>
+      <nav class="seq">
+        <a class="seq-prev" href="#s05"><span>Previous</span>05 — One address, many tenants</a>
+        <a class="seq-next" href="#s07"><span>Next</span>07 — The two interior styles</a>
+      </nav>
     </div>
   </details>
 </section>
@@ -1278,6 +1320,10 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
       </tbody>
     </table>
   </div>
+      <nav class="seq">
+        <a class="seq-prev" href="#s06"><span>Previous</span>06 — Sessions all the way down</a>
+        <a class="seq-next" href="#s08"><span>Next</span>08 — Bookkeeping</a>
+      </nav>
     </div>
   </details>
 </section>
@@ -1425,6 +1471,10 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
   </div>
 
   <div class="note"><b>The pattern:</b> the older protocols are <em>periodic</em> — they re-send everything on a timer, and silence means death. Everything designed after 1990 is <em>event-driven</em> — send once, acknowledge, then say nothing until something actually changes, and detect failure with a separate, much faster hello. That shift is most of why convergence went from minutes to milliseconds.</div>
+      <nav class="seq">
+        <a class="seq-prev" href="#s07"><span>Previous</span>07 — The two interior styles</a>
+        <a class="seq-next" href="#s09"><span>Next</span>09 — Inside one router</a>
+      </nav>
     </div>
   </details>
 </section>
@@ -1467,6 +1517,10 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
       </div>
     </div>
   </div>
+      <nav class="seq">
+        <a class="seq-prev" href="#s08"><span>Previous</span>08 — Bookkeeping</a>
+        <a class="seq-next" href="#s10"><span>Next</span>10 — Quick reference</a>
+      </nav>
     </div>
   </details>
 </section>
@@ -1529,6 +1583,10 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
   </div>
 
   <p class="body">Two of these have outlived their category. <em>IS-IS</em> won the carrier core because it doesn’t ride on IP and can carry new address families without a new protocol version. <em>BGP</em> escaped the border entirely — it now distributes VPN routes, EVPN MAC addresses and data-centre fabrics <em>inside</em> networks, doing a job its name says it shouldn’t.</p>
+      <nav class="seq">
+        <a class="seq-prev" href="#s09"><span>Previous</span>09 — Inside one router</a>
+        <a class="seq-next" href="#s11"><span>Next</span>11 — VLAN</a>
+      </nav>
     </div>
   </details>
 </section>
@@ -1637,6 +1695,10 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
       </ul>
     </div>
   </div>
+      <nav class="seq">
+        <a class="seq-prev" href="#s10"><span>Previous</span>10 — Quick reference</a>
+        <a class="seq-next" href="#s12"><span>Next</span>12 — VXLAN</a>
+      </nav>
     </div>
   </details>
 </section>
@@ -1750,6 +1812,10 @@ $ bridge fdb show dev vxlan0
   </div>
 
   <div class="note"><b>Read this next to section 05 and it is the same architecture twice.</b> The VNI is the VPN label; the VTEP is the PE; the routed fabric is the P core that knows nothing about tenants; MP-BGP distributes membership in both. MPLS built it for carriers with label switching in the middle; VXLAN rebuilt it for datacentres with plain IP in the middle, because every device already knew how to forward that. <em>Give each tenant its own table, and make the identifier travel with the packet</em> — that is the whole idea, at every layer this guide visits.</div>
+      <nav class="seq">
+        <a class="seq-prev" href="#s11"><span>Previous</span>11 — VLAN</a>
+        <a class="seq-next" href="#s13"><span>Next</span>13 — EVPN control plane</a>
+      </nav>
     </div>
   </details>
 </section>
@@ -1857,6 +1923,10 @@ $ bridge fdb show dev vxlan0
   </div>
 
   <div class="note"><b>Three things that bite, in rough order of how long they take to find.</b> A route reflector holds no VRF for your tenants, so RT import finds no match and the default behaviour on many platforms is to <em>discard</em> the route — silently breaking the overlay until route-target filtering is disabled on the RRs. Route distinguishers should stay auto-derived per switch: that is what lets a reflector keep several paths to one prefix from different leaves, and pinning a single RD across leaves collapses your ECMP at the reflector. And the underlay MTU must carry the tenant MTU plus the encapsulation, or you get the familiar shape — pings fine, large transfers vanish.</div>
+      <nav class="seq">
+        <a class="seq-prev" href="#s12"><span>Previous</span>12 — VXLAN</a>
+        <a class="seq-next" href="#s14"><span>Next</span>14 — Virtual Ethernet</a>
+      </nav>
     </div>
   </details>
 </section>
@@ -1975,6 +2045,10 @@ $ ip -d link show | grep -A1 '^12:'
   </div>
 
   <div class="note"><b>On a GPU node this path is the slow lane on purpose.</b> RoCE traffic never enters it: the verbs datapath bypasses the kernel stack completely, which is why an RDMA pod gets an <em>SR-IOV VF alongside</em> its veth rather than instead of it. The veth carries control traffic, health checks and anything that needs a Service IP; the fabric carries the tensors, and the two never meet in the stack.</div>
+      <nav class="seq">
+        <a class="seq-prev" href="#s13"><span>Previous</span>13 — EVPN control plane</a>
+        <a class="seq-next" href="#s15"><span>Next</span>15 — Network namespaces</a>
+      </nav>
     </div>
   </details>
 </section>
@@ -2072,6 +2146,10 @@ default via 10.244.3.1 dev eth0
       </ul>
     </div>
   </div>
+      <nav class="seq">
+        <a class="seq-prev" href="#s14"><span>Previous</span>14 — Virtual Ethernet</a>
+        <a class="seq-next" href="#s16"><span>Next</span>16 — VRF on Linux</a>
+      </nav>
     </div>
   </details>
 </section>
@@ -2172,6 +2250,10 @@ $ ip rule show
       </ul>
     </div>
   </div>
+      <nav class="seq">
+        <a class="seq-prev" href="#s15"><span>Previous</span>15 — Network namespaces</a>
+        <a class="seq-next" href="#s17"><span>Next</span>17 — Identity, not address</a>
+      </nav>
     </div>
   </details>
 </section>
@@ -2248,6 +2330,10 @@ $ ip rule show
       </ul>
     </div>
   </div>
+      <nav class="seq">
+        <a class="seq-prev" href="#s16"><span>Previous</span>16 — VRF on Linux</a>
+        <a class="seq-next" href="#coda"><span>Next</span>Coda — one idea, five times</a>
+      </nav>
     </div>
   </details>
 </section>
@@ -2328,6 +2414,51 @@ $ ip rule show
   </figure>
 
   <div class="note"><b>So the guide’s own refrain is wrong, and usefully so.</b> “Make the identifier travel with the packet” holds for the first three columns and breaks twice at the bottom: a namespace puts nothing on the wire, and identity-based policy resolves the tenant <em>after</em> the packet has already arrived. The honest version is one level up — <em>every scheme picks somewhere to keep the tenant identifier, and that choice decides whether isolation is a property of the structure or a property of the configuration.</em> MPLS chose the structure and pays for it in protocols. Kubernetes chose the configuration and pays for it in blast radius. Neither is the mistake; picking one without knowing which you picked is.</div>
+      <nav class="seq">
+        <a class="seq-prev" href="#s17"><span>Previous</span>17 — Identity, not address</a>
+        <a class="seq-next" href="#glossary"><span>Next</span>Glossary</a>
+      </nav>
+    </div>
+  </details>
+</section>
+
+<section id="glossary">
+  <details open>
+    <summary>
+      <div class="eyebrow">Reference</div>
+      <h2>Glossary</h2>
+    </summary>
+    <div class="sec-body">
+      <p class="lede">Every term the guide leans on more than once. Each also appears as a dotted underline at its first use in any section — hover it there instead of coming here.</p>
+      <dl class="gloss">
+        <div><dt>Adj-RIB-In</dt><dd>What a BGP peer actually sent, stored untouched before any import policy runs, so policy can be re-applied without asking again.</dd></div>
+        <div><dt>AS_PATH</dt><dd>The list of autonomous systems a BGP route has crossed. Both the loop check — see your own number, discard — and the distance metric.</dd></div>
+        <div><dt>BFD</dt><dd>Bidirectional Forwarding Detection. A bare sub-second heartbeat that other protocols subscribe to instead of running their own slow timers.</dd></div>
+        <div><dt>DUAL</dt><dd>EIGRP's Diffusing Update Algorithm. Keeps a provably loop-free backup so failover needs no conversation with anyone.</dd></div>
+        <div><dt>ECMP</dt><dd>Equal Cost Multi-Path — spreading traffic over several equally good paths.</dd></div>
+        <div><dt>FEC</dt><dd>Forwarding Equivalence Class: a set of packets a router will treat identically. An MPLS label is the name of one.</dd></div>
+        <div><dt>FIB</dt><dd>The forwarding table, compiled into hardware from the RIB. What actually moves packets, consulting no protocol.</dd></div>
+        <div><dt>IRB</dt><dd>Integrated Routing and Bridging — doing both in one device. Symmetric IRB routes into an L3VNI; asymmetric uses the destination subnet's L2VNI.</dd></div>
+        <div><dt>L2VNI</dt><dd>One per subnet — the bridge domain. Traffic within a subnet is encapsulated in it.</dd></div>
+        <div><dt>l3mdev</dt><dd>The Linux VRF device. Enslave an interface to it and that interface's traffic resolves in the master's routing table.</dd></div>
+        <div><dt>L3VNI</dt><dd>One per VRF. Traffic routed between subnets is encapsulated in it, and the egress leaf does its own lookup on arrival.</dd></div>
+        <div><dt>LDP</dt><dd>Label Distribution Protocol. Hands out a label for every prefix already in the IGP, following its shortest path.</dd></div>
+        <div><dt>LER</dt><dd>Label Edge Router. Classifies a packet into a FEC once, at the edge, and pushes the first label.</dd></div>
+        <div><dt>Loc-RIB</dt><dd>What a BGP speaker believes after import policy and best-path selection: one winner per prefix.</dd></div>
+        <div><dt>LSA</dt><dd>Link State Advertisement. One router's description of its own links, flooded unchanged and acknowledged.</dd></div>
+        <div><dt>LSDB</dt><dd>The link-state database: every LSA in an area, byte-identical on every router in it.</dd></div>
+        <div><dt>LSR</dt><dd>Label Switch Router. Swaps labels without ever looking at the IP header.</dd></div>
+        <div><dt>netns</dt><dd>A network namespace: a complete, independent copy of the network stack — devices, tables, netfilter, sysctls and port space.</dd></div>
+        <div><dt>PHP</dt><dd>Penultimate Hop Popping. The second-to-last router removes the label so the egress does one lookup instead of two.</dd></div>
+        <div><dt>RIB</dt><dd>The routing table: the control plane's chosen route per prefix, one winner across all protocols.</dd></div>
+        <div><dt>SPF</dt><dd>Shortest Path First — Dijkstra's algorithm, run over the LSDB, rooted at the router running it.</dd></div>
+        <div><dt>veth</dt><dd>A pair of devices that are each other's transmit path. Not a cable — a pointer.</dd></div>
+        <div><dt>VNI</dt><dd>VXLAN Network Identifier: 24 bits naming a segment, so 16.7 million of them against a VLAN's 4094.</dd></div>
+        <div><dt>VTEP</dt><dd>VXLAN Tunnel Endpoint — where encapsulation starts and ends. A switch, a host, or a DPU.</dd></div>
+      </dl>
+      <nav class="seq">
+        <a class="seq-prev" href="#coda"><span>Previous</span>Coda — one idea, five times</a>
+      </nav>
     </div>
   </details>
 </section>
@@ -2451,6 +2582,40 @@ $ ip rule show
   document.getElementById('demoReset').addEventListener('click', function(){ step = 0; paint(); });
   paint();
 })();
+  var GLOSS = {"AS_PATH": "The list of autonomous systems a BGP route has crossed. Both the loop check — see your own number, discard — and the distance metric.", "Adj-RIB-In": "What a BGP peer actually sent, stored untouched before any import policy runs, so policy can be re-applied without asking again.", "Loc-RIB": "What a BGP speaker believes after import policy and best-path selection: one winner per prefix.", "LSDB": "The link-state database: every LSA in an area, byte-identical on every router in it.", "LSA": "Link State Advertisement. One router's description of its own links, flooded unchanged and acknowledged.", "SPF": "Shortest Path First — Dijkstra's algorithm, run over the LSDB, rooted at the router running it.", "DUAL": "EIGRP's Diffusing Update Algorithm. Keeps a provably loop-free backup so failover needs no conversation with anyone.", "FEC": "Forwarding Equivalence Class: a set of packets a router will treat identically. An MPLS label is the name of one.", "LER": "Label Edge Router. Classifies a packet into a FEC once, at the edge, and pushes the first label.", "LSR": "Label Switch Router. Swaps labels without ever looking at the IP header.", "PHP": "Penultimate Hop Popping. The second-to-last router removes the label so the egress does one lookup instead of two.", "LDP": "Label Distribution Protocol. Hands out a label for every prefix already in the IGP, following its shortest path.", "VTEP": "VXLAN Tunnel Endpoint — where encapsulation starts and ends. A switch, a host, or a DPU.", "L3VNI": "One per VRF. Traffic routed between subnets is encapsulated in it, and the egress leaf does its own lookup on arrival.", "L2VNI": "One per subnet — the bridge domain. Traffic within a subnet is encapsulated in it.", "VNI": "VXLAN Network Identifier: 24 bits naming a segment, so 16.7 million of them against a VLAN's 4094.", "IRB": "Integrated Routing and Bridging — doing both in one device. Symmetric IRB routes into an L3VNI; asymmetric uses the destination subnet's L2VNI.", "BFD": "Bidirectional Forwarding Detection. A bare sub-second heartbeat that other protocols subscribe to instead of running their own slow timers.", "ECMP": "Equal Cost Multi-Path — spreading traffic over several equally good paths.", "l3mdev": "The Linux VRF device. Enslave an interface to it and that interface's traffic resolves in the master's routing table.", "netns": "A network namespace: a complete, independent copy of the network stack — devices, tables, netfilter, sysctls and port space.", "veth": "A pair of devices that are each other's transmit path. Not a cable — a pointer.", "RIB": "The routing table: the control plane's chosen route per prefix, one winner across all protocols.", "FIB": "The forwarding table, compiled into hardware from the RIB. What actually moves packets, consulting no protocol."};
+  (function(){
+    var terms = Object.keys(GLOSS).sort(function(a,b){ return b.length - a.length; });
+    var SKIP = /^(CODE|PRE|A|SVG|FIGURE|TABLE|SUMMARY|H2|H3|DFN|BUTTON|NAV|SCRIPT)$/;
+    function skipped(node){
+      for (var q = node.parentNode; q && q !== document.body; q = q.parentNode){
+        if (SKIP.test(q.nodeName)) return true;
+        if (q.classList && q.classList.contains('tablewrap')) return true;
+        if (q.id === 'glossary') return true;
+      }
+      return false;
+    }
+    [].forEach.call(document.querySelectorAll('.sec-body'), function(body){
+      terms.forEach(function(term){
+        var re = new RegExp('\\b' + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b');
+        var walker = document.createTreeWalker(body, NodeFilter.SHOW_TEXT, null);
+        var node;
+        while ((node = walker.nextNode())){
+          if (skipped(node)) continue;
+          var m = re.exec(node.nodeValue);
+          if (!m) continue;
+          var tail = node.splitText(m.index);
+          tail.nodeValue = tail.nodeValue.slice(term.length);
+          var d = document.createElement('dfn');
+          d.className = 'g';
+          d.setAttribute('data-def', GLOSS[term]);
+          d.setAttribute('tabindex', '0');
+          d.textContent = term;
+          tail.parentNode.insertBefore(d, tail);
+          break;
+        }
+      });
+    });
+  })();
 </script>
 </body>
 </html>
