@@ -2393,7 +2393,7 @@ $ ip rule show
 <div class="part">
   <div class="part-n">Part V</div>
   <div class="part-t">A datacentre, end to end</div>
-  <p class="part-d">Everything above, applied once to a real building: 64 GPU nodes, 8 storage nodes, eleven racks, and tenants who must not be able to reach each other.</p>
+  <p class="part-d">Everything above, applied once to a real building: 64 GPU nodes, 8 storage nodes, twelve racks, and tenants who must not be able to reach each other.</p>
 </div>
 
 <section id="s18">
@@ -2405,10 +2405,10 @@ $ ip rule show
     <div class="sec-body">
       <p class="lede">A concrete build, with the arithmetic shown. Numbers are worked from stated assumptions rather than quoted — change an assumption and the shape changes with it.</p>
 
-      <div class="note"><b>The build.</b> <em>64 compute nodes</em>, 8 GPUs apiece — 512 GPUs — plus <em>8 storage nodes</em>, in <em>11 racks</em>. Nodes are treated as one class at HGX density, roughly 15 kW each. Mix in lower-power inference nodes and they pack denser, which shrinks the rack count but leaves every fabric below unchanged.</div>
+      <div class="note"><b>The build.</b> <em>64 compute nodes</em>, 8 GPUs apiece — 512 GPUs — plus <em>8 storage nodes</em>, in <em>12 racks</em>. Nodes are treated as one class at HGX density, roughly 15 kW each. Mix in lower-power inference nodes and they pack denser, which shrinks the rack count but leaves every fabric below unchanged.</div>
 
   <figure class="wide">
-    <svg viewBox="0 0 1040 640" role="img" aria-label="End to end: transit and peering into border routers, firewalls and SoftGates; four separate fabrics — backend, frontend, storage and out-of-band — of which only the frontend reaches the edge; and eleven racks holding 64 compute nodes, 8 storage nodes and the network gear.">
+    <svg viewBox="0 0 1040 660" role="img" aria-label="End to end: transit and peering into border routers, firewalls and SoftGates; four separate fabrics — backend, frontend, storage and out-of-band — of which only the frontend reaches the edge; and twelve racks — every compute and storage rack carrying its own top-of-rack switches, and three network racks holding the spines, rail switches and edge.">
       <rect class="s-box" x="440" y="20" width="160" height="32" rx="6"/>
       <text class="s-ts" x="520" y="41" text-anchor="middle">transit · peering</text>
       <line class="s-flow" x1="520" y1="52" x2="520" y2="72" marker-end="url(#aE2)" style="color:var(--ink-soft)"/>
@@ -2451,11 +2451,11 @@ $ ip rule show
         <rect class="w-ls" x="798" y="200" width="212" height="140" rx="12" stroke="currentColor" stroke-width="1.2"/>
         <text class="s-t" x="816" y="230" fill="currentColor">Out-of-band</text>
         <text class="s-ts" x="816" y="256">BMC / Redfish</text>
-        <text class="s-ts" x="816" y="278">11 ToR + 2 agg</text>
+        <text class="s-ts" x="816" y="278">9 ToR + 2 agg</text>
         <text class="s-ts" x="816" y="300">never routed to a tenant</text>
       </g>
 
-      <line x1="98" y1="384" x2="942" y2="384" stroke="var(--ink-soft)" stroke-width="1.2" opacity=".55"/>
+      <line x1="94" y1="384" x2="946" y2="384" stroke="var(--ink-soft)" stroke-width="1.2" opacity=".55"/>
       <line class="s-flow" x1="145" y1="384" x2="145" y2="346" marker-end="url(#aE2)" style="color:var(--mp)"/>
       <text class="s-ts" x="154" y="372" fill="var(--mp)">8 × 400G</text>
       <line class="s-flow" x1="401" y1="384" x2="401" y2="346" marker-end="url(#aE2)" style="color:var(--pv)"/>
@@ -2465,86 +2465,153 @@ $ ip rule show
       <line class="s-flow" x1="880" y1="384" x2="880" y2="346" marker-end="url(#aE2)" style="color:var(--ls)"/>
       <text class="s-ts" x="889" y="372" fill="var(--ls)">1 × 1G</text>
 
-      <rect class="s-box" x="98" y="400" width="64" height="170" rx="6"/>
-      <line x1="106" y1="432" x2="154" y2="432" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="106" y1="470" x2="154" y2="470" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="106" y1="508" x2="154" y2="508" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="106" y1="546" x2="154" y2="546" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="130" y1="384" x2="130" y2="400" stroke="var(--ink-soft)" stroke-width="1" opacity=".5"/>
-      <rect class="s-box" x="176" y="400" width="64" height="170" rx="6"/>
-      <line x1="184" y1="432" x2="232" y2="432" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="184" y1="470" x2="232" y2="470" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="184" y1="508" x2="232" y2="508" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="184" y1="546" x2="232" y2="546" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="208" y1="384" x2="208" y2="400" stroke="var(--ink-soft)" stroke-width="1" opacity=".5"/>
-      <rect class="s-box" x="254" y="400" width="64" height="170" rx="6"/>
-      <line x1="262" y1="432" x2="310" y2="432" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="262" y1="470" x2="310" y2="470" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="262" y1="508" x2="310" y2="508" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="262" y1="546" x2="310" y2="546" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="286" y1="384" x2="286" y2="400" stroke="var(--ink-soft)" stroke-width="1" opacity=".5"/>
-      <rect class="s-box" x="332" y="400" width="64" height="170" rx="6"/>
-      <line x1="340" y1="432" x2="388" y2="432" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="340" y1="470" x2="388" y2="470" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="340" y1="508" x2="388" y2="508" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="340" y1="546" x2="388" y2="546" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="364" y1="384" x2="364" y2="400" stroke="var(--ink-soft)" stroke-width="1" opacity=".5"/>
-      <rect class="s-box" x="410" y="400" width="64" height="170" rx="6"/>
-      <line x1="418" y1="432" x2="466" y2="432" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="418" y1="470" x2="466" y2="470" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="418" y1="508" x2="466" y2="508" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="418" y1="546" x2="466" y2="546" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="442" y1="384" x2="442" y2="400" stroke="var(--ink-soft)" stroke-width="1" opacity=".5"/>
-      <rect class="s-box" x="488" y="400" width="64" height="170" rx="6"/>
-      <line x1="496" y1="432" x2="544" y2="432" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="496" y1="470" x2="544" y2="470" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="496" y1="508" x2="544" y2="508" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="496" y1="546" x2="544" y2="546" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="520" y1="384" x2="520" y2="400" stroke="var(--ink-soft)" stroke-width="1" opacity=".5"/>
-      <rect class="s-box" x="566" y="400" width="64" height="170" rx="6"/>
-      <line x1="574" y1="432" x2="622" y2="432" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="574" y1="470" x2="622" y2="470" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="574" y1="508" x2="622" y2="508" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="574" y1="546" x2="622" y2="546" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="598" y1="384" x2="598" y2="400" stroke="var(--ink-soft)" stroke-width="1" opacity=".5"/>
-      <rect class="s-box" x="644" y="400" width="64" height="170" rx="6"/>
-      <line x1="652" y1="432" x2="700" y2="432" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="652" y1="470" x2="700" y2="470" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="652" y1="508" x2="700" y2="508" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="652" y1="546" x2="700" y2="546" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="676" y1="384" x2="676" y2="400" stroke="var(--ink-soft)" stroke-width="1" opacity=".5"/>
-      <rect class="s-zone" x="722" y="400" width="64" height="170" rx="6"/>
-      <line x1="730" y1="432" x2="778" y2="432" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="730" y1="470" x2="778" y2="470" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="730" y1="508" x2="778" y2="508" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="730" y1="546" x2="778" y2="546" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="754" y1="384" x2="754" y2="400" stroke="var(--ink-soft)" stroke-width="1" opacity=".5"/>
-      <rect class="s-zone" x="800" y="400" width="64" height="170" rx="6"/>
-      <line x1="808" y1="432" x2="856" y2="432" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="808" y1="470" x2="856" y2="470" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="808" y1="508" x2="856" y2="508" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="808" y1="546" x2="856" y2="546" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="832" y1="384" x2="832" y2="400" stroke="var(--ink-soft)" stroke-width="1" opacity=".5"/>
-      <rect class="s-zone" x="878" y="400" width="64" height="170" rx="6"/>
-      <line x1="886" y1="432" x2="934" y2="432" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="886" y1="470" x2="934" y2="470" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="886" y1="508" x2="934" y2="508" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="886" y1="546" x2="934" y2="546" stroke="var(--rule)" stroke-width="1"/>
-      <line x1="910" y1="384" x2="910" y2="400" stroke="var(--ink-soft)" stroke-width="1" opacity=".5"/>
+      <rect class="s-box" x="94" y="400" width="60" height="170" rx="6"/>
+      <rect class="w-pv" x="100" y="406" width="48" height="11" rx="2"/>
+      <rect class="w-ls" x="100" y="419" width="48" height="9" rx="2"/>
+      <line x1="100" y1="442" x2="148" y2="442" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="100" y1="468" x2="148" y2="468" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="100" y1="494" x2="148" y2="494" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="100" y1="520" x2="148" y2="520" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="100" y1="546" x2="148" y2="546" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="124" y1="384" x2="124" y2="400" stroke="var(--ink-soft)" stroke-width="1" opacity=".5"/>
+      <rect class="s-box" x="166" y="400" width="60" height="170" rx="6"/>
+      <rect class="w-pv" x="172" y="406" width="48" height="11" rx="2"/>
+      <rect class="w-ls" x="172" y="419" width="48" height="9" rx="2"/>
+      <line x1="172" y1="442" x2="220" y2="442" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="172" y1="468" x2="220" y2="468" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="172" y1="494" x2="220" y2="494" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="172" y1="520" x2="220" y2="520" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="172" y1="546" x2="220" y2="546" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="196" y1="384" x2="196" y2="400" stroke="var(--ink-soft)" stroke-width="1" opacity=".5"/>
+      <rect class="s-box" x="238" y="400" width="60" height="170" rx="6"/>
+      <rect class="w-pv" x="244" y="406" width="48" height="11" rx="2"/>
+      <rect class="w-ls" x="244" y="419" width="48" height="9" rx="2"/>
+      <line x1="244" y1="442" x2="292" y2="442" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="244" y1="468" x2="292" y2="468" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="244" y1="494" x2="292" y2="494" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="244" y1="520" x2="292" y2="520" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="244" y1="546" x2="292" y2="546" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="268" y1="384" x2="268" y2="400" stroke="var(--ink-soft)" stroke-width="1" opacity=".5"/>
+      <rect class="s-box" x="310" y="400" width="60" height="170" rx="6"/>
+      <rect class="w-pv" x="316" y="406" width="48" height="11" rx="2"/>
+      <rect class="w-ls" x="316" y="419" width="48" height="9" rx="2"/>
+      <line x1="316" y1="442" x2="364" y2="442" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="316" y1="468" x2="364" y2="468" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="316" y1="494" x2="364" y2="494" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="316" y1="520" x2="364" y2="520" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="316" y1="546" x2="364" y2="546" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="340" y1="384" x2="340" y2="400" stroke="var(--ink-soft)" stroke-width="1" opacity=".5"/>
+      <rect class="s-box" x="382" y="400" width="60" height="170" rx="6"/>
+      <rect class="w-pv" x="388" y="406" width="48" height="11" rx="2"/>
+      <rect class="w-ls" x="388" y="419" width="48" height="9" rx="2"/>
+      <line x1="388" y1="442" x2="436" y2="442" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="388" y1="468" x2="436" y2="468" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="388" y1="494" x2="436" y2="494" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="388" y1="520" x2="436" y2="520" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="388" y1="546" x2="436" y2="546" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="412" y1="384" x2="412" y2="400" stroke="var(--ink-soft)" stroke-width="1" opacity=".5"/>
+      <rect class="s-box" x="454" y="400" width="60" height="170" rx="6"/>
+      <rect class="w-pv" x="460" y="406" width="48" height="11" rx="2"/>
+      <rect class="w-ls" x="460" y="419" width="48" height="9" rx="2"/>
+      <line x1="460" y1="442" x2="508" y2="442" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="460" y1="468" x2="508" y2="468" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="460" y1="494" x2="508" y2="494" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="460" y1="520" x2="508" y2="520" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="460" y1="546" x2="508" y2="546" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="484" y1="384" x2="484" y2="400" stroke="var(--ink-soft)" stroke-width="1" opacity=".5"/>
+      <rect class="s-box" x="526" y="400" width="60" height="170" rx="6"/>
+      <rect class="w-pv" x="532" y="406" width="48" height="11" rx="2"/>
+      <rect class="w-ls" x="532" y="419" width="48" height="9" rx="2"/>
+      <line x1="532" y1="442" x2="580" y2="442" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="532" y1="468" x2="580" y2="468" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="532" y1="494" x2="580" y2="494" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="532" y1="520" x2="580" y2="520" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="532" y1="546" x2="580" y2="546" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="556" y1="384" x2="556" y2="400" stroke="var(--ink-soft)" stroke-width="1" opacity=".5"/>
+      <rect class="s-box" x="598" y="400" width="60" height="170" rx="6"/>
+      <rect class="w-pv" x="604" y="406" width="48" height="11" rx="2"/>
+      <rect class="w-ls" x="604" y="419" width="48" height="9" rx="2"/>
+      <line x1="604" y1="442" x2="652" y2="442" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="604" y1="468" x2="652" y2="468" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="604" y1="494" x2="652" y2="494" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="604" y1="520" x2="652" y2="520" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="604" y1="546" x2="652" y2="546" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="628" y1="384" x2="628" y2="400" stroke="var(--ink-soft)" stroke-width="1" opacity=".5"/>
+      <rect class="s-box" x="670" y="400" width="60" height="170" rx="6"/>
+      <rect class="w-pv" x="676" y="406" width="48" height="11" rx="2"/>
+      <rect class="w-ls" x="676" y="419" width="48" height="9" rx="2"/>
+      <line x1="676" y1="442" x2="724" y2="442" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="676" y1="468" x2="724" y2="468" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="676" y1="494" x2="724" y2="494" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="676" y1="520" x2="724" y2="520" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="676" y1="546" x2="724" y2="546" stroke="var(--rule)" stroke-width="1"/>
+      <line x1="700" y1="384" x2="700" y2="400" stroke="var(--ink-soft)" stroke-width="1" opacity=".5"/>
+      <rect class="s-box" x="742" y="400" width="60" height="170" rx="6"/>
+      <rect class="w-mp" x="748" y="406" width="48" height="26" rx="2"/>
+      <rect class="w-mp" x="748" y="436" width="48" height="26" rx="2"/>
+      <rect class="w-pv" x="748" y="466" width="48" height="20" rx="2"/>
+      <rect class="s-zone" x="748" y="490" width="48" height="20" rx="2"/>
+      <rect class="w-ls" x="748" y="514" width="48" height="16" rx="2"/>
+      <line x1="772" y1="384" x2="772" y2="400" stroke="var(--ink-soft)" stroke-width="1" opacity=".5"/>
+      <rect class="s-box" x="814" y="400" width="60" height="170" rx="6"/>
+      <rect class="w-mp" x="820" y="406" width="48" height="26" rx="2"/>
+      <rect class="w-mp" x="820" y="436" width="48" height="26" rx="2"/>
+      <rect class="w-pv" x="820" y="466" width="48" height="20" rx="2"/>
+      <rect class="s-zone" x="820" y="490" width="48" height="20" rx="2"/>
+      <rect class="w-ls" x="820" y="514" width="48" height="16" rx="2"/>
+      <line x1="844" y1="384" x2="844" y2="400" stroke="var(--ink-soft)" stroke-width="1" opacity=".5"/>
+      <rect class="s-box" x="886" y="400" width="60" height="170" rx="6"/>
+      <rect class="w-mp" x="892" y="406" width="48" height="26" rx="2"/>
+      <rect class="w-mp" x="892" y="436" width="48" height="26" rx="2"/>
+      <rect class="w-pv" x="892" y="466" width="48" height="20" rx="2"/>
+      <rect class="s-zone" x="892" y="490" width="48" height="20" rx="2"/>
+      <rect class="w-ls" x="892" y="514" width="48" height="16" rx="2"/>
+      <line x1="916" y1="384" x2="916" y2="400" stroke="var(--ink-soft)" stroke-width="1" opacity=".5"/>
 
-      <text class="s-ts" x="403" y="592" text-anchor="middle">compute · 8 racks · 64 nodes, 512 GPUs</text>
-      <text class="s-ts" x="403" y="610" text-anchor="middle">8 nodes a rack · ~120 kW · liquid cooled</text>
-      <text class="s-ts" x="754" y="592" text-anchor="middle">storage · 1</text>
-      <text class="s-ts" x="754" y="610" text-anchor="middle">8 nodes</text>
-      <text class="s-ts" x="910" y="592" text-anchor="middle">network · 2</text>
-      <text class="s-ts" x="910" y="610" text-anchor="middle">spines, edge, OOB</text>
+      <text class="s-ts" x="376" y="592" text-anchor="middle">compute · 8 racks · 64 nodes, 512 GPUs</text>
+      <text class="s-ts" x="376" y="610" text-anchor="middle">8 nodes a rack · ~120 kW · liquid cooled</text>
+      <text class="s-ts" x="700" y="592" text-anchor="middle">storage · 1</text>
+      <text class="s-ts" x="700" y="610" text-anchor="middle">8 nodes</text>
+      <text class="s-ts" x="844" y="592" text-anchor="middle">network · 3</text>
+      <text class="s-ts" x="844" y="610" text-anchor="middle">≈ 89U of gear</text>
 
+      <rect class="w-pv" x="94" y="628" width="14" height="11" rx="2"/>
+      <text class="s-ts" x="114" y="638">frontend ToR</text>
+      <rect class="w-ls" x="324" y="628" width="14" height="11" rx="2"/>
+      <text class="s-ts" x="344" y="638">OOB</text>
+      <rect class="w-mp" x="554" y="628" width="14" height="11" rx="2"/>
+      <text class="s-ts" x="574" y="638">rail + spine</text>
+      <rect class="s-zone" x="784" y="628" width="14" height="11" rx="2"/>
+      <text class="s-ts" x="804" y="638">routers · FW · SoftGate</text>
       <defs><marker id="aE2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker></defs>
     </svg>
     <figcaption>Every compute rack feeds <b>four separate fabrics</b>, and only one of them — the frontend — reaches the edge. That is most of the security posture, expressed as cabling rather than rules. The backend carries no tenant identifier at all, and the out-of-band network exists precisely so that a node whose data plane is broken is still reachable.</figcaption>
   </figure>
 
-      <p class="body">Eleven racks: <em>8</em> compute, <em>1</em> storage, <em>2</em> network and edge. Power sets that count — an 8-GPU node draws roughly 15 kW, so eight of them is a 120 kW liquid-cooled rack, near the practical ceiling today. Everything downstream, including how many rails the backend needs, follows from that kilowatt figure.</p>
+      <p class="body">Twelve racks: <em>8</em> compute, <em>1</em> storage, <em>3</em> network and edge. Power sets that count — an 8-GPU node draws roughly 15 kW, so eight of them is a 120 kW liquid-cooled rack, near the practical ceiling today. Everything downstream, including how many rails the backend needs, follows from that kilowatt figure.</p>
+
+
+      <p class="body">Half the switching never reaches those network racks. <b>Thirty-one switches live in the racks they serve</b> — two frontend leaves and one out-of-band switch per rack, plus the storage pair. What has to be central is everything that spans racks, and that is what fills the other three.</p>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>In the network racks</th><th>Count</th><th>U each</th><th>U</th></tr></thead>
+          <tbody>
+            <tr><td class="nm">Backend rail leaves</td><td class="num">8</td><td class="num">2</td><td class="num">16</td></tr>
+            <tr><td class="nm">Backend spines</td><td class="num">8</td><td class="num">2</td><td class="num">16</td></tr>
+            <tr><td class="nm">Frontend spines</td><td class="num">2</td><td class="num">2</td><td class="num">4</td></tr>
+            <tr><td class="nm">OOB aggregation</td><td class="num">2</td><td class="num">1</td><td class="num">2</td></tr>
+            <tr><td class="nm">Border routers</td><td class="num">2</td><td class="num">2</td><td class="num">4</td></tr>
+            <tr><td class="nm">Firewalls</td><td class="num">2</td><td class="num">2</td><td class="num">4</td></tr>
+            <tr><td class="nm">SoftGates</td><td class="num">4</td><td class="num">2</td><td class="num">8</td></tr>
+            <tr><td class="nm">Patch panels</td><td class="num">~15</td><td class="num">1–2</td><td class="num">~25</td></tr>
+            <tr><td class="nm">Cable managers, PDUs, blanking</td><td>—</td><td>—</td><td class="num">~10</td></tr>
+            <tr><td class="nm">Total</td><td class="num">28 devices</td><td>—</td><td class="num">≈ 89U</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="body">Two 42U racks give 84U, so this needs <em>three</em> — and the binding constraint is not the switches but the patching. <b>512 backend fibres converging on eight rail switches</b> is the hard part of rail optimisation, and it is why those switches must be central: each one takes GPU <em>i</em> from every node in the cluster, so none of them can live in a compute rack. Power is comfortable either way — roughly 43 kW total, about 15 kW a rack across three.</p>
 
       <div class="tablewrap">
         <table>
@@ -2553,7 +2620,7 @@ $ ip rule show
             <tr><td class="nm">Backend</td><td class="num">8 × 400G</td><td>8 rail leaves + 8 spines</td><td class="num">1:1</td><td>whole nodes per tenant — or PKeys on InfiniBand</td></tr>
             <tr><td class="nm">Frontend</td><td class="num">2 × 200G</td><td>18 leaves + 2 spines</td><td class="num">3:1</td><td>VPC → VRF, V-Net → L2VNI</td></tr>
             <tr><td class="nm">Storage</td><td class="num">2 × 100G</td><td>2 leaves</td><td class="num">2:1</td><td>its own VRF, exported per tenant</td></tr>
-            <tr><td class="nm">Out-of-band</td><td class="num">1 × 1G</td><td>11 ToR + 2 agg</td><td class="num">n/a</td><td>operator only — never reachable by a tenant</td></tr>
+            <tr><td class="nm">Out-of-band</td><td class="num">1 × 1G</td><td>9 ToR + 2 agg</td><td class="num">n/a</td><td>operator only — never reachable by a tenant</td></tr>
           </tbody>
         </table>
       </div>
