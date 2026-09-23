@@ -6,8 +6,8 @@ segmentation that divides a wire, down to the kernel on a single host.
 **Read it → https://dharmjit.github.io/networking-learnings/**
 
 One self-contained HTML file. No build step, no framework, no dependencies — the only
-script drives the contents rail, section folding, and the convergence
-walk-through in section 07.
+script drives the contents rail, section folding, the glossary tooltips, and
+the convergence walk-through in section 07.
 Every diagram is hand-authored inline SVG. The only external request is to Google Fonts.
 
 ## What's in it
