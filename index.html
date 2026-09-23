@@ -260,7 +260,7 @@ td.num{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--ink
 .part-d{font-size:1.04rem;color:var(--ink-soft);max-width:62ch;}
 .part + section{border-top:0;padding-top:28px;}
 section[id]{scroll-margin-top:72px;}
-.toc{display:grid;grid-template-columns:repeat(4,1fr);gap:22px 30px;border-top:1px solid var(--rule);padding-top:24px;margin-top:14px;}
+.toc{display:grid;grid-template-columns:repeat(5,1fr);gap:22px 30px;border-top:1px solid var(--rule);padding-top:24px;margin-top:14px;}
 .toc-h{font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:11px;}
 .toc ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:7px;}
 .toc li{font-size:.9rem;display:flex;gap:10px;}
@@ -325,10 +325,11 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
     <a href="#s07" data-part="2">Inside one network</a>
     <a href="#s11" data-part="3">One wire, many networks</a>
     <a href="#s14" data-part="4">Network as software</a>
+    <a href="#s18" data-part="5">DC networking</a>
   </nav>
   <nav class="utils">
     <a href="#s00" data-part="0">Origins</a>
-    <a href="#glossary" data-part="5">Glossary</a>
+    <a href="#glossary" data-part="6">Glossary</a>
   </nav>
 </header>
 
@@ -368,6 +369,10 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
         <a href="#s17"><span>17</span>Identity, not address</a>
     </div>
     <div class="rail-g" data-part="5" hidden>
+      <div class="rail-h">V · A datacentre, end to end</div>
+        <a href="#s18"><span>18</span>A neocloud, built</a>
+    </div>
+    <div class="rail-g" data-part="6" hidden>
       <div class="rail-h">Reference</div>
         <a href="#coda"><span>—</span>Coda · one idea, five times</a>
         <a href="#glossary"><span>—</span>Glossary</a>
@@ -425,6 +430,12 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
         <li><span class="no">15</span><a href="#s15">Network namespaces</a></li>
         <li><span class="no">16</span><a href="#s16">VRF on Linux</a></li>
         <li><span class="no">17</span><a href="#s17">Identity, not address</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="toc-h">V · A datacentre, end to end</div>
+      <ul>
+        <li><span class="no">18</span><a href="#s18">A neocloud, built</a></li>
       </ul>
     </div>
   </nav>
@@ -2367,7 +2378,7 @@ $ ip rule show
   </div>
       <nav class="seq">
         <a class="seq-prev" href="#s16"><span>Previous</span>16 — VRF on Linux</a>
-        <a class="seq-next" href="#coda"><span>Next</span>Coda — one idea, five times</a>
+        <a class="seq-next" href="#s18"><span>Next</span>18 — A neocloud, built</a>
       </nav>
     </div>
   </details>
@@ -2378,6 +2389,187 @@ $ ip rule show
   <div class="part-t">One idea, five times</div>
   <p class="part-d">The guide has now asked the same question at five scales and been given five different answers. Read together, they disagree about something fundamental.</p>
 </div>
+
+<div class="part">
+  <div class="part-n">Part V</div>
+  <div class="part-t">A datacentre, end to end</div>
+  <p class="part-d">Everything above, applied once to a real building: 128 GPU nodes, 16 storage nodes, fifteen racks, and tenants who must not be able to reach each other.</p>
+</div>
+
+<section id="s18">
+  <details open>
+    <summary>
+      <div class="eyebrow">18 — A worked design</div>
+      <h2>A neocloud, built</h2>
+    </summary>
+    <div class="sec-body">
+      <p class="lede">A concrete build, with the arithmetic shown. Numbers are worked from stated assumptions rather than quoted — change an assumption and the shape changes with it.</p>
+
+      <div class="note"><b>The assumption that makes it fit.</b> 128 HGX-class nodes will not go into fifteen racks: at ~15 kW each you need twenty-five or more. Read as a mix, it works — <em>64 × HGX B300</em> (8 GPUs, ~15 kW, liquid) and <em>64 × RTX 6000 Pro</em> nodes (~4 kW, air), 1,024 GPUs in total, plus 16 storage nodes. Everything below follows from that split; if your mix differs, the rack count is the first thing to recompute.</div>
+
+  <figure class="wide">
+    <svg viewBox="0 0 1040 372" role="img" aria-label="Fifteen racks in four groups: eight GPU racks, four inference racks, one storage rack and two network racks, with node counts, power and cooling for each.">
+  <text class="s-ts" x="30" y="62">GPU compute</text>
+  <text class="s-t" x="30" y="82">× 8 racks</text>
+  <rect class="s-box" x="30" y="96" width="200" height="214" rx="8"/>
+  <g class="mp"><rect class="w-mp" x="38" y="104" width="184" height="30" rx="5" stroke="currentColor" stroke-width="1"/><text class="s-ts" x="48" y="124" fill="currentColor">2 × ToR</text></g>
+  <rect class="s-zone" x="38" y="144" width="184" height="24" rx="4"/>
+  <rect class="s-zone" x="38" y="171" width="184" height="24" rx="4"/>
+  <rect class="s-zone" x="38" y="198" width="184" height="24" rx="4"/>
+  <rect class="s-zone" x="38" y="225" width="184" height="24" rx="4"/>
+  <rect class="s-zone" x="38" y="252" width="184" height="24" rx="4"/>
+  <rect class="s-zone" x="38" y="279" width="184" height="24" rx="4"/>
+  <text class="s-t" x="48" y="168">8 × HGX B300</text>
+  <text class="s-ts" x="30" y="332">8 nodes × ~15 kW</text>
+  <text class="s-ts" x="30" y="350">≈ 120 kW · liquid</text>
+  <text class="s-ts" x="290" y="62">Inference</text>
+  <text class="s-t" x="290" y="82">× 4 racks</text>
+  <rect class="s-box" x="290" y="96" width="200" height="214" rx="8"/>
+  <g class="ls"><rect class="w-ls" x="298" y="104" width="184" height="30" rx="5" stroke="currentColor" stroke-width="1"/><text class="s-ts" x="308" y="124" fill="currentColor">2 × ToR</text></g>
+  <rect class="s-zone" x="298" y="144" width="184" height="24" rx="4"/>
+  <rect class="s-zone" x="298" y="171" width="184" height="24" rx="4"/>
+  <rect class="s-zone" x="298" y="198" width="184" height="24" rx="4"/>
+  <rect class="s-zone" x="298" y="225" width="184" height="24" rx="4"/>
+  <rect class="s-zone" x="298" y="252" width="184" height="24" rx="4"/>
+  <rect class="s-zone" x="298" y="279" width="184" height="24" rx="4"/>
+  <text class="s-t" x="308" y="168">16 × RTX 6000 Pro</text>
+  <text class="s-ts" x="290" y="332">16 nodes × ~4 kW</text>
+  <text class="s-ts" x="290" y="350">≈ 64 kW · air</text>
+  <text class="s-ts" x="550" y="62">Storage</text>
+  <text class="s-t" x="550" y="82">× 1 rack</text>
+  <rect class="s-box" x="550" y="96" width="200" height="214" rx="8"/>
+  <g class="dv"><rect class="w-dv" x="558" y="104" width="184" height="30" rx="5" stroke="currentColor" stroke-width="1"/><text class="s-ts" x="568" y="124" fill="currentColor">2 × ToR</text></g>
+  <rect class="s-zone" x="558" y="144" width="184" height="24" rx="4"/>
+  <rect class="s-zone" x="558" y="171" width="184" height="24" rx="4"/>
+  <rect class="s-zone" x="558" y="198" width="184" height="24" rx="4"/>
+  <rect class="s-zone" x="558" y="225" width="184" height="24" rx="4"/>
+  <rect class="s-zone" x="558" y="252" width="184" height="24" rx="4"/>
+  <rect class="s-zone" x="558" y="279" width="184" height="24" rx="4"/>
+  <text class="s-t" x="568" y="168">16 × NVMe nodes</text>
+  <text class="s-ts" x="550" y="332">16 nodes × ~2 kW</text>
+  <text class="s-ts" x="550" y="350">≈ 32 kW · air</text>
+  <text class="s-ts" x="810" y="62">Network + edge</text>
+  <text class="s-t" x="810" y="82">× 2 racks</text>
+  <rect class="s-box" x="810" y="96" width="200" height="214" rx="8"/>
+  <g class="pv"><rect class="w-pv" x="818" y="104" width="184" height="30" rx="5" stroke="currentColor" stroke-width="1"/><text class="s-ts" x="828" y="124" fill="currentColor">spines</text></g>
+  <rect class="s-zone" x="818" y="144" width="184" height="24" rx="4"/>
+  <rect class="s-zone" x="818" y="171" width="184" height="24" rx="4"/>
+  <rect class="s-zone" x="818" y="198" width="184" height="24" rx="4"/>
+  <rect class="s-zone" x="818" y="225" width="184" height="24" rx="4"/>
+  <rect class="s-zone" x="818" y="252" width="184" height="24" rx="4"/>
+  <rect class="s-zone" x="818" y="279" width="184" height="24" rx="4"/>
+  <text class="s-t" x="828" y="168">routers · FW · SoftGate</text>
+  <text class="s-ts" x="810" y="332">OOB aggregation</text>
+  <text class="s-ts" x="810" y="350">≈ 20 kW · air</text>
+    </svg>
+    <figcaption>Power sets the rack count, not floor space. An <b>8-GPU B300 node draws roughly 15 kW</b>, so eight of them is already a 120 kW liquid-cooled rack — near the practical ceiling today. The RTX 6000 Pro nodes are a quarter of that, which is why sixteen fit in an air-cooled rack and why the mix is what makes 144 nodes land in fifteen racks rather than twenty-five.</figcaption>
+  </figure>
+
+      <p class="body">Fifteen racks: <em>8</em> GPU, <em>4</em> inference, <em>1</em> storage, <em>2</em> network and edge. The GPU racks are the constraint — liquid cooling, CDUs, and a power envelope that decides everything downstream including how many rails the backend fabric needs.</p>
+
+  <figure class="wide">
+    <svg viewBox="0 0 1040 470" role="img" aria-label="One compute node's four sets of NICs going to four separate fabrics — backend RoCE, frontend EVPN, storage and out-of-band management — with only the frontend reaching the border routers and firewalls.">
+      <rect class="s-zone" x="30" y="150" width="215" height="185" rx="12"/>
+      <text class="s-ts" x="48" y="176">one HGX B300 node</text>
+      <text class="s-t" x="48" y="206">8 × 400G</text>
+      <text class="s-ts" x="48" y="224">one NIC per GPU</text>
+      <text class="s-t" x="48" y="254">2 × 200G</text>
+      <text class="s-ts" x="48" y="272">tenant traffic</text>
+      <text class="s-t" x="48" y="302">2 × 100G</text>
+      <text class="s-ts" x="48" y="320">storage</text>
+
+      <g class="mp">
+        <line class="s-flow" x1="245" y1="200" x2="296" y2="94" marker-end="url(#aDc)"/>
+        <rect class="w-mp" x="300" y="52" width="380" height="84" rx="10" stroke="currentColor" stroke-width="1.2"/>
+        <text class="s-t" x="320" y="78" fill="currentColor">Backend · rail-optimised RoCEv2</text>
+        <text class="s-ts" x="320" y="98">8 rail leaves + 8 spines · 1:1, non-blocking</text>
+        <text class="s-ts" x="320" y="118">tenancy: whole nodes, or PKeys on InfiniBand — no VRF</text>
+      </g>
+      <g class="pv">
+        <line class="s-flow" x1="245" y1="252" x2="296" y2="196" marker-end="url(#aDc)"/>
+        <rect class="w-pv" x="300" y="158" width="380" height="84" rx="10" stroke="currentColor" stroke-width="1.2"/>
+        <text class="s-t" x="320" y="184" fill="currentColor">Frontend · EVPN / VXLAN</text>
+        <text class="s-ts" x="320" y="204">26 leaves + 4 spines · 3:1 is fine here</text>
+        <text class="s-ts" x="320" y="224">tenancy: one VPC = one VRF, a V-Net per subnet</text>
+      </g>
+      <g class="dv">
+        <line class="s-flow" x1="245" y1="300" x2="296" y2="300" marker-end="url(#aDc)"/>
+        <rect class="w-dv" x="300" y="264" width="380" height="72" rx="10" stroke="currentColor" stroke-width="1.2"/>
+        <text class="s-t" x="320" y="290" fill="currentColor">Storage · NVMe-oF</text>
+        <text class="s-ts" x="320" y="310">2 leaves · own VRF, jumbo frames end to end</text>
+      </g>
+      <g class="ls">
+        <line class="s-flow" x1="245" y1="326" x2="296" y2="392" marker-end="url(#aDc)"/>
+        <rect class="w-ls" x="300" y="358" width="380" height="72" rx="10" stroke="currentColor" stroke-width="1.2"/>
+        <text class="s-t" x="320" y="384" fill="currentColor">Out-of-band · BMC / Redfish</text>
+        <text class="s-ts" x="320" y="404">15 ToR + 2 agg · never routed to a tenant, ever</text>
+      </g>
+
+      <line class="s-flow" x1="684" y1="200" x2="745" y2="200" marker-end="url(#aDc)" style="color:var(--ink-soft)"/>
+      <rect class="s-zone" x="750" y="120" width="260" height="160" rx="12"/>
+      <text class="s-ts" x="768" y="146">the only way out</text>
+      <text class="s-t" x="768" y="174">2 × border routers</text>
+      <text class="s-ts" x="768" y="192">eBGP to transit and peering</text>
+      <text class="s-t" x="768" y="220">2 × firewall</text>
+      <text class="s-t" x="768" y="248">4 × SoftGate</text>
+      <text class="s-ts" x="768" y="266">NAT, elastic IP, L4LB</text>
+
+      <text class="s-ts" x="520" y="456" text-anchor="middle">three of the four fabrics never reach the border at all</text>
+      <defs><marker id="aDc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker></defs>
+    </svg>
+    <figcaption>Four physically separate networks, because they want different things. The backend needs line rate and cannot share; the frontend needs tenancy and policy; storage needs jumbo frames; and the management network needs to survive all three being broken. <b>Only the frontend touches the border</b> — which is most of your security posture, expressed as cabling rather than rules.</figcaption>
+  </figure>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Fabric</th><th>Per node</th><th>Switching</th><th>Oversubscription</th><th>Tenant isolation</th></tr></thead>
+          <tbody>
+            <tr><td class="nm">Backend</td><td class="num">8 × 400G</td><td>8 rail leaves + 8 spines</td><td class="num">1:1</td><td>whole nodes per tenant — or PKeys on InfiniBand</td></tr>
+            <tr><td class="nm">Frontend</td><td class="num">2 × 200G</td><td>26 leaves + 4 spines</td><td class="num">3:1</td><td>VPC → VRF, V-Net → L2VNI</td></tr>
+            <tr><td class="nm">Storage</td><td class="num">2 × 100G</td><td>2 leaves</td><td class="num">2:1</td><td>its own VRF, exported per tenant</td></tr>
+            <tr><td class="nm">Out-of-band</td><td class="num">1 × 1G</td><td>15 ToR + 2 agg</td><td class="num">n/a</td><td>operator only — never reachable by a tenant</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="trio">
+        <div class="card mpc">
+          <div class="tag" style="color:var(--mp)">The backend arithmetic</div>
+          <ul>
+            <li>64 HGX nodes × 8 NICs = <b>512 endpoints at 400G</b>.</li>
+            <li><b>Rail-optimised</b>: eight rails, and GPU <em>i</em> on every node lands on rail <em>i</em>. A collective across GPU 0s stays inside one rail instead of crossing the fabric.</li>
+            <li>Each rail leaf takes 64 downlinks and 64 uplinks — non-blocking by construction. Eight spines, each with 8 ports to every rail leaf, fills a 64-port spine exactly.</li>
+            <li><b>1:1, not 3:1.</b> All-reduce is all-to-all, so oversubscription lands directly in job time. This is the one fabric where the enterprise default is simply wrong.</li>
+          </ul>
+        </div>
+        <div class="card pvc">
+          <div class="tag" style="color:var(--pv)">Where tenancy actually lives</div>
+          <ul>
+            <li><b>Frontend only.</b> One tenant = one VPC = one VRF, present on the leaves that hold their nodes and nowhere else.</li>
+            <li>Their jump host sits in their own VPC, reachable through a DNAT on a SoftGate — the per-tenant entry point, with the public side in the System VPC.</li>
+            <li><b>The backend has no VRFs.</b> Isolation there is whole nodes allocated to one tenant, or PKeys if it is InfiniBand. Do not promise tenants a shared, sliced RoCE fabric.</li>
+            <li>Overlapping <code>10.0.0.0/8</code> between tenants is free on the frontend and meaningless on the backend.</li>
+          </ul>
+        </div>
+        <div class="card lsc">
+          <div class="tag" style="color:var(--ls)">What decides the numbers</div>
+          <ul>
+            <li><b>Power per rack</b> sets node density, which sets rack count, which sets leaf count. Everything else is downstream of a kilowatt figure.</li>
+            <li><b>GPU:NIC affinity.</b> A NIC must sit on the same PCIe root complex as the GPU it serves, or you pay for every transfer twice. This constrains server SKU before it constrains the network.</li>
+            <li><b>MTU end to end.</b> 9000 on the backend and storage, and an underlay that carries tenant MTU plus encapsulation on the frontend.</li>
+            <li><b>Cable count.</b> 64 nodes × 8 backend NICs is 512 optics before a single tenant port. Optics and their failure rate are a real line item, not an afterthought.</li>
+          </ul>
+        </div>
+      </div>
+
+      <nav class="seq">
+        <a class="seq-prev" href="#s17"><span>Previous</span>17 — Identity, not address</a>
+        <a class="seq-next" href="#coda"><span>Next</span>Coda — one idea, five times</a>
+      </nav>
+      <div class="note"><b>Three things that will bite, in order.</b> <em>The out-of-band network is the one that must never fail</em> — it is how you reach a node whose data plane is broken, so it gets its own switches, its own power feed and no route to any tenant VRF. <em>Storage is east-west traffic wearing a north-south costume</em>: sixteen nodes serving 128 clients will saturate a 2:1 storage fabric during checkpointing long before anyone complains about the tenant network. And <em>the backend fabric cannot be resized later</em> — rail-optimised cabling is decided at build time, so the number of rails you can grow to is a decision you are making now, whether or not you know it.</div>
+    </div>
+  </details>
+</section>
 
 <section id="coda">
   <details open>
@@ -2450,7 +2642,7 @@ $ ip rule show
 
   <div class="note"><b>So the guide’s own refrain is wrong, and usefully so.</b> “Make the identifier travel with the packet” holds for the first three columns and breaks twice at the bottom: a namespace puts nothing on the wire, and identity-based policy resolves the tenant <em>after</em> the packet has already arrived. The honest version is one level up — <em>every scheme picks somewhere to keep the tenant identifier, and that choice decides whether isolation is a property of the structure or a property of the configuration.</em> MPLS chose the structure and pays for it in protocols. Kubernetes chose the configuration and pays for it in blast radius. Neither is the mistake; picking one without knowing which you picked is.</div>
       <nav class="seq">
-        <a class="seq-prev" href="#s17"><span>Previous</span>17 — Identity, not address</a>
+        <a class="seq-prev" href="#s18"><span>Previous</span>18 — A neocloud, built</a>
         <a class="seq-next" href="#glossary"><span>Next</span>Glossary</a>
       </nav>
     </div>
@@ -2521,7 +2713,7 @@ $ ip rule show
     var a = rail.querySelector('a[href="#' + sec.id + '"]');
     if (a) links[sec.id] = a;
   });
-  var PART_OF = {"s00": 0, "s01": 1, "s02": 1, "s03": 1, "s04": 1, "s05": 1, "s06": 1, "s07": 2, "s08": 2, "s09": 2, "s10": 2, "s11": 3, "s12": 3, "s13": 3, "s14": 4, "s15": 4, "s16": 4, "s17": 4, "coda": 5, "glossary": 5};
+  var PART_OF = {"s00": 0, "s01": 1, "s02": 1, "s03": 1, "s04": 1, "s05": 1, "s06": 1, "s07": 2, "s08": 2, "s09": 2, "s10": 2, "s11": 3, "s12": 3, "s13": 3, "s14": 4, "s15": 4, "s16": 4, "s17": 4, "s18": 5, "coda": 6, "glossary": 6};
   var activePart = -1;
   var active = null, ticking = false;
   function spy(){
