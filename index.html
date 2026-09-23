@@ -86,7 +86,7 @@ img{max-width:100%}
   --shadow:0 1px 0 rgba(0,0,0,.4);
 }
 
-body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:16.5px;line-height:1.62;}
+body{padding-top:56px;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:16.5px;line-height:1.62;}
 .wrap{max-width:1060px;margin:0 auto;padding:56px 22px 90px;}
 
 h1{font-family:var(--mono);font-weight:600;font-size:clamp(2.1rem,5.4vw,3.4rem);line-height:1.04;letter-spacing:-.035em;margin:.15em 0 0;text-wrap:balance;}
@@ -219,10 +219,25 @@ td.num{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--ink
 .rung p{font-size:.96rem;color:var(--ink-soft);}
 .rung p b{color:var(--ink);font-weight:600;}
 
+/* top bar */
+.topbar{position:fixed;top:0;left:0;right:0;height:56px;display:flex;align-items:center;gap:22px;padding:0 20px;background:var(--paper);border-bottom:1px solid var(--rule);z-index:40;overflow-x:auto;}
+.brand{font-family:var(--mono);font-weight:600;font-size:.86rem;letter-spacing:-.025em;color:var(--ink);text-decoration:none;white-space:nowrap;}
+.brand em{font-style:normal;color:var(--ink-soft);}
+.parts{display:flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden;background:var(--surface);flex:none;}
+.parts a{font-family:var(--mono);font-size:.76rem;padding:7px 17px;text-decoration:none;color:var(--ink-soft);border-right:1px solid var(--rule);white-space:nowrap;transition:background .15s ease,color .15s ease;}
+.parts a:last-child{border-right:0;}
+.parts a:hover{color:var(--ink);}
+.parts a.on{background:var(--ink);color:var(--paper);}
+.utils{display:flex;gap:18px;margin-left:auto;flex:none;}
+.utils a{font-family:var(--mono);font-size:.74rem;color:var(--ink-soft);text-decoration:none;white-space:nowrap;}
+.utils a:hover{color:var(--ink);}
+.utils a.on{color:var(--ink);border-bottom:1px solid var(--ink);}
+
 /* contents rail */
 .rail{display:none;}
 .rail-title{display:block;font-family:var(--mono);font-size:.82rem;font-weight:600;letter-spacing:-.025em;line-height:1.3;color:var(--ink);text-decoration:none;margin-bottom:24px;}
 .rail-g{margin-bottom:18px;}
+.rail-g[hidden]{display:none;}
 .rail-h{font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);line-height:1.4;margin-bottom:7px;padding-left:12px;}
 .rail-g a{display:flex;gap:9px;font-size:.8rem;line-height:1.35;color:var(--ink-soft);text-decoration:none;padding:4px 0 4px 10px;border-left:2px solid transparent;}
 .rail-g a span{font-family:var(--mono);font-size:.72rem;opacity:.75;flex:none;}
@@ -231,7 +246,7 @@ td.num{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--ink
 .rail-g a.on span{opacity:1;}
 @media (min-width:1180px){
   body{padding-left:252px;}
-  .rail{display:block;position:fixed;top:0;left:0;width:252px;height:100vh;overflow-y:auto;box-sizing:border-box;padding:36px 20px 44px;border-right:1px solid var(--rule);background:var(--paper);}
+  .rail{display:block;position:fixed;top:56px;left:0;width:252px;height:calc(100vh - 56px);overflow-y:auto;box-sizing:border-box;padding:36px 20px 44px;border-right:1px solid var(--rule);background:var(--paper);}
 }
 
 /* parts + nav */
@@ -240,7 +255,7 @@ td.num{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--ink
 .part-t{font-family:var(--mono);font-weight:600;font-size:clamp(1.7rem,4vw,2.35rem);letter-spacing:-.035em;line-height:1.04;}
 .part-d{font-size:1.04rem;color:var(--ink-soft);max-width:62ch;}
 .part + section{border-top:0;padding-top:28px;}
-section[id]{scroll-margin-top:16px;}
+section[id]{scroll-margin-top:72px;}
 .toc{display:grid;grid-template-columns:repeat(4,1fr);gap:22px 30px;border-top:1px solid var(--rule);padding-top:24px;margin-top:14px;}
 .toc-h{font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:11px;}
 .toc ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:7px;}
@@ -299,12 +314,27 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
 </style>
 </head>
 <body>
+<header class="topbar">
+  <a class="brand" href="#top">Packets<em>,</em> Paths <em>&amp;</em> Labels</a>
+  <nav class="parts" aria-label="Parts">
+    <a href="#s01" data-part="1">Internet</a>
+    <a href="#s07" data-part="2">Network</a>
+    <a href="#s11" data-part="3">Wire</a>
+    <a href="#s14" data-part="4">Host</a>
+  </nav>
+  <nav class="utils">
+    <a href="#s00" data-part="0">Origins</a>
+    <a href="#glossary" data-part="5">Glossary</a>
+  </nav>
+</header>
+
 <nav class="rail" aria-label="Contents">
   <a class="rail-title" href="#top">Packets, Paths<br>and Labels</a>
-    <div class="rail-g">
+    <div class="rail-g" data-part="0" hidden>
+      <div class="rail-h">Origins</div>
         <a href="#s00"><span>—</span>Origins</a>
     </div>
-    <div class="rail-g">
+    <div class="rail-g" data-part="1" hidden>
       <div class="rail-h">I · Between networks</div>
         <a href="#s01"><span>01</span>The shape of it</a>
         <a href="#s02"><span>02</span>The family tree</a>
@@ -313,27 +343,28 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
         <a href="#s05"><span>05</span>One address, many tenants</a>
         <a href="#s06"><span>06</span>Sessions all the way down</a>
     </div>
-    <div class="rail-g">
+    <div class="rail-g" data-part="2" hidden>
       <div class="rail-h">II · Inside one network</div>
         <a href="#s07"><span>07</span>The two interior styles</a>
         <a href="#s08"><span>08</span>Bookkeeping</a>
         <a href="#s09"><span>09</span>Inside one router</a>
         <a href="#s10"><span>10</span>Quick reference</a>
     </div>
-    <div class="rail-g">
+    <div class="rail-g" data-part="3" hidden>
       <div class="rail-h">III · One wire, many networks</div>
         <a href="#s11"><span>11</span>VLAN — twelve bits</a>
         <a href="#s12"><span>12</span>VXLAN &amp; EVPN</a>
         <a href="#s13"><span>13</span>EVPN control plane</a>
     </div>
-    <div class="rail-g">
+    <div class="rail-g" data-part="4" hidden>
       <div class="rail-h">IV · When the network becomes software</div>
         <a href="#s14"><span>14</span>Virtual Ethernet</a>
         <a href="#s15"><span>15</span>Network namespaces</a>
         <a href="#s16"><span>16</span>VRF on Linux</a>
         <a href="#s17"><span>17</span>Identity, not address</a>
     </div>
-    <div class="rail-g">
+    <div class="rail-g" data-part="5" hidden>
+      <div class="rail-h">Reference</div>
         <a href="#coda"><span>—</span>Coda · one idea, five times</a>
         <a href="#glossary"><span>—</span>Glossary</a>
     </div>
@@ -2486,12 +2517,24 @@ $ ip rule show
     var a = rail.querySelector('a[href="#' + sec.id + '"]');
     if (a) links[sec.id] = a;
   });
+  var PART_OF = {"s00": 0, "s01": 1, "s02": 1, "s03": 1, "s04": 1, "s05": 1, "s06": 1, "s07": 2, "s08": 2, "s09": 2, "s10": 2, "s11": 3, "s12": 3, "s13": 3, "s14": 4, "s15": 4, "s16": 4, "s17": 4, "coda": 5, "glossary": 5};
+  var activePart = -1;
   var active = null, ticking = false;
   function spy(){
     ticking = false;
     var cur = secs[0];
     for (var i = 0; i < secs.length; i++){
       if (secs[i].getBoundingClientRect().top <= 140) cur = secs[i];
+    }
+    var part = PART_OF[cur.id];
+    if (part !== activePart){
+      activePart = part;
+      [].forEach.call(document.querySelectorAll('.rail-g'), function(g){
+        g.hidden = (+g.getAttribute('data-part') !== part);
+      });
+      [].forEach.call(document.querySelectorAll('.parts a, .utils a'), function(t){
+        t.classList.toggle('on', +t.getAttribute('data-part') === part);
+      });
     }
     var a = links[cur.id];
     if (!a || a === active) return;
