@@ -2591,6 +2591,131 @@ $ ip rule show
       <p class="body">Twelve racks: <em>8</em> compute, <em>1</em> storage, <em>3</em> network and edge. Power sets that count — an 8-GPU node draws roughly 15 kW, so eight of them is a 120 kW liquid-cooled rack, near the practical ceiling today. Everything downstream, including how many rails the backend needs, follows from that kilowatt figure.</p>
 
 
+  <figure class="wide">
+    <svg viewBox="0 0 1040 610" role="img" aria-label="Top: the backend as a matrix — eight vertical rails crossing four node rows, a dot at every crossing, showing that GPU i on every node lands on rail i. Bottom: the frontend as leaf and spine, every leaf connected to both spines and every node dual-homed to the two leaves in its rack.">
+      <g class="mp">
+        <text class="s-t" x="30" y="44" fill="currentColor" style="letter-spacing:.1em">BACKEND — RAIL-OPTIMISED</text>
+        <text class="s-ts" x="30" y="64">every node puts GPU 0 on rail 0, GPU 1 on rail 1, and so on to 7</text>
+        <rect class="w-mp" x="200" y="86" width="572" height="32" rx="8" stroke="currentColor" stroke-width="1.2"/>
+        <text class="s-ts" x="486" y="106" text-anchor="middle" fill="currentColor">8 spines — every rail leaf connects to all of them, 1:1</text>
+        <line x1="227" y1="148" x2="227" y2="120" stroke="currentColor" stroke-width="1.2" opacity=".55"/>
+        <rect class="s-box" x="200" y="148" width="54" height="30" rx="6"/>
+        <text class="s-ts" x="227" y="168" text-anchor="middle" fill="currentColor">rail 0</text>
+        <line x1="227" y1="178" x2="227" y2="298" stroke="currentColor" stroke-width="1.2" opacity=".5"/>
+        <line x1="301" y1="148" x2="301" y2="120" stroke="currentColor" stroke-width="1.2" opacity=".55"/>
+        <rect class="s-box" x="274" y="148" width="54" height="30" rx="6"/>
+        <text class="s-ts" x="301" y="168" text-anchor="middle" fill="currentColor">rail 1</text>
+        <line x1="301" y1="178" x2="301" y2="298" stroke="currentColor" stroke-width="1.2" opacity=".5"/>
+        <line x1="375" y1="148" x2="375" y2="120" stroke="currentColor" stroke-width="1.2" opacity=".55"/>
+        <rect class="s-box" x="348" y="148" width="54" height="30" rx="6"/>
+        <text class="s-ts" x="375" y="168" text-anchor="middle" fill="currentColor">rail 2</text>
+        <line x1="375" y1="178" x2="375" y2="298" stroke="currentColor" stroke-width="1.2" opacity=".5"/>
+        <line x1="449" y1="148" x2="449" y2="120" stroke="currentColor" stroke-width="1.2" opacity=".55"/>
+        <rect class="s-box" x="422" y="148" width="54" height="30" rx="6"/>
+        <text class="s-ts" x="449" y="168" text-anchor="middle" fill="currentColor">rail 3</text>
+        <line x1="449" y1="178" x2="449" y2="298" stroke="currentColor" stroke-width="1.2" opacity=".5"/>
+        <line x1="523" y1="148" x2="523" y2="120" stroke="currentColor" stroke-width="1.2" opacity=".55"/>
+        <rect class="s-box" x="496" y="148" width="54" height="30" rx="6"/>
+        <text class="s-ts" x="523" y="168" text-anchor="middle" fill="currentColor">rail 4</text>
+        <line x1="523" y1="178" x2="523" y2="298" stroke="currentColor" stroke-width="1.2" opacity=".5"/>
+        <line x1="597" y1="148" x2="597" y2="120" stroke="currentColor" stroke-width="1.2" opacity=".55"/>
+        <rect class="s-box" x="570" y="148" width="54" height="30" rx="6"/>
+        <text class="s-ts" x="597" y="168" text-anchor="middle" fill="currentColor">rail 5</text>
+        <line x1="597" y1="178" x2="597" y2="298" stroke="currentColor" stroke-width="1.2" opacity=".5"/>
+        <line x1="671" y1="148" x2="671" y2="120" stroke="currentColor" stroke-width="1.2" opacity=".55"/>
+        <rect class="s-box" x="644" y="148" width="54" height="30" rx="6"/>
+        <text class="s-ts" x="671" y="168" text-anchor="middle" fill="currentColor">rail 6</text>
+        <line x1="671" y1="178" x2="671" y2="298" stroke="currentColor" stroke-width="1.2" opacity=".5"/>
+        <line x1="745" y1="148" x2="745" y2="120" stroke="currentColor" stroke-width="1.2" opacity=".55"/>
+        <rect class="s-box" x="718" y="148" width="54" height="30" rx="6"/>
+        <text class="s-ts" x="745" y="168" text-anchor="middle" fill="currentColor">rail 7</text>
+        <line x1="745" y1="178" x2="745" y2="298" stroke="currentColor" stroke-width="1.2" opacity=".5"/>
+      </g>
+      <rect class="s-box" x="30" y="192" width="150" height="20" rx="4"/>
+      <text class="s-ts" x="42" y="206">node 1 · 8 NICs</text>
+      <line x1="180" y1="202" x2="790" y2="202" stroke="var(--ink-soft)" stroke-width="1" opacity=".45"/>
+      <circle cx="227" cy="202" r="3.6" fill="var(--mp)"/>
+      <circle cx="301" cy="202" r="3.6" fill="var(--mp)"/>
+      <circle cx="375" cy="202" r="3.6" fill="var(--mp)"/>
+      <circle cx="449" cy="202" r="3.6" fill="var(--mp)"/>
+      <circle cx="523" cy="202" r="3.6" fill="var(--mp)"/>
+      <circle cx="597" cy="202" r="3.6" fill="var(--mp)"/>
+      <circle cx="671" cy="202" r="3.6" fill="var(--mp)"/>
+      <circle cx="745" cy="202" r="3.6" fill="var(--mp)"/>
+      <rect class="s-box" x="30" y="218" width="150" height="20" rx="4"/>
+      <text class="s-ts" x="42" y="232">node 2 · 8 NICs</text>
+      <line x1="180" y1="228" x2="790" y2="228" stroke="var(--ink-soft)" stroke-width="1" opacity=".45"/>
+      <circle cx="227" cy="228" r="3.6" fill="var(--mp)"/>
+      <circle cx="301" cy="228" r="3.6" fill="var(--mp)"/>
+      <circle cx="375" cy="228" r="3.6" fill="var(--mp)"/>
+      <circle cx="449" cy="228" r="3.6" fill="var(--mp)"/>
+      <circle cx="523" cy="228" r="3.6" fill="var(--mp)"/>
+      <circle cx="597" cy="228" r="3.6" fill="var(--mp)"/>
+      <circle cx="671" cy="228" r="3.6" fill="var(--mp)"/>
+      <circle cx="745" cy="228" r="3.6" fill="var(--mp)"/>
+      <rect class="s-box" x="30" y="244" width="150" height="20" rx="4"/>
+      <text class="s-ts" x="42" y="258">node 3 · 8 NICs</text>
+      <line x1="180" y1="254" x2="790" y2="254" stroke="var(--ink-soft)" stroke-width="1" opacity=".45"/>
+      <circle cx="227" cy="254" r="3.6" fill="var(--mp)"/>
+      <circle cx="301" cy="254" r="3.6" fill="var(--mp)"/>
+      <circle cx="375" cy="254" r="3.6" fill="var(--mp)"/>
+      <circle cx="449" cy="254" r="3.6" fill="var(--mp)"/>
+      <circle cx="523" cy="254" r="3.6" fill="var(--mp)"/>
+      <circle cx="597" cy="254" r="3.6" fill="var(--mp)"/>
+      <circle cx="671" cy="254" r="3.6" fill="var(--mp)"/>
+      <circle cx="745" cy="254" r="3.6" fill="var(--mp)"/>
+      <rect class="s-box" x="30" y="270" width="150" height="20" rx="4"/>
+      <text class="s-ts" x="42" y="284">node 4 · 8 NICs</text>
+      <line x1="180" y1="280" x2="790" y2="280" stroke="var(--ink-soft)" stroke-width="1" opacity=".45"/>
+      <circle cx="227" cy="280" r="3.6" fill="var(--mp)"/>
+      <circle cx="301" cy="280" r="3.6" fill="var(--mp)"/>
+      <circle cx="375" cy="280" r="3.6" fill="var(--mp)"/>
+      <circle cx="449" cy="280" r="3.6" fill="var(--mp)"/>
+      <circle cx="523" cy="280" r="3.6" fill="var(--mp)"/>
+      <circle cx="597" cy="280" r="3.6" fill="var(--mp)"/>
+      <circle cx="671" cy="280" r="3.6" fill="var(--mp)"/>
+      <circle cx="745" cy="280" r="3.6" fill="var(--mp)"/>
+      <text class="s-ts" x="42" y="312">… × 64 nodes</text>
+      <text class="s-ts" x="820" y="206">512 fibres in total,</text>
+      <text class="s-ts" x="820" y="224">64 landing on each rail</text>
+      <line x1="30" y1="336" x2="1010" y2="336" stroke="var(--rule)" stroke-width="1.5" stroke-dasharray="5 6"/>
+      <g class="pv">
+        <text class="s-t" x="30" y="372" fill="currentColor" style="letter-spacing:.1em">FRONTEND — LEAF AND SPINE</text>
+        <text class="s-ts" x="30" y="392">every leaf to every spine · every node to both leaves in its own rack</text>
+        <rect class="w-pv" x="360" y="416" width="120" height="32" rx="8" stroke="currentColor" stroke-width="1.2"/>
+        <text class="s-ts" x="420" y="436" text-anchor="middle" fill="currentColor">spine 1</text>
+        <rect class="w-pv" x="560" y="416" width="120" height="32" rx="8" stroke="currentColor" stroke-width="1.2"/>
+        <text class="s-ts" x="620" y="436" text-anchor="middle" fill="currentColor">spine 2</text>
+        <rect class="s-box" x="150" y="500" width="110" height="30" rx="6"/>
+        <text class="s-ts" x="205" y="519" text-anchor="middle" fill="currentColor">leaf 1a</text>
+        <line x1="205" y1="500" x2="420" y2="448" stroke="currentColor" stroke-width="1" opacity=".45"/>
+        <line x1="205" y1="500" x2="620" y2="448" stroke="currentColor" stroke-width="1" opacity=".45"/>
+        <rect class="s-box" x="320" y="500" width="110" height="30" rx="6"/>
+        <text class="s-ts" x="375" y="519" text-anchor="middle" fill="currentColor">leaf 1b</text>
+        <line x1="375" y1="500" x2="420" y2="448" stroke="currentColor" stroke-width="1" opacity=".45"/>
+        <line x1="375" y1="500" x2="620" y2="448" stroke="currentColor" stroke-width="1" opacity=".45"/>
+        <rect class="s-box" x="560" y="500" width="110" height="30" rx="6"/>
+        <text class="s-ts" x="615" y="519" text-anchor="middle" fill="currentColor">leaf 2a</text>
+        <line x1="615" y1="500" x2="420" y2="448" stroke="currentColor" stroke-width="1" opacity=".45"/>
+        <line x1="615" y1="500" x2="620" y2="448" stroke="currentColor" stroke-width="1" opacity=".45"/>
+        <rect class="s-box" x="730" y="500" width="110" height="30" rx="6"/>
+        <text class="s-ts" x="785" y="519" text-anchor="middle" fill="currentColor">leaf 2b</text>
+        <line x1="785" y1="500" x2="420" y2="448" stroke="currentColor" stroke-width="1" opacity=".45"/>
+        <line x1="785" y1="500" x2="620" y2="448" stroke="currentColor" stroke-width="1" opacity=".45"/>
+      </g>
+      <rect class="s-box" x="175" y="566" width="160" height="28" rx="6"/>
+      <text class="s-ts" x="255" y="585" text-anchor="middle">rack 1 · node</text>
+      <line x1="255" y1="566" x2="205" y2="530" stroke="var(--pv)" stroke-width="1.2" opacity=".6"/>
+      <line x1="255" y1="566" x2="375" y2="530" stroke="var(--pv)" stroke-width="1.2" opacity=".6"/>
+      <rect class="s-box" x="585" y="566" width="160" height="28" rx="6"/>
+      <text class="s-ts" x="665" y="585" text-anchor="middle">rack 2 · node</text>
+      <line x1="665" y1="566" x2="615" y2="530" stroke="var(--pv)" stroke-width="1.2" opacity=".6"/>
+      <line x1="665" y1="566" x2="785" y2="530" stroke="var(--pv)" stroke-width="1.2" opacity=".6"/>
+      <text class="s-ts" x="1010" y="574" text-anchor="end">2 × 200G per node, split across the pair</text>
+    </svg>
+    <figcaption>The backend drawn as what it is — a <b>matrix</b>. Eight vertical rails, one horizontal line per node, and a dot wherever a NIC meets a rail. Every node touches every rail exactly once, so an all-reduce across GPU 3 stays inside rail 3 instead of crossing the fabric. The frontend needs no such discipline: any leaf, any spine, and a node dual-homed to its own rack&#8217;s pair for survivability rather than locality.</figcaption>
+  </figure>
+
       <p class="body">Half the switching never reaches those network racks. <b>Thirty-one switches live in the racks they serve</b> — two frontend leaves and one out-of-band switch per rack, plus the storage pair. What has to be central is everything that spans racks, and that is what fills the other three.</p>
 
       <div class="tablewrap">
