@@ -330,6 +330,7 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
   <nav class="utils">
     <a href="#s00" data-part="0">Origins</a>
     <a href="#glossary" data-part="6">Glossary</a>
+    <a href="#" id="showAll">Show all</a>
   </nav>
 </header>
 
@@ -480,7 +481,7 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
   </details>
 </section>
 
-<div class="part">
+<div class="part" data-part="1">
   <div class="part-n">Part I</div>
   <div class="part-t">Between networks</div>
   <p class="part-d">Two administrations, no shared trust, and a boundary that gets negotiated rather than measured — plus the label-switched core that carries the result.</p>
@@ -1175,7 +1176,7 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
   </details>
 </section>
 
-<div class="part">
+<div class="part" data-part="2">
   <div class="part-n">Part II</div>
   <div class="part-t">Inside one network</div>
   <p class="part-d">One owner, full trust, and a free hand to optimise. This is the only place a metric means what it says.</p>
@@ -1636,7 +1637,7 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
     </div>
   </details>
 </section>
-<div class="part">
+<div class="part" data-part="3">
   <div class="part-n">Part III</div>
   <div class="part-t">One wire, many networks</div>
   <p class="part-d">Section 05 solved this for routes: give every tenant its own table and carry an identifier with the packet. Two layers down, the same answer gets rebuilt twice — once in twelve bits, once in twenty-four.</p>
@@ -1977,7 +1978,7 @@ $ bridge fdb show dev vxlan0
   </details>
 </section>
 
-<div class="part">
+<div class="part" data-part="4">
   <div class="part-n">Part IV</div>
   <div class="part-t">When the network becomes software</div>
   <p class="part-d">The last three metres, where a cable is a pointer, a stack is a struct, a routing table is a device and a tenant is a number in a map. Not all of it is host-scoped — one of these is a router concept and one is a cluster concept — but this is where you meet them as code.</p>
@@ -2384,13 +2385,7 @@ $ ip rule show
   </details>
 </section>
 
-<div class="part">
-  <div class="part-n">Coda</div>
-  <div class="part-t">One idea, five times</div>
-  <p class="part-d">The guide has now asked the same question at five scales and been given five different answers. Read together, they disagree about something fundamental.</p>
-</div>
-
-<div class="part">
+<div class="part" data-part="5">
   <div class="part-n">Part V</div>
   <div class="part-t">A datacentre, end to end</div>
   <p class="part-d">Everything above, applied once to a real building: 64 GPU nodes, 8 storage nodes, twelve racks, and tenants who must not be able to reach each other.</p>
@@ -2789,6 +2784,12 @@ $ ip rule show
   </details>
 </section>
 
+<div class="part" data-part="6">
+  <div class="part-n">Coda</div>
+  <div class="part-t">One idea, five times</div>
+  <p class="part-d">The guide has now asked the same question at five scales and been given five different answers. Read together, they disagree about something fundamental.</p>
+</div>
+
 <section id="coda">
   <details open>
     <summary>
@@ -2932,24 +2933,38 @@ $ ip rule show
     if (a) links[sec.id] = a;
   });
   var PART_OF = {"s00": 0, "s01": 1, "s02": 1, "s03": 1, "s04": 1, "s05": 1, "s06": 1, "s07": 2, "s08": 2, "s09": 2, "s10": 2, "s11": 3, "s12": 3, "s13": 3, "s14": 4, "s15": 4, "s16": 4, "s17": 4, "s18": 5, "coda": 6, "glossary": 6};
-  var activePart = -1;
+  var activePart = -1, showAll = false;
+  var dividers = [].slice.call(document.querySelectorAll('.part[data-part]'));
+  var allBtn = document.getElementById('showAll');
+  function applyScope(){
+    secs.forEach(function(sec){
+      sec.style.display = (showAll || PART_OF[sec.id] === activePart) ? '' : 'none';
+    });
+    dividers.forEach(function(d){
+      d.style.display = (showAll || +d.getAttribute('data-part') === activePart) ? '' : 'none';
+    });
+  }
+  function setPart(p){
+    if (p === undefined || p === activePart) return;
+    activePart = p;
+    [].forEach.call(document.querySelectorAll('.rail-g'), function(g){
+      g.hidden = (+g.getAttribute('data-part') !== p);
+    });
+    [].forEach.call(document.querySelectorAll('.parts a, .utils a[data-part]'), function(t){
+      t.classList.toggle('on', +t.getAttribute('data-part') === p);
+    });
+    applyScope();
+  }
   var active = null, ticking = false;
   function spy(){
     ticking = false;
-    var cur = secs[0];
-    for (var i = 0; i < secs.length; i++){
-      if (secs[i].getBoundingClientRect().top <= 140) cur = secs[i];
+    var vis = secs.filter(function(x){ return x.offsetParent !== null; });
+    if (!vis.length) return;
+    var cur = vis[0];
+    for (var i = 0; i < vis.length; i++){
+      if (vis[i].getBoundingClientRect().top <= 140) cur = vis[i];
     }
-    var part = PART_OF[cur.id];
-    if (part !== activePart){
-      activePart = part;
-      [].forEach.call(document.querySelectorAll('.rail-g'), function(g){
-        g.hidden = (+g.getAttribute('data-part') !== part);
-      });
-      [].forEach.call(document.querySelectorAll('.parts a, .utils a'), function(t){
-        t.classList.toggle('on', +t.getAttribute('data-part') === part);
-      });
-    }
+    if (showAll) setPart(PART_OF[cur.id]);
     var a = links[cur.id];
     if (!a || a === active) return;
     if (active) active.classList.remove('on');
@@ -2976,8 +2991,11 @@ $ ip rule show
   });
   function openTarget(hash){
     if (!hash || hash.length < 2) return;
-    var el = document.getElementById(hash.slice(1));
-    var d = el && el.querySelector('details');
+    var id = hash.slice(1);
+    var el = document.getElementById(id);
+    if (!el) return;
+    if (!showAll && PART_OF[id] !== undefined) setPart(PART_OF[id]);
+    var d = el.querySelector('details');
     if (d) d.open = true;
   }
   document.addEventListener('click', function(e){
@@ -2985,7 +3003,16 @@ $ ip rule show
     if (a) openTarget(a.getAttribute('href'));
   });
   addEventListener('hashchange', function(){ openTarget(location.hash); spy(); });
-  addEventListener('beforeprint', function(){ setAll(true); });
+  if (allBtn) allBtn.addEventListener('click', function(e){
+    e.preventDefault();
+    showAll = !showAll;
+    allBtn.classList.toggle('on', showAll);
+    allBtn.textContent = showAll ? 'One part at a time' : 'Show all';
+    applyScope();
+    spy();
+  });
+  addEventListener('beforeprint', function(){ setAll(true); showAll = true; applyScope(); });
+  setPart(location.hash.length > 1 && PART_OF[location.hash.slice(1)] !== undefined ? PART_OF[location.hash.slice(1)] : 0);
   openTarget(location.hash);
 
   function onScroll(){ if (!ticking){ ticking = true; requestAnimationFrame(spy); } }
