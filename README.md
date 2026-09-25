@@ -27,6 +27,12 @@ The through-line: give each tenant its own table, and make the identifier travel
 packet. MPLS does it with a VPN label, VXLAN with a VNI, VLAN with twelve bits, the kernel
 with a namespace — and it is the same idea every time.
 
+## Where to start
+
+The page opens with four reading paths — new to this, you run a cluster, you're
+buying hardware, or the whole thing top to bottom. Every section also carries the
+question it answers, so a collapsed page reads as an index you can scan.
+
 ## Reading it locally
 
 ```bash

@@ -114,6 +114,14 @@ section > details[open] > summary::after{transform:translateY(-25%) rotate(-135d
 section > details > summary:hover::after{border-color:var(--ink);}
 section > details > summary:focus-visible{outline:2px solid var(--ink);outline-offset:6px;border-radius:4px;}
 .sec-body{display:flex;flex-direction:column;gap:22px;padding-top:9px;}
+.q{font-size:.95rem;line-height:1.4;color:var(--ink-soft);max-width:62ch;}
+.paths{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:18px 26px;border-top:1px solid var(--rule);padding-top:22px;margin-top:18px;}
+.path{display:flex;flex-direction:column;gap:6px;}
+.path b{font-family:var(--mono);font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;font-weight:500;color:var(--ink-soft);}
+.path span{font-size:.92rem;line-height:1.45;}
+.hops{font-family:var(--mono);font-size:.82rem;display:flex;flex-wrap:wrap;gap:8px;}
+.hops a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--rule);}
+.hops a:hover{border-bottom-color:var(--ink);}
 .seq{display:flex;justify-content:space-between;gap:24px;border-top:1px solid var(--rule);padding-top:18px;margin-top:6px;}
 .seq a{display:flex;flex-direction:column;gap:3px;text-decoration:none;color:var(--ink);font-size:.92rem;max-width:47%;}
 .seq a span{font-family:var(--mono);font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);}
@@ -395,6 +403,29 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
     <span><i style="background:var(--kn)"></i> the host kernel</span>
   </div>
 
+  <div class="paths">
+    <div class="path">
+      <b>New to all this</b>
+      <span>Start with the four that stand alone, then fill in around them.</span>
+      <div class="hops"><a href="#s01">01</a> <a href="#s07">07</a> <a href="#s11">11</a> <a href="#s14">14</a></div>
+    </div>
+    <div class="path">
+      <b>You run a cluster</b>
+      <span>The tenancy thread, from the fabric down to the policy engine.</span>
+      <div class="hops"><a href="#s13">13</a> <a href="#s16">16</a> <a href="#s17">17</a> <a href="#s18">18</a></div>
+    </div>
+    <div class="path">
+      <b>You’re buying hardware</b>
+      <span>What the money goes on, and which numbers are load-bearing.</span>
+      <div class="hops"><a href="#s18">18</a> <a href="#s12">12</a> <a href="#s13">13</a></div>
+    </div>
+    <div class="path">
+      <b>The whole thing</b>
+      <span>Open Origins and follow Next. It is built to be read downward.</span>
+      <div class="hops"><a href="#s00">00</a></div>
+    </div>
+  </div>
+
   <nav class="toc">
     <div>
       <div class="toc-h">I · Between networks</div>
@@ -449,6 +480,7 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
     <summary>
       <div class="eyebrow">Origins</div>
       <h2>Who built this, and what for</h2>
+      <p class="q">Why does networking look the way it does?</p>
     </summary>
     <div class="sec-body">
       <p class="lede">Almost nothing here was designed. Each piece was added by someone with a specific problem, on top of whatever was already deployed — which is why the result layers the way it does.</p>
@@ -492,6 +524,7 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
     <summary>
       <div class="eyebrow">01 — The shape of it</div>
       <h2>Two problems, not one</h2>
+      <p class="q">Why isn’t there just one routing protocol?</p>
     </summary>
     <div class="sec-body">
       <p class="lede">Inside a network, routing is an engineering question: which way is fastest? Between networks, it is a business question: whose traffic am I willing to carry?</p>
@@ -589,6 +622,7 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
     <summary>
       <div class="eyebrow">02 — The family tree</div>
       <h2>Three ways to answer “which way?”</h2>
+      <p class="q">What are all these protocols, and how do they differ?</p>
     </summary>
     <div class="sec-body">
       <p class="lede">Every routing protocol differs on two axes: who you talk to, and what you tell them.</p>
@@ -651,6 +685,7 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
     <summary>
       <div class="eyebrow">03 — The exterior one</div>
       <h2>BGP: a distance vector protocol that shows its work</h2>
+      <p class="q">How do two networks that don’t trust each other agree on a route?</p>
     </summary>
     <div class="sec-body">
       <p class="lede">Carrying the full AS path solves the loop problem outright — and doubles as the raw material for policy. Here is what actually moves between two speakers.</p>
@@ -824,6 +859,7 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
     <summary>
       <div class="eyebrow">04 — MPLS</div>
       <h2>Stop asking where, start asking which</h2>
+      <p class="q">Why forward on a label instead of an address?</p>
     </summary>
     <div class="sec-body">
       <p class="lede">MPLS puts a short fixed label in front of the packet. Every router after the first one matches that label exactly, and never looks at the IP address again.</p>
@@ -927,6 +963,7 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
     <summary>
       <div class="eyebrow">05 — Multi-tenancy</div>
       <h2>One address, many tenants</h2>
+      <p class="q">How can two customers both use 10.0.0.0/8 on one network?</p>
     </summary>
     <div class="sec-body">
       <p class="lede">Two customers both use <code>10.0.0.0/8</code> and both cross the same core. Nothing collides, because in the core the packet is never routed by its address — the label carries the tenant.</p>
@@ -1034,6 +1071,7 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
     <summary>
       <div class="eyebrow">06 — Sessions all the way down</div>
       <h2>Four conversations, each useless without the one below</h2>
+      <p class="q">What has to come up, and in what order, before anything works?</p>
     </summary>
     <div class="sec-body">
       <p class="lede">Everything in this part runs at once, on the same routers, over the same links. What makes it work is the order — and what makes it fail is that the order is never enforced.</p>
@@ -1187,6 +1225,7 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
     <summary>
       <div class="eyebrow">07 — The two interior styles</div>
       <h2>Tell your neighbours everything, or tell everyone one thing</h2>
+      <p class="q">How does a router learn about a network it cannot see?</p>
     </summary>
     <div class="sec-body">
       <p class="lede">This single choice decides the memory a router needs, how fast the network heals, and how badly it fails.</p>
@@ -1379,6 +1418,7 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
     <summary>
       <div class="eyebrow">08 — Bookkeeping</div>
       <h2>Every protocol keeps its own books</h2>
+      <p class="q">Where do routes live before they reach the routing table?</p>
     </summary>
     <div class="sec-body">
       <p class="lede">A protocol’s database is not the routing table. Each one maintains a private view, argues with its peers inside that view, and submits a single candidate per prefix to the router it happens to be running on.</p>
@@ -1530,6 +1570,7 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
     <summary>
       <div class="eyebrow">09 — Inside one router</div>
       <h2>How the winner is actually chosen</h2>
+      <p class="q">Four protocols offer the same prefix. Which one wins?</p>
     </summary>
     <div class="sec-body">
       <p class="lede">Protocols only propose. A single router may hear about the same destination from four of them at once.</p>
@@ -1576,6 +1617,7 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
     <summary>
       <div class="eyebrow">10 — Quick reference</div>
       <h2>The protocols, with their real numbers</h2>
+      <p class="q">Which protocol should I expect to find where?</p>
     </summary>
     <div class="sec-body">
 
@@ -1648,6 +1690,7 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
     <summary>
       <div class="eyebrow">11 — VLAN</div>
       <h2>Twelve bits that split a switch</h2>
+      <p class="q">How does one cable carry several separate networks?</p>
     </summary>
     <div class="sec-body">
       <p class="lede">One physical Ethernet, many broadcast domains. A four-byte tag, inserted on the way in and removed on the way out, so the hosts on either end never learn they were sharing.</p>
@@ -1755,6 +1798,7 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
     <summary>
       <div class="eyebrow">12 — VXLAN</div>
       <h2>An Ethernet segment inside a UDP packet</h2>
+      <p class="q">What do you do when 4,094 VLANs isn’t enough?</p>
     </summary>
     <div class="sec-body">
       <p class="lede">Wrap the whole frame in an ordinary IP packet and the L2 domain stops being a cabling problem. Twenty-four bits of tenant id instead of twelve, and a routed fabric underneath that can use every link it has.</p>
@@ -1872,6 +1916,7 @@ $ bridge fdb show dev vxlan0
     <summary>
       <div class="eyebrow">13 — EVPN</div>
       <h2>The underlay has to stay boring</h2>
+      <p class="q">What tells every switch where a tenant’s addresses are?</p>
     </summary>
     <div class="sec-body">
       <p class="lede">VXLAN moves the packet. Something still has to decide where to send it — and that job is split across two routing protocols that must never be handed each other’s work.</p>
@@ -1989,6 +2034,7 @@ $ bridge fdb show dev vxlan0
     <summary>
       <div class="eyebrow">14 — Virtual Ethernet</div>
       <h2>A cable that is really a pointer</h2>
+      <p class="q">How does a container’s network reach the outside world?</p>
     </summary>
     <div class="sec-body">
       <p class="lede">Below the NIC, the same problem repeats at a thousandth of the scale: two network stacks on one machine that need a link between them. The kernel’s answer is a pair of devices that are each other’s transmit path.</p>
@@ -2105,6 +2151,7 @@ $ ip -d link show | grep -A1 '^12:'
     <summary>
       <div class="eyebrow">15 — Network namespaces</div>
       <h2>Not a filter over the stack — another copy of it</h2>
+      <p class="q">What exactly does a container get its own copy of?</p>
     </summary>
     <div class="sec-body">
       <p class="lede">The kernel’s answer to tenancy is the most thorough one in this guide and the only one that puts nothing on the wire at all.</p>
@@ -2206,6 +2253,7 @@ default via 10.244.3.1 dev eth0
     <summary>
       <div class="eyebrow">16 — VRF on Linux</div>
       <h2>The same idea, one layer down</h2>
+      <p class="q">How does one Linux box hold several routing tables?</p>
     </summary>
     <div class="sec-body">
       <p class="lede">You have already met VRF, in <a href="#s05" style="color:inherit">section 05</a>, as what a provider edge router keeps per tenant. It is not a host concept and has no scale of its own — a PE, a switch and a laptop all mean the same thing by it. What is specific here is the implementation, and what it buys: separate routing tables, but one firewall, one conntrack and one agent that can see all of them.</p>
@@ -2310,6 +2358,7 @@ $ ip rule show
     <summary>
       <div class="eyebrow">17 — Identity, not address</div>
       <h2>When the address stops meaning anything</h2>
+      <p class="q">How do you write a firewall rule when addresses are recycled every minute?</p>
     </summary>
     <div class="sec-body">
       <p class="lede">Every mechanism so far assumes an address identifies a tenant. In a cluster it identifies nothing: pod addresses are handed out from a node’s range and reused within seconds.</p>
@@ -2396,6 +2445,7 @@ $ ip rule show
     <summary>
       <div class="eyebrow">18 — A worked design</div>
       <h2>A neocloud, built</h2>
+      <p class="q">What does all of this look like in one actual building?</p>
     </summary>
     <div class="sec-body">
       <p class="lede">A concrete build, with the arithmetic shown. Numbers are worked from stated assumptions rather than quoted — change an assumption and the shape changes with it.</p>
@@ -2795,6 +2845,7 @@ $ ip rule show
     <summary>
       <div class="eyebrow">Coda</div>
       <h2>Where the tenant identifier lives</h2>
+      <p class="q">Is there a single idea underneath all of it?</p>
     </summary>
     <div class="sec-body">
 
