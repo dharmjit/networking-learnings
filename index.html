@@ -244,7 +244,7 @@ td.num{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--ink
 .brand{font-family:var(--mono);font-weight:600;font-size:.86rem;letter-spacing:-.025em;color:var(--ink);text-decoration:none;white-space:nowrap;}
 .brand em{font-style:normal;color:var(--ink-soft);}
 .parts{display:flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden;background:var(--surface);flex:none;}
-.parts a{font-family:var(--mono);font-size:.72rem;padding:7px 14px;text-decoration:none;color:var(--ink-soft);border-right:1px solid var(--rule);white-space:nowrap;transition:background .15s ease,color .15s ease;}
+.parts a{font-family:var(--mono);font-size:.7rem;padding:7px 12px;text-decoration:none;color:var(--ink-soft);border-right:1px solid var(--rule);white-space:nowrap;transition:background .15s ease,color .15s ease;}
 .parts a:last-child{border-right:0;}
 .parts a:hover{color:var(--ink);}
 .parts a.on{background:var(--ink);color:var(--paper);}
@@ -253,7 +253,7 @@ td.num{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--ink
 .utils a:hover{color:var(--ink);}
 .utils a.on{color:var(--ink);border-bottom:1px solid var(--ink);}
 
-@media (max-width:1180px){
+@media (max-width:1340px){
   .brand{display:none;}
 }
 
@@ -280,7 +280,7 @@ td.num{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--ink
 .part-d{font-size:1.04rem;color:var(--ink-soft);max-width:62ch;}
 .part + section{border-top:0;padding-top:28px;}
 section[id]{scroll-margin-top:72px;}
-.toc{display:grid;grid-template-columns:repeat(5,1fr);gap:22px 30px;border-top:1px solid var(--rule);padding-top:24px;margin-top:14px;}
+.toc{display:grid;grid-template-columns:repeat(3,1fr);gap:22px 30px;border-top:1px solid var(--rule);padding-top:24px;margin-top:14px;}
 .toc-h{font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:11px;}
 .toc ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:7px;}
 .toc li{font-size:.9rem;display:flex;gap:10px;}
@@ -343,13 +343,14 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
   <nav class="parts" aria-label="Parts">
     <a href="#s01" data-part="1">Between networks</a>
     <a href="#s07" data-part="2">Inside one network</a>
-    <a href="#s11" data-part="3">One wire, many networks</a>
-    <a href="#s14" data-part="4">Network as software</a>
-    <a href="#s18" data-part="5">DC networking</a>
+    <a href="#s11" data-part="3">Inside one subnet</a>
+    <a href="#s12" data-part="4">One wire, many networks</a>
+    <a href="#s15" data-part="5">Network as software</a>
+    <a href="#s19" data-part="6">DC networking</a>
   </nav>
   <nav class="utils">
     <a href="#s00" data-part="0">Origins</a>
-    <a href="#glossary" data-part="6">Glossary</a>
+    <a href="#glossary" data-part="7">Glossary</a>
     <a href="#" id="showAll">Show all</a>
   </nav>
 </header>
@@ -377,23 +378,27 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
         <a href="#s10"><span>10</span>Quick reference</a>
     </div>
     <div class="rail-g" data-part="3" hidden>
-      <div class="rail-h">III · One wire, many networks</div>
-        <a href="#s11"><span>11</span>VLAN — twelve bits</a>
-        <a href="#s12"><span>12</span>VXLAN &amp; EVPN</a>
-        <a href="#s13"><span>13</span>EVPN control plane</a>
+      <div class="rail-h">III · Inside one subnet</div>
+        <a href="#s11"><span>11</span>The last place you can shout</a>
     </div>
     <div class="rail-g" data-part="4" hidden>
-      <div class="rail-h">IV · When the network becomes software</div>
-        <a href="#s14"><span>14</span>Virtual Ethernet</a>
-        <a href="#s15"><span>15</span>Network namespaces</a>
-        <a href="#s16"><span>16</span>VRF on Linux</a>
-        <a href="#s17"><span>17</span>Identity, not address</a>
+      <div class="rail-h">IV · One wire, many networks</div>
+        <a href="#s12"><span>12</span>VLAN — twelve bits</a>
+        <a href="#s13"><span>13</span>VXLAN &amp; EVPN</a>
+        <a href="#s14"><span>14</span>EVPN control plane</a>
     </div>
     <div class="rail-g" data-part="5" hidden>
-      <div class="rail-h">V · A datacentre, end to end</div>
-        <a href="#s18"><span>18</span>A neocloud, built</a>
+      <div class="rail-h">V · When the network becomes software</div>
+        <a href="#s15"><span>15</span>Virtual Ethernet</a>
+        <a href="#s16"><span>16</span>Network namespaces</a>
+        <a href="#s17"><span>17</span>VRF on Linux</a>
+        <a href="#s18"><span>18</span>Identity, not address</a>
     </div>
     <div class="rail-g" data-part="6" hidden>
+      <div class="rail-h">VI · A datacentre, end to end</div>
+        <a href="#s19"><span>19</span>A neocloud, built</a>
+    </div>
+    <div class="rail-g" data-part="7" hidden>
       <div class="rail-h">Reference</div>
         <a href="#coda"><span>—</span>Coda · one idea, five times</a>
         <a href="#glossary"><span>—</span>Glossary</a>
@@ -419,17 +424,17 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
     <div class="path">
       <b>New to all this</b>
       <span>Start with the four that stand alone, then fill in around them.</span>
-      <div class="hops"><a href="#s01">01</a> <a href="#s07">07</a> <a href="#s11">11</a> <a href="#s14">14</a></div>
+      <div class="hops"><a href="#s01">01</a> <a href="#s07">07</a> <a href="#s12">11</a> <a href="#s15">14</a></div>
     </div>
     <div class="path">
       <b>You run a cluster</b>
       <span>The tenancy thread, from the fabric down to the policy engine.</span>
-      <div class="hops"><a href="#s13">13</a> <a href="#s16">16</a> <a href="#s17">17</a> <a href="#s18">18</a></div>
+      <div class="hops"><a href="#s14">13</a> <a href="#s17">16</a> <a href="#s18">17</a> <a href="#s19">18</a></div>
     </div>
     <div class="path">
       <b>You’re buying hardware</b>
       <span>What the money goes on, and which numbers are load-bearing.</span>
-      <div class="hops"><a href="#s18">18</a> <a href="#s12">12</a> <a href="#s13">13</a></div>
+      <div class="hops"><a href="#s19">18</a> <a href="#s13">12</a> <a href="#s14">13</a></div>
     </div>
     <div class="path">
       <b>The whole thing</b>
@@ -460,26 +465,32 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
       </ul>
     </div>
     <div>
-      <div class="toc-h">III · One wire, many networks</div>
+      <div class="toc-h">III · Inside one subnet</div>
       <ul>
-        <li><span class="no">11</span><a href="#s11">VLAN — twelve bits</a></li>
-        <li><span class="no">12</span><a href="#s12">VXLAN &amp; EVPN</a></li>
-        <li><span class="no">13</span><a href="#s13">EVPN control plane</a></li>
+        <li><span class="no">11</span><a href="#s11">The last place you can shout</a></li>
       </ul>
     </div>
     <div>
-      <div class="toc-h">IV · When the network becomes software</div>
+      <div class="toc-h">IV · One wire, many networks</div>
       <ul>
-        <li><span class="no">14</span><a href="#s14">Virtual Ethernet</a></li>
-        <li><span class="no">15</span><a href="#s15">Network namespaces</a></li>
-        <li><span class="no">16</span><a href="#s16">VRF on Linux</a></li>
-        <li><span class="no">17</span><a href="#s17">Identity, not address</a></li>
+        <li><span class="no">12</span><a href="#s12">VLAN — twelve bits</a></li>
+        <li><span class="no">13</span><a href="#s13">VXLAN &amp; EVPN</a></li>
+        <li><span class="no">14</span><a href="#s14">EVPN control plane</a></li>
       </ul>
     </div>
     <div>
-      <div class="toc-h">V · A datacentre, end to end</div>
+      <div class="toc-h">V · When the network becomes software</div>
       <ul>
-        <li><span class="no">18</span><a href="#s18">A neocloud, built</a></li>
+        <li><span class="no">15</span><a href="#s15">Virtual Ethernet</a></li>
+        <li><span class="no">16</span><a href="#s16">Network namespaces</a></li>
+        <li><span class="no">17</span><a href="#s17">VRF on Linux</a></li>
+        <li><span class="no">18</span><a href="#s18">Identity, not address</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="toc-h">VI · A datacentre, end to end</div>
+      <ul>
+        <li><span class="no">19</span><a href="#s19">A neocloud, built</a></li>
       </ul>
     </div>
   </nav>
@@ -1166,7 +1177,7 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
       <div class="tag" style="color:var(--mp)">At the edge · VRF</div>
       <ul>
         <li>The PE keeps a <b>separate RIB and FIB per tenant</b>. Customer interfaces are bound to one VRF.</li>
-        <li>Blue’s <code>10.0.0.0/8</code> and red’s are rows in two different tables that never meet — no more magic than <a href="#s15" style="color:inherit">two network namespaces</a> on one host — and Linux has the VRF abstraction itself, in <a href="#s16" style="color:inherit">section 16</a>.</li>
+        <li>Blue’s <code>10.0.0.0/8</code> and red’s are rows in two different tables that never meet — no more magic than <a href="#s16" style="color:inherit">two network namespaces</a> on one host — and Linux has the VRF abstraction itself, in <a href="#s17" style="color:inherit">section 17</a>.</li>
         <li>P routers in the core hold <b>zero</b> tenant routes, which is the whole scaling argument.</li>
       </ul>
     </div>
@@ -1188,7 +1199,7 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
     </div>
   </div>
 
-  <div class="note"><b>The catch:</b> this buys isolation, not interoperability. Blue’s <code>10.1.1.1</code> and red’s still cannot talk to each other — joining them needs NAT or a shared-services VRF with non-overlapping addressing. Overlap is only free while the two tenants stay strangers. The same shape turns up in <a href="#s12" style="color:inherit"><em>VXLAN/EVPN</em></a>, where the VNI plays the VPN label’s part and the RD/RT model is borrowed wholesale: the tenant identifier has to travel <b>with</b> the packet, because the address stopped being unique.</div>
+  <div class="note"><b>The catch:</b> this buys isolation, not interoperability. Blue’s <code>10.1.1.1</code> and red’s still cannot talk to each other — joining them needs NAT or a shared-services VRF with non-overlapping addressing. Overlap is only free while the two tenants stay strangers. The same shape turns up in <a href="#s13" style="color:inherit"><em>VXLAN/EVPN</em></a>, where the VNI plays the VPN label’s part and the RD/RT model is borrowed wholesale: the tenant identifier has to travel <b>with</b> the packet, because the address stopped being unique.</div>
       <nav class="seq">
         <a class="seq-prev" href="#s04"><span>Previous</span>04 — MPLS</a>
         <a class="seq-next" href="#s06"><span>Next</span>06 — Sessions all the way down</a>
@@ -1804,21 +1815,126 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
   <p class="body">Two of these have outlived their category. <em>IS-IS</em> won the carrier core because it doesn’t ride on IP and can carry new address families without a new protocol version. <em>BGP</em> escaped the border entirely — it now distributes VPN routes, EVPN MAC addresses and data-centre fabrics <em>inside</em> networks, doing a job its name says it shouldn’t.</p>
       <nav class="seq">
         <a class="seq-prev" href="#s09"><span>Previous</span>09 — Inside one router</a>
-        <a class="seq-next" href="#s11"><span>Next</span>11 — VLAN</a>
+        <a class="seq-next" href="#s11"><span>Next</span>11 — The last place you can shout</a>
       </nav>
     </div>
   </details>
 </section>
 <div class="part" data-part="3">
   <div class="part-n">Part III</div>
-  <div class="part-t">One wire, many networks</div>
-  <p class="part-d">Section 05 solved this for routes: give every tenant its own table and carry an identifier with the packet. Two layers down, the same answer gets rebuilt twice — once in twelve bits, once in twenty-four.</p>
+  <div class="part-t">Inside one subnet</div>
+  <p class="part-d">One broadcast domain — the set of machines that reach each other with no router in between. Everything above this was about getting between such places; this is what happens inside one.</p>
 </div>
 
 <section id="s11">
   <details open>
     <summary>
-      <div class="eyebrow">11 — VLAN</div>
+      <div class="eyebrow">11 — Inside one subnet</div>
+      <h2>The last place you can shout</h2>
+      <p class="q">How does a machine find the MAC address for an IP it has never talked to?</p>
+    </summary>
+    <div class="sec-body">
+      <p class="lede">A subnet is not an addressing convention, it is a <em>scope</em> — and inside it you can ask a question of everyone at once. That single ability is what makes address resolution work, what lets a switch learn without ever being configured, and what eventually stops the whole thing scaling.</p>
+
+      <figure class="wide">
+        <svg viewBox="0 0 1040 400" role="img" aria-label="A sequence diagram: host A broadcasts an ARP request, the switch learns A from the frame's source address and floods the request to every other port, host B replies by unicast, the switch learns B, and the reply is forwarded to one port only.">
+      <rect class="s-box" x="55" y="40" width="170" height="46" rx="8"/>
+      <text class="s-t" x="140" y="60" text-anchor="middle">host A</text>
+      <text class="s-ts" x="140" y="78" text-anchor="middle">10.0.1.9 · aa:…:01</text>
+      <line x1="140" y1="86" x2="140" y2="352" stroke="var(--rule)" stroke-width="1.2" stroke-dasharray="4 5"/>
+      <rect class="s-box" x="315" y="40" width="170" height="46" rx="8"/>
+      <text class="s-t" x="400" y="60" text-anchor="middle">switch</text>
+      <text class="s-ts" x="400" y="78" text-anchor="middle">forwarding table</text>
+      <line x1="400" y1="86" x2="400" y2="352" stroke="var(--rule)" stroke-width="1.2" stroke-dasharray="4 5"/>
+      <rect class="s-box" x="595" y="40" width="170" height="46" rx="8"/>
+      <text class="s-t" x="680" y="60" text-anchor="middle">host B</text>
+      <text class="s-ts" x="680" y="78" text-anchor="middle">10.0.1.5 · bb:…:05</text>
+      <line x1="680" y1="86" x2="680" y2="352" stroke="var(--rule)" stroke-width="1.2" stroke-dasharray="4 5"/>
+      <rect class="s-box" x="825" y="40" width="150" height="46" rx="8"/>
+      <text class="s-t" x="900" y="60" text-anchor="middle">hosts C · D</text>
+      <line x1="900" y1="86" x2="900" y2="352" stroke="var(--rule)" stroke-width="1.2" stroke-dasharray="4 5"/>
+      <g class="mp"><line class="s-flow" x1="140" y1="128" x2="400" y2="128" marker-end="url(#aSub)"/></g>
+      <text class="s-ts" x="150" y="118">“who has 10.0.1.5?” · dst ff:ff:ff:ff:ff:ff</text>
+      <rect class="s-box" x="322" y="148" width="330" height="26" rx="6"/>
+      <text class="s-ts" x="334" y="165">learns aa:…:01 is on port 1 — from the source field</text>
+      <g class="mp"><line class="s-flow" x1="400" y1="212" x2="900" y2="212" marker-end="url(#aSub)"/></g>
+      <text class="s-ts" x="410" y="202">flooded to every other port — nobody said where .5 is</text>
+      <circle cx="680" cy="212" r="3.5" fill="var(--mp)"/>
+      <g class="ls"><line class="s-flow" x1="680" y1="258" x2="400" y2="258" marker-end="url(#aSub)"/></g>
+      <text class="s-ts" x="410" y="248">“I do” · dst aa:…:01 · unicast, not broadcast</text>
+      <rect class="s-box" x="322" y="278" width="300" height="26" rx="6"/>
+      <text class="s-ts" x="334" y="295">learns bb:…:05 is on port 3</text>
+      <g class="ls"><line class="s-flow" x1="400" y1="332" x2="140" y2="332" marker-end="url(#aSub)"/></g>
+      <text class="s-ts" x="150" y="322">forwarded to one port only</text>
+      <circle cx="22" cy="128" r="10" fill="var(--mp)"/><text x="22" y="132" text-anchor="middle" font-family="var(--mono)" font-size="11" font-weight="600" fill="var(--paper)">1</text>
+      <circle cx="22" cy="161" r="10" fill="var(--mp)"/><text x="22" y="165" text-anchor="middle" font-family="var(--mono)" font-size="11" font-weight="600" fill="var(--paper)">2</text>
+      <circle cx="22" cy="212" r="10" fill="var(--mp)"/><text x="22" y="216" text-anchor="middle" font-family="var(--mono)" font-size="11" font-weight="600" fill="var(--paper)">3</text>
+      <circle cx="22" cy="258" r="10" fill="var(--mp)"/><text x="22" y="262" text-anchor="middle" font-family="var(--mono)" font-size="11" font-weight="600" fill="var(--paper)">4</text>
+      <circle cx="22" cy="332" r="10" fill="var(--mp)"/><text x="22" y="336" text-anchor="middle" font-family="var(--mono)" font-size="11" font-weight="600" fill="var(--paper)">5</text>
+        <text class="s-ts" x="520" y="382" text-anchor="middle">two addresses learned, nothing configured — the table is a side effect of traffic</text>
+          <defs><marker id="aSub" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker></defs>
+        </svg>
+        <div class="walk">
+          <div><b>1</b><span><em>A shouts.</em> It has an IP and needs a MAC, so it sends an ARP request to the broadcast address — every machine in the subnet must look at it.</span></div>
+          <div><b>2</b><span><em>The switch learns A for free.</em> Not from the question, from the envelope: the frame’s <em>source</em> address plus the port it arrived on.</span></div>
+          <div><b>3</b><span><em>It floods the question.</em> Nobody has ever told it where <code>10.0.1.5</code> lives, so it sends the frame everywhere except back the way it came.</span></div>
+          <div><b>4</b><span><em>B answers, quietly.</em> The reply is <b>unicast</b> — B knows exactly who asked. The switch learns B from that frame’s source.</span></div>
+          <div><b>5</b><span><em>And now it forwards.</em> One port, not four. The next conversation between A and B never troubles anybody else.</span></div>
+        </div>
+        <figcaption>Two machines learned each other’s addresses and a switch built a forwarding table, and <b>nothing in that exchange was configured by anyone</b>. That is the bargain of a broadcast domain: no configuration, paid for by everyone having to listen.</figcaption>
+      </figure>
+
+      <div class="trio">
+        <div class="card mpc">
+          <div class="tag" style="color:var(--mp)">ARP, concretely</div>
+          <ul>
+            <li>Request is <b>broadcast</b>, reply is <b>unicast</b>. Only the question costs everybody something.</li>
+            <li>The answer is cached in the <b>neighbour table</b> — <code>ip neigh</code> — with states you can watch: <code>REACHABLE</code>, <code>STALE</code>, <code>DELAY</code>, <code>PROBE</code>, <code>FAILED</code>.</li>
+            <li>IPv6 has no ARP. <b>NDP</b> does the same job over ICMPv6 <em>multicast</em>, so only the machines that might care are interrupted.</li>
+            <li><b>Gratuitous ARP</b> is an unsolicited announcement — “this address is mine now”. It is how a floating IP tells a subnet it has moved.</li>
+          </ul>
+        </div>
+        <div class="card mpc">
+          <div class="tag" style="color:var(--mp)">How a switch learns</div>
+          <ul>
+            <li>It reads the <b>source</b> address of every frame and notes which port it came from. Nothing else.</li>
+            <li>Unknown destination? <b>Flood it.</b> Not a failure — the only correct thing to do, and how the table fills.</li>
+            <li>Entries <b>age out</b>, typically after five minutes. The table is a cache, not a record.</li>
+            <li>Which is why a switch needs no configuration to work, and why a misconfigured one still forwards.</li>
+          </ul>
+        </div>
+        <div class="card mpc">
+          <div class="tag" style="color:var(--mp)">BUM, and the ceiling</div>
+          <ul>
+            <li><b>B</b>roadcast, <b>U</b>nknown unicast, <b>M</b>ulticast — the three kinds of frame that go everywhere.</li>
+            <li>Every host’s NIC and CPU pays for every one of them, whether or not it cares.</li>
+            <li>The MAC table is finite. Overflow it and the switch floods <em>permanently</em>, because it can no longer remember where anything is.</li>
+            <li>This, not address space, is what limits how big a subnet can usefully be.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="note"><b>And loops here are fatal, not merely bad.</b> An Ethernet header has no TTL. A broadcast frame that finds a loop circulates until the link saturates — and since it is being flooded, it multiplies at every switch on the way round. That is why <em>spanning tree</em> exists: it finds the loops and <b>blocks</b> the redundant links, which means paying for bandwidth you are then forbidden to use. Radia Perlman, 1985, and it is the grievance every design in the next part is trying to settle.</div>
+
+      <div class="note"><b>So where does a subnet end?</b> At a router — that is the whole definition, and the netmask has almost nothing to do with it. <code>/24</code> is not a property of the wire; it is the number a host consults to answer exactly one question: <em>is this destination somewhere I can shout at, or do I hand the frame to my gateway?</em> Get the mask wrong on one host and it ARPs for addresses nobody will answer, or routes to things that were sitting beside it all along.</div>
+      <nav class="seq">
+        <a class="seq-prev" href="#s10"><span>Previous</span>10 — Quick reference</a>
+        <a class="seq-next" href="#s12"><span>Next</span>12 — VLAN — twelve bits</a>
+      </nav>
+    </div>
+  </details>
+</section>
+
+<div class="part" data-part="4">
+  <div class="part-n">Part IV</div>
+  <div class="part-t">One wire, many networks</div>
+  <p class="part-d">Section 05 solved this for routes: give every tenant its own table and carry an identifier with the packet. Two layers down, the same answer gets rebuilt twice — once in twelve bits, once in twenty-four.</p>
+</div>
+
+<section id="s12">
+  <details open>
+    <summary>
+      <div class="eyebrow">12 — VLAN</div>
       <h2>Twelve bits that split a switch</h2>
       <p class="q">How does one cable carry several separate networks?</p>
     </summary>
@@ -1916,17 +2032,17 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
     </div>
   </div>
       <nav class="seq">
-        <a class="seq-prev" href="#s10"><span>Previous</span>10 — Quick reference</a>
-        <a class="seq-next" href="#s12"><span>Next</span>12 — VXLAN</a>
+        <a class="seq-prev" href="#s11"><span>Previous</span>11 — The last place you can shout</a>
+        <a class="seq-next" href="#s13"><span>Next</span>13 — VXLAN & EVPN</a>
       </nav>
     </div>
   </details>
 </section>
 
-<section id="s12">
+<section id="s13">
   <details open>
     <summary>
-      <div class="eyebrow">12 — VXLAN</div>
+      <div class="eyebrow">13 — VXLAN</div>
       <h2>An Ethernet segment inside a UDP packet</h2>
       <p class="q">What do you do when 4,094 VLANs isn’t enough?</p>
     </summary>
@@ -2034,17 +2150,17 @@ $ bridge fdb show dev vxlan0
 
   <div class="note"><b>Read this next to section 05 and it is the same architecture twice.</b> The VNI is the VPN label; the VTEP is the PE; the routed fabric is the P core that knows nothing about tenants; MP-BGP distributes membership in both. MPLS built it for carriers with label switching in the middle; VXLAN rebuilt it for datacentres with plain IP in the middle, because every device already knew how to forward that. <em>Give each tenant its own table, and make the identifier travel with the packet</em> — that is the whole idea, at every layer this guide visits.</div>
       <nav class="seq">
-        <a class="seq-prev" href="#s11"><span>Previous</span>11 — VLAN</a>
-        <a class="seq-next" href="#s13"><span>Next</span>13 — EVPN control plane</a>
+        <a class="seq-prev" href="#s12"><span>Previous</span>12 — VLAN — twelve bits</a>
+        <a class="seq-next" href="#s14"><span>Next</span>14 — EVPN control plane</a>
       </nav>
     </div>
   </details>
 </section>
 
-<section id="s13">
+<section id="s14">
   <details open>
     <summary>
-      <div class="eyebrow">13 — EVPN</div>
+      <div class="eyebrow">14 — EVPN</div>
       <h2>The underlay has to stay boring</h2>
       <p class="q">What tells every switch where a tenant’s addresses are?</p>
     </summary>
@@ -2146,23 +2262,23 @@ $ bridge fdb show dev vxlan0
 
   <div class="note"><b>Three things that bite, in rough order of how long they take to find.</b> A route reflector holds no VRF for your tenants, so RT import finds no match and the default behaviour on many platforms is to <em>discard</em> the route — silently breaking the overlay until route-target filtering is disabled on the RRs. Route distinguishers should stay auto-derived per switch: that is what lets a reflector keep several paths to one prefix from different leaves, and pinning a single RD across leaves collapses your ECMP at the reflector. And the underlay MTU must carry the tenant MTU plus the encapsulation, or you get the familiar shape — pings fine, large transfers vanish.</div>
       <nav class="seq">
-        <a class="seq-prev" href="#s12"><span>Previous</span>12 — VXLAN</a>
-        <a class="seq-next" href="#s14"><span>Next</span>14 — Virtual Ethernet</a>
+        <a class="seq-prev" href="#s13"><span>Previous</span>13 — VXLAN & EVPN</a>
+        <a class="seq-next" href="#s15"><span>Next</span>15 — Virtual Ethernet</a>
       </nav>
     </div>
   </details>
 </section>
 
-<div class="part" data-part="4">
-  <div class="part-n">Part IV</div>
+<div class="part" data-part="5">
+  <div class="part-n">Part V</div>
   <div class="part-t">When the network becomes software</div>
   <p class="part-d">The last three metres, where a cable is a pointer, a stack is a struct, a routing table is a device and a tenant is a number in a map. Not all of it is host-scoped — one of these is a router concept and one is a cluster concept — but this is where you meet them as code.</p>
 </div>
 
-<section id="s14">
+<section id="s15">
   <details open>
     <summary>
-      <div class="eyebrow">14 — Virtual Ethernet</div>
+      <div class="eyebrow">15 — Virtual Ethernet</div>
       <h2>A cable that is really a pointer</h2>
       <p class="q">How does a container’s network reach the outside world?</p>
     </summary>
@@ -2269,17 +2385,17 @@ $ ip -d link show | grep -A1 '^12:'
 
   <div class="note"><b>On a GPU node this path is the slow lane on purpose.</b> RoCE traffic never enters it: the verbs datapath bypasses the kernel stack completely, which is why an RDMA pod gets an <em>SR-IOV VF alongside</em> its veth rather than instead of it. The veth carries control traffic, health checks and anything that needs a Service IP; the fabric carries the tensors, and the two never meet in the stack.</div>
       <nav class="seq">
-        <a class="seq-prev" href="#s13"><span>Previous</span>13 — EVPN control plane</a>
-        <a class="seq-next" href="#s15"><span>Next</span>15 — Network namespaces</a>
+        <a class="seq-prev" href="#s14"><span>Previous</span>14 — EVPN control plane</a>
+        <a class="seq-next" href="#s16"><span>Next</span>16 — Network namespaces</a>
       </nav>
     </div>
   </details>
 </section>
 
-<section id="s15">
+<section id="s16">
   <details open>
     <summary>
-      <div class="eyebrow">15 — Network namespaces</div>
+      <div class="eyebrow">16 — Network namespaces</div>
       <h2>Not a filter over the stack — another copy of it</h2>
       <p class="q">What exactly does a container get its own copy of?</p>
     </summary>
@@ -2356,7 +2472,7 @@ default via 10.244.3.1 dev eth0
     <div class="card knc">
       <div class="tag" style="color:var(--kn)">What it costs</div>
       <ul>
-        <li>Crossing a boundary needs a <em>device</em>, so every packet pays the two full stack traversals from <a href="#s14" style="color:inherit">section 14</a>.</li>
+        <li>Crossing a boundary needs a <em>device</em>, so every packet pays the two full stack traversals from <a href="#s15" style="color:inherit">section 15</a>.</li>
         <li>Each namespace carries its own conntrack accounting and its own copy of every sysctl you thought you had set. A node-wide tuning change reaches none of them.</li>
         <li>Debugging tools are namespace-blind by default: <code>ss</code>, <code>tcpdump</code> and <code>conntrack -L</code> all report the namespace you happen to be in, which is usually the wrong one.</li>
       </ul>
@@ -2366,22 +2482,22 @@ default via 10.244.3.1 dev eth0
       <ul>
         <li>VLAN puts twelve bits in the frame. MPLS puts a label in the packet. VXLAN puts a VNI in a UDP header.</li>
         <li>A namespace puts <b>nothing anywhere</b>. There is no tenant identifier on the wire, because there is no shared wire — the packet never touches a structure belonging to anyone else.</li>
-        <li>That is why it is both the cleanest isolation available and completely unable to cross a machine. The moment you need two hosts, you are back to <a href="#s12" style="color:inherit">VXLAN</a>.</li>
+        <li>That is why it is both the cleanest isolation available and completely unable to cross a machine. The moment you need two hosts, you are back to <a href="#s13" style="color:inherit">VXLAN</a>.</li>
       </ul>
     </div>
   </div>
       <nav class="seq">
-        <a class="seq-prev" href="#s14"><span>Previous</span>14 — Virtual Ethernet</a>
-        <a class="seq-next" href="#s16"><span>Next</span>16 — VRF on Linux</a>
+        <a class="seq-prev" href="#s15"><span>Previous</span>15 — Virtual Ethernet</a>
+        <a class="seq-next" href="#s17"><span>Next</span>17 — VRF on Linux</a>
       </nav>
     </div>
   </details>
 </section>
 
-<section id="s16">
+<section id="s17">
   <details open>
     <summary>
-      <div class="eyebrow">16 — VRF on Linux</div>
+      <div class="eyebrow">17 — VRF on Linux</div>
       <h2>The same idea, one layer down</h2>
       <p class="q">How does one Linux box hold several routing tables?</p>
     </summary>
@@ -2476,17 +2592,17 @@ $ ip rule show
     </div>
   </div>
       <nav class="seq">
-        <a class="seq-prev" href="#s15"><span>Previous</span>15 — Network namespaces</a>
-        <a class="seq-next" href="#s17"><span>Next</span>17 — Identity, not address</a>
+        <a class="seq-prev" href="#s16"><span>Previous</span>16 — Network namespaces</a>
+        <a class="seq-next" href="#s18"><span>Next</span>18 — Identity, not address</a>
       </nav>
     </div>
   </details>
 </section>
 
-<section id="s17">
+<section id="s18">
   <details open>
     <summary>
-      <div class="eyebrow">17 — Identity, not address</div>
+      <div class="eyebrow">18 — Identity, not address</div>
       <h2>When the address stops meaning anything</h2>
       <p class="q">How do you write a firewall rule when addresses are recycled every minute?</p>
     </summary>
@@ -2557,23 +2673,23 @@ $ ip rule show
     </div>
   </div>
       <nav class="seq">
-        <a class="seq-prev" href="#s16"><span>Previous</span>16 — VRF on Linux</a>
-        <a class="seq-next" href="#s18"><span>Next</span>18 — A neocloud, built</a>
+        <a class="seq-prev" href="#s17"><span>Previous</span>17 — VRF on Linux</a>
+        <a class="seq-next" href="#s19"><span>Next</span>19 — A neocloud, built</a>
       </nav>
     </div>
   </details>
 </section>
 
-<div class="part" data-part="5">
-  <div class="part-n">Part V</div>
+<div class="part" data-part="6">
+  <div class="part-n">Part VI</div>
   <div class="part-t">A datacentre, end to end</div>
   <p class="part-d">Everything above, applied once to a real building: 64 GPU nodes, 8 storage nodes, twelve racks, and tenants who must not be able to reach each other.</p>
 </div>
 
-<section id="s18">
+<section id="s19">
   <details open>
     <summary>
-      <div class="eyebrow">18 — A worked design</div>
+      <div class="eyebrow">19 — A worked design</div>
       <h2>A neocloud, built</h2>
       <p class="q">What does all of this look like in one actual building?</p>
     </summary>
@@ -2956,7 +3072,7 @@ $ ip rule show
       </div>
 
       <nav class="seq">
-        <a class="seq-prev" href="#s17"><span>Previous</span>17 — Identity, not address</a>
+        <a class="seq-prev" href="#s18"><span>Previous</span>18 — Identity, not address</a>
         <a class="seq-next" href="#coda"><span>Next</span>Coda — one idea, five times</a>
       </nav>
       <div class="note"><b>Three things that will bite, in order.</b> <em>The out-of-band network is the one that must never fail</em> — it is how you reach a node whose data plane is broken, so it gets its own switches, its own power feed and no route to any tenant VRF. <em>Storage is east-west traffic wearing a north-south costume</em>: eight nodes serving 64 clients will saturate a 2:1 storage fabric during checkpointing long before anyone complains about the tenant network. And <em>the backend fabric cannot be resized later</em> — rail-optimised cabling is decided at build time, so the number of rails you can grow to is a decision you are making now, whether or not you know it.</div>
@@ -2964,7 +3080,7 @@ $ ip rule show
   </details>
 </section>
 
-<div class="part" data-part="6">
+<div class="part" data-part="7">
   <div class="part-n">Coda</div>
   <div class="part-t">One idea, five times</div>
   <p class="part-d">The guide has now asked the same question at five scales and been given five different answers. Read together, they disagree about something fundamental.</p>
@@ -3042,7 +3158,7 @@ $ ip rule show
 
   <div class="note"><b>So the guide’s own refrain is wrong, and usefully so.</b> “Make the identifier travel with the packet” holds for the first three columns and breaks twice at the bottom: a namespace puts nothing on the wire, and identity-based policy resolves the tenant <em>after</em> the packet has already arrived. The honest version is one level up — <em>every scheme picks somewhere to keep the tenant identifier, and that choice decides whether isolation is a property of the structure or a property of the configuration.</em> MPLS chose the structure and pays for it in protocols. Kubernetes chose the configuration and pays for it in blast radius. Neither is the mistake; picking one without knowing which you picked is.</div>
       <nav class="seq">
-        <a class="seq-prev" href="#s18"><span>Previous</span>18 — A neocloud, built</a>
+        <a class="seq-prev" href="#s19"><span>Previous</span>19 — A neocloud, built</a>
         <a class="seq-next" href="#glossary"><span>Next</span>Glossary</a>
       </nav>
     </div>
@@ -3113,7 +3229,7 @@ $ ip rule show
     var a = rail.querySelector('a[href="#' + sec.id + '"]');
     if (a) links[sec.id] = a;
   });
-  var PART_OF = {"s00": 0, "s01": 1, "s02": 1, "s03": 1, "s04": 1, "s05": 1, "s06": 1, "s07": 2, "s08": 2, "s09": 2, "s10": 2, "s11": 3, "s12": 3, "s13": 3, "s14": 4, "s15": 4, "s16": 4, "s17": 4, "s18": 5, "coda": 6, "glossary": 6};
+  var PART_OF = {"s00": 0, "s01": 1, "s02": 1, "s03": 1, "s04": 1, "s05": 1, "s06": 1, "s07": 2, "s08": 2, "s09": 2, "s10": 2, "s11": 3, "s12": 4, "s13": 4, "s14": 4, "s15": 5, "s16": 5, "s17": 5, "s18": 5, "s19": 6, "coda": 7, "glossary": 7};
   var activePart = -1, showAll = false;
   var dividers = [].slice.call(document.querySelectorAll('.part[data-part]'));
   var allBtn = document.getElementById('showAll');
