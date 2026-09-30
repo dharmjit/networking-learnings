@@ -114,6 +114,9 @@ section > details[open] > summary::after{transform:translateY(-25%) rotate(-135d
 section > details > summary:hover::after{border-color:var(--ink);}
 section > details > summary:focus-visible{outline:2px solid var(--ink);outline-offset:6px;border-radius:4px;}
 .sec-body{display:flex;flex-direction:column;gap:22px;padding-top:9px;}
+.sub{display:flex;flex-direction:column;gap:7px;border-top:1px solid var(--rule);padding-top:22px;margin-top:8px;}
+.sub h3{font-family:var(--mono);font-weight:600;font-size:1.15rem;letter-spacing:-.025em;}
+.sub p{font-size:1rem;line-height:1.55;color:var(--ink-soft);max-width:64ch;}
 .walk{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px 28px;margin-top:18px;padding-top:16px;border-top:1px solid var(--rule);}
 .step{transition:opacity .35s ease;}
 .step.off{opacity:.14;}
@@ -910,17 +913,58 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
     </div>
   </div>
 
+  <div class="sub">
+    <h3>Exterior · eBGP</h3>
+    <p>Between two autonomous systems. This is the boundary BGP was designed around, and the only place its caution makes sense.</p>
+  </div>
+
   <div class="duo">
     <div class="card pvc">
-      <div class="tag" style="color:var(--pv)">eBGP vs iBGP — the same protocol, different rules</div>
+      <div class="tag" style="color:var(--pv)">What it does to a route</div>
       <ul>
-        <li><b>eBGP</b> — peer in another AS, normally directly connected (TTL 1 unless you ask for multihop). Prepend my ASN, rewrite <code>NEXT_HOP</code> to myself, re-advertise what policy allows.</li>
-        <li><b>iBGP</b> — peer inside my own AS, loopback to loopback, any number of IGP hops away. Do <em>not</em> prepend. Do <em>not</em> touch <code>NEXT_HOP</code> — it stays the far eBGP neighbour’s address, which your IGP must therefore be able to reach, or you configure <code>next-hop-self</code>.</li>
-        <li>The rule that shapes everything: <b>a route learned from one iBGP peer is never re-advertised to another iBGP peer.</b> AS_PATH does not grow inside an AS, so there is no loop detection — the prohibition has to be structural instead.</li>
-        <li>That forces a <b>full mesh</b>: <em>n</em>(<em>n</em>−1)/2 sessions. Route reflectors lift the rule and substitute <code>ORIGINATOR_ID</code> and <code>CLUSTER_LIST</code> as the loop check; confederations solve it by faking sub-ASes instead.</li>
+        <li><b>Prepends its own ASN</b> to <code>AS_PATH</code> — which is simultaneously the loop check, the distance metric, and the evidence policy is written against.</li>
+        <li><b>Rewrites <code>NEXT_HOP</code> to itself</b>, so the far side is given an address it can actually reach.</li>
+        <li>Re-advertises what export policy allows, to the peers export policy allows. Nothing is passed on by default.</li>
+        <li>Decrements nothing else. The prefix itself is never altered — only the attributes travelling with it.</li>
       </ul>
     </div>
     <div class="card pvc">
+      <div class="tag" style="color:var(--pv)">Why it is never discovered</div>
+      <ul>
+        <li>Every peer is configured by hand, by <b>address and ASN</b>. There is no hello, no multicast, nothing to stumble into.</li>
+        <li>Directly connected by default — <b>TTL 1</b>. Reaching a peer further away needs <code>ebgp-multihop</code>, stated deliberately.</li>
+        <li>That is the point: a session is a commercial relationship. You agreed to carry this traffic, so you name who you agreed with.</li>
+        <li>Datacentre fabrics soften the <em>addressing</em> — dynamic neighbours, BGP unnumbered over IPv6 link-local — but never the trust. You still declare the expected ASN.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sub">
+    <h3>Interior · iBGP</h3>
+    <p>The same protocol between two routers inside one AS. Almost everything that looks strange about BGP network design comes from this half.</p>
+  </div>
+
+  <div class="duo">
+    <div class="card pvc">
+      <div class="tag" style="color:var(--pv)">What changes</div>
+      <ul>
+        <li><b>Does not prepend.</b> <code>AS_PATH</code> is unchanged inside the AS — which is exactly why the next card exists.</li>
+        <li><b>Does not touch <code>NEXT_HOP</code>.</b> It stays the far eBGP neighbour’s address, so your IGP has to be able to reach it — or you configure <code>next-hop-self</code> and take the job on yourself.</li>
+        <li>Peers <b>loopback to loopback</b>, any number of IGP hops apart. The session has no idea how many routers it crossed.</li>
+      </ul>
+    </div>
+    <div class="card pvc">
+      <div class="tag" style="color:var(--pv)">The rule that shapes every network</div>
+      <ul>
+        <li><b>A route learned from one iBGP peer is never re-advertised to another.</b> Not policy — protocol.</li>
+        <li>Because <code>AS_PATH</code> does not grow internally, there is no loop detection available. The prohibition has to be <em>structural</em> instead.</li>
+        <li>So every speaker must hear it directly: a <b>full mesh</b>, <em>n</em>(<em>n</em>−1)/2 sessions — 4,950 at a hundred routers. <b>Route reflectors</b> lift the rule and substitute <code>ORIGINATOR_ID</code> and <code>CLUSTER_LIST</code> as the loop check; confederations fake sub-ASes instead.</li>
+        <li>And note what iBGP is <em>not</em>: an IGP. It carries no topology, computes no paths, and its sessions exist only because an IGP made those loopbacks reachable — which is precisely what the walkthrough above is showing.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card pvc">
       <div class="tag" style="color:var(--pv)">Four messages, and that is all</div>
       <ul>
         <li><b>OPEN</b> — my AS, my router ID, my hold time, my capabilities: 4-byte ASNs, which address families I speak, route refresh, add-path. A capability the other side rejects means no session at all.</li>
@@ -930,7 +974,7 @@ footer{border-top:1px solid var(--rule);padding-top:26px;margin-top:40px;font-fa
         <li>The state machine is Idle → Connect → Active → OpenSent → OpenConfirm → <b>Established</b>. A session stuck in <em>Active</em> is not active; it is failing to connect and retrying — the worst-named state in networking.</li>
       </ul>
     </div>
-  </div>
+
 
   <div class="note"><b>Read the best-path order again:</b> path length is only step two, and it is measured in networks crossed, not milliseconds. A route through four small ASes can beat one through two huge ones. BGP was never trying to be fast — it was trying to be <em>agreeable</em>.</div>
       <nav class="seq">
